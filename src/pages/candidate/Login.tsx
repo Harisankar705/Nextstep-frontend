@@ -1,13 +1,19 @@
 import React from "react";
-
 import { ArrowRight } from "lucide-react";
+import { Logo } from "../../components/Logo";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate=useNavigate()
+  const handleSignupClick=()=>{
+    navigate('/signup')
+  }
   return (
     <div className="min-h-screen w-full bg-[#1a1625] text-white flex items-center justify-center">
       <div className="container max-w-[1100px] px-4">
         <div className=" grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div className="flex flex-col justify-center space-y-4">
+            <Logo width={400} height={107} className="mb-4" />
             <div className="space-y-2">
               <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
                 Hiring Done <span className="text-[#8257e7]">right</span>
@@ -67,7 +73,7 @@ const Login = () => {
             <div className="flex items-center gap-2 rounded-lg bg-[#2a2837] p-4">
               <div className="h-8 w-8 rounded-lg bg-[#1e129]" />
               <div className="flex-1">
-                <p className="text-sm">Explore Jobs</p>
+                <p className="text-sm cursor-pointer" onClick={handleSignupClick}>Already have an account</p>
                 <p className="text-xs text-gray-400">Signup</p>
               </div>
               <ArrowRight className="h-4 w-4 text-gray-400" />
