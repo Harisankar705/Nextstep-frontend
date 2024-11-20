@@ -24,7 +24,7 @@ const Login = () => {
     }
     setLoading(true)
     try {
-      const response=await login(email,password)
+      const response=await login(email,password,'user')
       if(response.token)
       {
         localStorage.setItem('authtoken',response.token)
@@ -32,6 +32,7 @@ const Login = () => {
       }
       else
       {
+        console.log(error)
         setError("Login failed!Please check your credentails!")
       }
     } catch (error) {

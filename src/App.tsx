@@ -7,11 +7,14 @@ import EmployerSignup from './pages/employer/EmployerSignup.tsx';
 import './utils/toast.css';
 import Home from './pages/candidate/Home.tsx'
 import ProtectedRoute from './utils/ProtectedRoute.tsx';
+import { Toaster } from 'react-hot-toast';
 const App = () => {
   return (
     <div>
+      <Toaster/>
       <Router>
         <Routes>
+          
           <Route path='/login' element={<Login />} />
           <Route path='/signup' element={<Signup />} />
           <Route path='/employerlogin' element={<EmployerLogin />} />

@@ -52,7 +52,7 @@
           return;
         }
         try {
-          const isTaken=await checkEmailOrPhone(email,phonenumber)
+          const isTaken=await checkEmailOrPhone(email,phonenumber,'user')
           console.log("ISTAKEN",typeof isTaken)
           if(isTaken)
           {
