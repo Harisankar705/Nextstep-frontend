@@ -16,6 +16,14 @@ export const validateMail = (email:string) => {
     }
     return null
 }
+export const validateOTP=(otp:string):string|null=>{
+    if(/^\d{6}$/.test(otp))
+    {
+        return null
+    }
+    return 'otp must be 6 digits!'
+
+}
 export const validatePhoneNumber=(phonenumber:string)=>{
     if(!phonenumber.trim())
     {
