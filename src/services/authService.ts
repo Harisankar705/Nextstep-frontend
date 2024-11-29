@@ -11,8 +11,7 @@ interface SendOTPResponse {
     message: string
     success: boolean
 }
-interface verifyOTPResponse {
-    token?: string
+interface verifyOTPResponse { 
     success: boolean
     message: string
 }
@@ -30,27 +29,43 @@ interface GoogleAuthResponse {
     message?: string
 }
 type role = "user" | "employer"
+let isRefreshing=false
 api.interceptors.request.use(
     async (config) => {
-        const accessToken = localStorage.getItem('accessToken')
+        const accessToken = localStorage.getItem('accessToken');
+        
         if (accessToken) {
-            const tokenExpired = isTokenExpired(accessToken)
+            const tokenExpired = isTokenExpired(accessToken);
+            
             if (tokenExpired) {
-                console.log('Token expired')
-                await refreshToken()
-                const newAccessToken = localStorage.getItem('accessToken')
-                config.headers["Authorization"] = `Bearer ${newAccessToken}`
-            }
-            else {
-                config.headers['Authorization'] = `Bearer ${accessToken}`
+                console.log('Token expired');
+
+                if (!isRefreshing) {
+                    isRefreshing = true;
+                    try {
+                        const newAccessToken = await refreshToken();
+                        if (newAccessToken) {
+                            localStorage.setItem('accessToken', newAccessToken);
+                            config.headers["Authorization"] = `Bearer ${newAccessToken}`;
+                        } else {
+                            console.error('Failed to refresh token. Please log in again.');
+                        }
+                    } catch (error) {
+                        console.error('Error while refreshing token:', error);
+                    } finally {
+                        isRefreshing = false;
+                    }
+                }
+            } else {
+                config.headers['Authorization'] = `Bearer ${accessToken}`;
             }
         }
-        return config
+        return config;
     },
     (error) => {
-        return Promise.reject(error)
+        return Promise.reject(error);
     }
-)
+);
 export const sendOTP = async (email: string, role: role): Promise<SendOTPResponse> => {
     try {
         console.log('in sendotp')
@@ -100,6 +115,25 @@ export const register = async (userData: UserData, otp: string) => {
         throw error
     }
 }
+export const candidateDetails=async(details:Record<string,any>):Promise<any>=>{
+    try
+    {
+        console.log("In candidatedetails")
+        console.log(details)
+        const response=await api.post('/candidate-details',details,{
+            headers:{
+                'Content-Type':"multipart/form-data"
+            }
+        })
+        return response.data
+    
+    }catch(error:unknown)
+    {
+        axiosError(error,'candidateDetails')
+        throw error
+    }
+}
+
 export const login = async (email: string, password: string, role: role) => {
     try {
 
@@ -112,12 +146,22 @@ export const login = async (email: string, password: string, role: role) => {
     }
 
 }
-export const checkEmailOrPhone = async (email: string, phoneNumber: string, role: role) => {
+export const checkEmailOrPhone = async (email: string, phoneNumber: string, role: role,name:string) => {
     try {
-
-        const response = await api.post('/check-email-phone', { email, phoneNumber })
-        console.log("response", response.data)
-        return response.data.isTaken
+        const response = await api.post('/check-email-phone', { email, phoneNumber,role,name })
+        if(response.data.isEmailTaken)
+        {
+            return "Email already exists"
+        }
+        if(response.data.isPhoneTaken)
+        {
+            return "Phone number already taken"
+        }
+        if(response.data.isNameTaken)
+        {
+            return "Name is already taken"
+        }
+        return false
     }
     catch (error) {
         console.error('Error checking phone/mail', error)

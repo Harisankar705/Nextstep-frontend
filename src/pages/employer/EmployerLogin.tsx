@@ -30,7 +30,7 @@ const EmployerLogin = () => {
       const response = await login(email, password, "employer");
       console.log("RESPONSE",response)
       if (response && response.accessToken) {
-        localStorage.setItem("authtoken", response.accessToken);
+        localStorage.setItem("accessToken", response.accessToken);
         navigate('/home')
         toast.success("Login Successfull!")
         
@@ -44,7 +44,7 @@ const EmployerLogin = () => {
       }
     } catch (error) {
       console.error("Login error", error);
-      setError("An error occurred. Please try again.");
+      setError("Check your credentials!");
       
     } finally {
       setLoading(false);
@@ -112,13 +112,13 @@ const EmployerLogin = () => {
                 {loading ? "Logging in..." : "Login"}
               </button>
 
-              <button
+              {/* <button
                 type="button"
                 className="w-full flex items-center justify-center space-x-2 bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0dd3b4]/90 transition-colors"
               >
                 <FcGoogle className="w-4 h-4" />
                 <span className="text-sm">Login with Google!</span>
-              </button>
+              </button> */}
             </form>
 
             <div className="text-center text-sm">

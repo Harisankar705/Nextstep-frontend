@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Logo } from "../../components/Logo";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import {toast} from 'react-hot-toast'
 import { validateConfirmPassword, validateMail, validateName, validatePassword } from "../../utils/ValidationUtils";
 import { checkEmailOrPhone, register, sendOTP, verifyOTP, resendOTP } from "../../services/authService";
 import { EyeOff, Eye } from "lucide-react";
@@ -23,6 +23,7 @@ const EmployerSignup = () => {
   const [isResending, setIsResenting] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
+  
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -44,7 +45,7 @@ const EmployerSignup = () => {
     }
 
     try {
-      const isTaken = await checkEmailOrPhone(email, "",'employer');
+      const isTaken = await checkEmailOrPhone(email,"",  'employer',companyName);
       if (isTaken) {
         setError("Email already registered");
         toast.error("Email already registered");
@@ -54,8 +55,10 @@ const EmployerSignup = () => {
       if (otpSent) return;
       const response = await sendOTP(email, "employer");
       setOtpSend(true);
+      toast.success('OTP has been sended!Check your mail!')
       startCountDown();
     } catch (error) {
+      
       setError("Error occurred while checking for OTP");
     }
   };
@@ -81,12 +84,13 @@ const EmployerSignup = () => {
       setError("");
       setOtp(["", "", "", "", "", ""]);
       const response = await resendOTP(email, "employer");
-      if (response.success) {
+      console.log("RESEND respons",response)
+      if (response.message="OTP resended!") {
         setOtpSend(true);
+        toast.success("OTP has been resended!")
         startCountDown();
-        toast.success("OTP resend success!");
       } else {
-        toast.error("Failed to resend OTP!");
+        toast.error("Failed to resend OTP!")
       }
     } catch (error) {
       setError("Error occurred while resending OTP");
@@ -116,44 +120,50 @@ const EmployerSignup = () => {
 
   const handleVerify = async () => {
     const otpString = otp.join("");
-    const verified = await verifyOTP(email, otpString, "employer");
+    try {
+      const verified = await verifyOTP(email, otpString, "employer");
     if (verified.message === "OTP verification successfull!") {
       setOtpVerified(true);
       handleRegister();
       toast.success("OTP verified successfully!");
     } else {
-      setError("OTP verification failed");
+      // setError("OTP verification failed");
       toast.error("OTP verification failed! Try again!");
     }
+    } catch (error) {
+      // setError("OTP verification failed");
+      toast.error("OTP verification failed! Try again!");
+    }
+    
   };
 
   const handleRegister = async () => {
     console.log("IN handleregister")
-    
-      console.log("OTPVERIFIED",otpVerified)
-      const employerData = {
-        companyName,
-        email,
-        password,
-        role: "employer" as 'employer',
-        firstName:"",
-        secondName:"",
-        name:companyName
-      };
-      console.log("EMPLOYERDATA",employerData)
-      try {
-        setLoading(true);
-        const response = await register(employerData, otp.join(""));
-        console.log("RESPONSE",response)
-        toast.success("Registration completed");
-        setLoading(false);
-        setIsRegistered(true);
-        navigate("/employerlogin");
-      } catch (error) {
-        setLoading(false);
-        setError("Registration failed");
-      }
-    
+
+    console.log("OTPVERIFIED", otpVerified)
+    const employerData = {
+      companyName,
+      email,
+      password,
+      role: "employer" as 'employer',
+      firstName: "",
+      secondName: "",
+      name: companyName
+    };
+    console.log("EMPLOYERDATA", employerData)
+    try {
+      setLoading(true);
+      const response = await register(employerData, otp.join(""));
+      console.log("RESPONSE", response)
+      toast.success("Registration completed");
+      setLoading(false);
+      setIsRegistered(true);
+      navigate("/employerlogin");
+    } catch (error) {
+      setLoading(false);
+      setError("Registration failed");
+    }
+
   };
 
   return (
@@ -267,7 +277,7 @@ const EmployerSignup = () => {
                 </div>
                 {error && <p className="text-red-500">{error}</p>}
                 <button
-                  type="submit"
+                  type="submit" disabled={loading||otpSent}
                   className="w-full bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0DD3B4]/90 transition-colors"
                 >
                   {loading ? "Loading..." : "Sign Up"}
@@ -280,12 +290,12 @@ const EmployerSignup = () => {
             >
               Already have an account? Log In
             </button>
-            <button
+            {/* <button
               onClick={() => console.log("Google Login")}
               className="w-full flex items-center justify-center border border-gray-600 bg-transparent text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-colors"
             >
               <FcGoogle className="mr-2" /> Sign Up with Google
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

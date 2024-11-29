@@ -1,11 +1,29 @@
+import { jwtDecode} from 'jwt-decode';
+
 export const isTokenExpired = (token: string): boolean => {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const currentTime = Math.floor(Date.now() / 1000);
-    return payload.exp < currentTime;
+    try
+    {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        return payload.exp < currentTime;   
+    }
+    catch(error)
+    {
+        console.error("error decoding token",error)
+        return true
+    }
+   
 };
 
-export const getAccessToken = (): string | null => {
-    return localStorage.getItem('accessToken');
+export const getAccessToken = (): string => {
+    const token=localStorage.getItem('accessToken');
+    if(!token)
+    {
+        throw new Error('token not found')
+    }
+
+    const decodedToken:{userId:string}=jwtDecode(token)
+        return decodedToken.userId
 };
 
 export const setAccessToken = (token: string): void => {
@@ -27,3 +45,4 @@ export const setRefreshToken = (token: string): void => {
 export const removeRefreshToken = (): void => {
     localStorage.removeItem('refreshToken');
 };
+

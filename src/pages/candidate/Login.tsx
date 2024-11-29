@@ -4,6 +4,8 @@ import { Logo } from "../../components/Logo";
 import { useNavigate } from "react-router-dom";
 import { googleAuthentication, login } from "../../services/authService";
 import { useGoogleLogin } from "@react-oauth/google";
+import {toast} from 'react-hot-toast'
+import Spinner from "../../utils/Spinner";
 
 const Login = () => {
   const [email,setEmail]=useState('')
@@ -25,16 +27,24 @@ const Login = () => {
     setLoading(true)
     try {
       const response=await login(email,password,'user')
-      if(response.token)
+      console.log("response",response)
+      if(response.accessToken)
       {
-        localStorage.setItem('authtoken',response.token)
+        localStorage.setItem('accessToken',response.accessToken)
+        toast.success("Login success")
+        
+        
+      }
+      if(response.user.isProfileComplete)
+      {
         navigate('/home')
       }
       else
       {
-        console.log(error)
-        setError("Login failed!Please check your credentails!")
+        navigate('/candidate-details',{replace:true})
       }
+      
+      
     } catch (error) {
       console.log("Login error",error)
       setError("Check your email and password")
@@ -44,30 +54,30 @@ const Login = () => {
       setLoading(false)
     }
   }
-  const handleGoogleLogin=useGoogleLogin({
-    onSuccess:async(tokenResponse)=>{
-      try {
-        console.log("RES",tokenResponse.token_type)
-        const role='user'
-        const response=await googleAuthentication(tokenResponse.access_token,role)
-        if(response.success && response.token)
-        {
-          localStorage.setItem('authtoken',response.token)
-          navigate('/home')
-        }
-        else
-        {
-          setError(response.message||"Google authentication failed!")
-        }
-      } catch (error) {
-        setError('Failed to google Authenticate!')
-      }
-    },
-    onError:(error)=>{
-      console.log("error occured in googleLogin",error)
-      setError("Google authentication")
-    }
-  })
+  // const handleGoogleLogin=useGoogleLogin({
+  //   onSuccess:async(tokenResponse)=>{
+  //     try {
+  //       console.log("RES",tokenResponse.token_type)
+  //       const role='user'
+  //       const response=await googleAuthentication(tokenResponse.access_token,role)
+  //       if(response.success && response.token)
+  //       {
+  //         localStorage.setItem('accessToken',response.token)
+  //         navigate('/home')
+  //       }
+  //       else
+  //       {
+  //         setError(response.message||"Google authentication failed!")
+  //       }
+  //     } catch (error) {
+  //       setError('Failed to google Authenticate!')
+  //     }
+  //   },
+  //   onError:(error)=>{
+  //     console.log("error occured in googleLogin",error)
+  //     setError("Google authentication")
+  //   }
+  // })
   
   return (
     <div className="min-h-screen w-full bg-[#1a1625] text-white flex items-center justify-center">
@@ -110,7 +120,6 @@ const Login = () => {
                     type="button"
                     className="text-xs text-[#8257e6] hover:underline"
                   >
-                    {/* Forgot Password */}
                   </button>
                 </div>
                 <div className="relative">
@@ -136,21 +145,22 @@ const Login = () => {
                 className="w-full py-2  bg-[#8257e6] rounded-md hover:bg-[#8257e6]/90 transition-colors"
                 disabled={loading}
               >
-                {loading ?"Loggin in...":"Login"}
+                {loading ?<Spinner loading={true}/>:"Login"}
               </button>
+              
             </form>
-            <button
+            {/* <button
               type="button"
               onClick={()=>handleGoogleLogin()}
               className="w-full py-2 border border-[#8257e6] text[#8257e6] rounded-md  hover:bg-[#8257e6] hover:text-white transition-colors"
             >
               Continue With Google
-            </button>
+            </button> */}
             <div className="flex items-center gap-2 rounded-lg bg-[#2a2837] p-4">
               <div className="h-8 w-8 rounded-lg bg-[#1e129]" />
               <div className="flex-1">
                 <p className="text-sm cursor-pointer" onClick={handleSignupClick}>Don't have an account!</p>
-                <p className="text-xs text-gray-400">Login</p>
+                <p className="text-xs text-gray-400">Signup</p>
               </div>
               <ArrowRight className="h-4 w-4 text-gray-400" />
             </div>

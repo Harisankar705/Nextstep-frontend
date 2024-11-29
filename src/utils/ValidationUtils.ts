@@ -54,7 +54,7 @@ export const  validatePassword=(password:string):string|null=>{
       return null
 }
 export const validateConfirmPassword=(password:string,confirmPassword:string):string|null=>{
-    if(password!==confirmPassword)
+    if(password!==confirmPassword )
     {
         return "Passwords don't match!"
     }
