@@ -3,6 +3,7 @@ import { axiosError } from '../utils/AxiosError'
 import { isTokenExpired } from '../utils/AuthUtils'
 const api = axios.create({
     baseURL: "http://localhost:4000",
+    withCredentials: true,
     headers: {
         "Content-Type": "application/json"
     }
@@ -11,7 +12,7 @@ interface SendOTPResponse {
     message: string
     success: boolean
 }
-interface verifyOTPResponse { 
+interface verifyOTPResponse {
     success: boolean
     message: string
 }
@@ -28,48 +29,13 @@ interface GoogleAuthResponse {
     token?: string
     message?: string
 }
-type role = "user" | "employer"
-let isRefreshing=false
-api.interceptors.request.use(
-    async (config) => {
-        const accessToken = localStorage.getItem('accessToken');
-        
-        if (accessToken) {
-            const tokenExpired = isTokenExpired(accessToken);
-            
-            if (tokenExpired) {
-                console.log('Token expired');
 
-                if (!isRefreshing) {
-                    isRefreshing = true;
-                    try {
-                        const newAccessToken = await refreshToken();
-                        if (newAccessToken) {
-                            localStorage.setItem('accessToken', newAccessToken);
-                            config.headers["Authorization"] = `Bearer ${newAccessToken}`;
-                        } else {
-                            console.error('Failed to refresh token. Please log in again.');
-                        }
-                    } catch (error) {
-                        console.error('Error while refreshing token:', error);
-                    } finally {
-                        isRefreshing = false;
-                    }
-                }
-            } else {
-                config.headers['Authorization'] = `Bearer ${accessToken}`;
-            }
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+type role = "user" | "employer"
+``
 export const sendOTP = async (email: string, role: role): Promise<SendOTPResponse> => {
     try {
         console.log('in sendotp')
-        const response = await api.post('/send-otp', { email, role })
+        const response = await api.post('/send-otp', { email, role }, { withCredentials: false })
         console.log("RESPONSEDATA", response.data)
         return response.data
     } catch (error: unknown) {
@@ -81,7 +47,7 @@ export const resendOTP = async (email: string, role: role): Promise<SendOTPRespo
     try {
         console.log('in sendotp')
 
-        const response = await api.post('/resend-otp', { email, role })
+        const response = await api.post('/resend-otp', { email, role }, { withCredentials: false })
         console.log("RESPONSEDATA", response.data)
         return response.data
     } catch (error: unknown) {
@@ -93,7 +59,7 @@ export const resendOTP = async (email: string, role: role): Promise<SendOTPRespo
 export const verifyOTP = async (email: string, otp: string, role: role): Promise<verifyOTPResponse> => {
     try {
 
-        const response = await api.post('/verify-otp', { email, otp, role })
+        const response = await api.post('/verify-otp', { email, otp, role }, { withCredentials: false })
         console.log('response', response.data)
         return response.data
 
@@ -108,28 +74,27 @@ export const register = async (userData: UserData, otp: string) => {
     try {
         console.log('in register')
 
-        const response = await api.post('/signup', { userData, otp })
+        const response = await api.post('/signup', { userData, otp },{withCredentials:false})
         return response.data
     } catch (error: unknown) {
         axiosError(error, 'register')
         throw error
     }
 }
-export const candidateDetails=async(details:Record<string,any>):Promise<any>=>{
-    try
-    {
+export const candidateDetails = async (details: Record<string, any>): Promise<any> => {
+    try {
         console.log("In candidatedetails")
         console.log(details)
-        const response=await api.post('/candidate-details',details,{
-            headers:{
-                'Content-Type':"multipart/form-data"
-            }
+        const response = await api.post('/candidate-details', details, {
+            headers: {
+                'Content-Type': "multipart/form-data"
+            },
+           
         })
         return response.data
-    
-    }catch(error:unknown)
-    {
-        axiosError(error,'candidateDetails')
+
+    } catch (error: unknown) {
+        axiosError(error, 'candidateDetails')
         throw error
     }
 }
@@ -137,7 +102,7 @@ export const candidateDetails=async(details:Record<string,any>):Promise<any>=>{
 export const login = async (email: string, password: string, role: role) => {
     try {
 
-        const response = await api.post('/login', { email, password ,role})
+        const response = await api.post('/login', { email, password, role }, { withCredentials: true })
         return response.data
     } catch (error: unknown) {
         axiosError(error, 'login')
@@ -146,19 +111,16 @@ export const login = async (email: string, password: string, role: role) => {
     }
 
 }
-export const checkEmailOrPhone = async (email: string, phoneNumber: string, role: role,name:string) => {
+export const checkEmailOrPhone = async (email: string, phoneNumber: string, role: role, name: string) => {
     try {
-        const response = await api.post('/check-email-phone', { email, phoneNumber,role,name })
-        if(response.data.isEmailTaken)
-        {
+        const response = await api.post('/check-email-phone', { email, phoneNumber, role, name }, { withCredentials: false })
+        if (response.data.isEmailTaken) {
             return "Email already exists"
         }
-        if(response.data.isPhoneTaken)
-        {
+        if (response.data.isPhoneTaken) {
             return "Phone number already taken"
         }
-        if(response.data.isNameTaken)
-        {
+        if (response.data.isNameTaken) {
             return "Name is already taken"
         }
         return false
@@ -194,6 +156,20 @@ export const googleAuthentication = async (token: string, role: string): Promise
 
     } catch (error) {
         axiosError(error, 'googleAuthentication')
+        throw error
+    }
+}
+export const userAuthenticated = async (): Promise<boolean> => {
+    try {
+        console.log('in userauthenticated')
+        const response = await api.get('/protected')
+        console.log("ReSPONSE", response)
+        if (response.status === 200) {
+            return true
+        }
+        return false
+    } catch (error) {
+        axiosError(error, 'usetAuthenticated')
         throw error
     }
 }

@@ -15,16 +15,7 @@ export const isTokenExpired = (token: string): boolean => {
    
 };
 
-export const getAccessToken = (): string => {
-    const token=localStorage.getItem('accessToken');
-    if(!token)
-    {
-        throw new Error('token not found')
-    }
 
-    const decodedToken:{userId:string}=jwtDecode(token)
-        return decodedToken.userId
-};
 
 export const setAccessToken = (token: string): void => {
     localStorage.setItem('accessToken', token);

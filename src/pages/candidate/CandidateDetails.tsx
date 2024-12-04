@@ -5,7 +5,8 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import { Logo } from "../../components/Logo";
 import { candidateDetails } from "../../services/authService";
-import { getAccessToken } from "../../utils/AuthUtils";
+import { useNavigate } from "react-router-dom";
+import { fetchLanguageSuggestions, fetchLocationSuggestions } from "../../utils/LanguageAndLocation";
 type LocationSuggestion = {
   name: string;
   id: number;
@@ -16,6 +17,7 @@ const CandidateDetails = () => {
   const [profilePicturePreview, setProfilePicturePreview] = useState<
     string | null
   >(null);
+  const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [languageSuggestions, setLanguagesSuggestion] = useState<string[]>([]);
   const [languageInput, setLanguageInput] = useState("");
@@ -38,7 +40,7 @@ const CandidateDetails = () => {
       dateofbirth: "",
       gender: "",
       skills: [] as string[],
-      resumeFile:null
+      resumeFile: null
     },
     validationSchema: Yup.object({
       education: Yup.object({
@@ -57,20 +59,19 @@ const CandidateDetails = () => {
         institution: Yup.string().required("Instituiton is required"),
       }),
       languages: Yup.array().of(Yup.string()).min(1, "Languages is required"),
-      resumeFile:Yup.mixed()
-      .nullable()
-      .test('fileSize',"File too large!",(value)=>{
-        if(!value)return true
-        return (value as File).size<=500000000
-      })
-      .test('fileType', "Unsupported file type", (value) =>
-      {
-        if(!value)return true
-        return ['application/pdf', 'application/msword'].includes((value as File).type) 
+      resumeFile: Yup.mixed()
+        .nullable()
+        .test('fileSize', "File too large!", (value) => {
+          if (!value) return true
+          return (value as File).size <= 500000000
+        })
+        .test('fileType', "Unsupported file type", (value) => {
+          if (!value) return true
+          return ['application/pdf', 'application/msword'].includes((value as File).type)
 
-      }
-      
-      ),      
+        }
+
+        ),
       aboutMe: Yup.string().required("About me is required"),
       dateofbirth: Yup.date()
         .max(new Date(), "Date must be in the past")
@@ -82,28 +83,20 @@ const CandidateDetails = () => {
     }),
     onSubmit: async (values) => {
       const formData = new FormData();
-      const userId = getAccessToken();
-      console.log("USERID", userId);
-      if (!userId) {
-        toast.error("User id not found");
-        return;
-      }
-      formData.append("userId", userId);
 
-      if (profilePicture instanceof File)
-        {
-          console.log("Appending profile picture:", {
-            name: profilePicture.name,
-            type: profilePicture.type,
-            size: profilePicture.size
-          });
-          formData.append("profilePicture", profilePicture);
-        }
-      if (resumeFile) 
-        {
-          formData.append("resumeFile", resumeFile);
-          console.log('resumefile appended')
-        }
+
+      if (profilePicture instanceof File) {
+        console.log("Appending profile picture:", {
+          name: profilePicture.name,
+          type: profilePicture.type,
+          size: profilePicture.size
+        });
+        formData.append("profilePicture", profilePicture);
+      }
+      if (resumeFile) {
+        formData.append("resumeFile", resumeFile);
+        console.log('resumefile appended')
+      }
       formData.append("data", JSON.stringify(values));
       try {
         await candidateDetails(formData);
@@ -113,6 +106,7 @@ const CandidateDetails = () => {
       }
       console.log("Submitted Values:", values);
       toast.success("Details submitted successfully!");
+      navigate('/home')
     },
   });
   const handleLanguageChange = async (
@@ -122,20 +116,11 @@ const CandidateDetails = () => {
     setLanguageInput(query);
     if (query) {
       try {
-        const response = await axios.get(`https://restcountries.com/v3.1/all`);
-        const languages = response.data
-          .flatMap((country: any) =>
-            country.languages ? Object.values(country.languages) : []
-          )
-          .filter(
-            (lang: string) =>
-              typeof lang === "string" &&
-              lang.toLowerCase().includes(query.toLowerCase())
-          );
+        const languages=await fetchLanguageSuggestions(query)
+        setLanguagesSuggestion(languages)
+        
+          
 
-        const uniqueLanguages: string[] = Array.from(new Set(languages));
-
-        setLanguagesSuggestion(uniqueLanguages);
       } catch (error) {
         console.error("Error occurred:", error);
       }
@@ -156,16 +141,10 @@ const CandidateDetails = () => {
     debounceRef.current = setTimeout(async () => {
       if (query) {
         try {
-          const response = await axios.get(
-            `https://api.locationiq.com/v1/autocomplete.php?key=pk.737e7a51608e0777c2ffe0680fb255b1&q=${query}`
-          );
+          const locations=await fetchLocationSuggestions(query)
+          setLocationSuggestions(locations)
 
-          const locations = response.data.map((location: any) => ({
-            name: location.display_name, 
-            id: location.place_id, 
-          }));
-
-          setLocationSuggestions(locations);
+          
         } catch (error) {
           console.error("Error fetching locations:", error);
           toast.error("Failed to fetch location suggestions!");
@@ -199,16 +178,16 @@ const CandidateDetails = () => {
 
   const handleResumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const file=event.target.files[0]
+      const file = event.target.files[0]
       setResumeFile(file);
-      formik.setFieldValue("resumeFile",file)
+      formik.setFieldValue("resumeFile", file)
     }
   };
 
   const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      console.log('selectedfile',file)
+      console.log('selectedfile', file)
       if (file.type.startsWith("image/")) {
         setProfilePicture(file);
         setProfilePicturePreview(URL.createObjectURL(file));
@@ -217,7 +196,7 @@ const CandidateDetails = () => {
       }
     }
   };
-  
+
 
   const addSkill = (newSkill: string): void => {
     if (newSkill.trim() && !formik.values.skills.includes(newSkill)) {
@@ -254,7 +233,7 @@ const CandidateDetails = () => {
           />
           {profilePicturePreview && (
             <div className="mt-4">
-             <img
+              <img
                 src={profilePicturePreview}
                 alt="profile-picture"
                 className="w-32 h-32 rounded-full object-cover mx-auto border border-zinc-800"
@@ -271,11 +250,10 @@ const CandidateDetails = () => {
             value={formik.values.experience}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.experience && formik.errors.experience
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.experience && formik.errors.experience
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.experience && formik.errors.experience && (
             <p className="text-red-500 text-sm">{formik.errors.experience}</p>
@@ -289,11 +267,10 @@ const CandidateDetails = () => {
             onChange={handleResumeChange}
             accept='.pdf,.doc,.docx'
             onBlur={formik.handleBlur}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.resumeFile && formik.errors.resumeFile
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.resumeFile && formik.errors.resumeFile
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.resumeFile && formik.errors.resumeFile && (
             <p className="text-red-500 text-sm">{formik.errors.resumeFile}</p>
@@ -360,11 +337,10 @@ const CandidateDetails = () => {
             name="languages"
             value={languageInput}
             onChange={handleLanguageChange}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.languages && formik.errors.languages
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.languages && formik.errors.languages
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.languages && formik.errors.languages && (
             <p className="text-red-500 text-sm">{formik.errors.languages}</p>
@@ -407,11 +383,10 @@ const CandidateDetails = () => {
             name="location"
             value={locationInput}
             onChange={handleLocationChange}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.location && formik.errors.location
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.location && formik.errors.location
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.location && formik.errors.location && (
             <p className="text-red-500 text-sm">{formik.errors.location}</p>
@@ -441,11 +416,10 @@ const CandidateDetails = () => {
             value={formik.values.dateofbirth}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.dateofbirth && formik.errors.dateofbirth
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.dateofbirth && formik.errors.dateofbirth
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.dateofbirth && formik.errors.dateofbirth && (
             <p className="text-red-500 text-sm">{formik.errors.dateofbirth}</p>
@@ -460,11 +434,10 @@ const CandidateDetails = () => {
             value={formik.values.aboutMe}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.aboutMe && formik.errors.aboutMe
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.aboutMe && formik.errors.aboutMe
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.aboutMe && formik.errors.aboutMe && (
             <p className="text-red-500 text-sm">{formik.errors.aboutMe}</p>
@@ -478,11 +451,10 @@ const CandidateDetails = () => {
             value={formik.values.gender}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.gender && formik.errors.gender
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.gender && formik.errors.gender
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           >
             <option value="" disabled>
               Select gender
@@ -504,11 +476,10 @@ const CandidateDetails = () => {
             value={formik.values.education.degree}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.education?.degree && formik.errors.education?.degree
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.education?.degree && formik.errors.education?.degree
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.education?.degree &&
             formik.errors.education?.degree && (
@@ -529,11 +500,10 @@ const CandidateDetails = () => {
             onBlur={formik.handleBlur}
             placeholder="YYYY"
             maxLength={4}
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.education?.year  && formik.errors.education?.year
-                              ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.education?.year && formik.errors.education?.year
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.education?.year && formik.errors.education?.year && (
             <p className="text-red-500 text-sm">
@@ -552,11 +522,10 @@ const CandidateDetails = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             placeholder="University"
-            className={`w-full bg-zinc-900 border ${
-              formik.touched.education?.institution  && formik.errors.education?.institution
-                ? "border-red-500"
-                : "border-zinc-800"
-            } rounded px-3 py-2 text-white`}
+            className={`w-full bg-zinc-900 border ${formik.touched.education?.institution && formik.errors.education?.institution
+              ? "border-red-500"
+              : "border-zinc-800"
+              } rounded px-3 py-2 text-white`}
           />
           {formik.touched.education?.institution &&
             formik.errors.education?.institution && (

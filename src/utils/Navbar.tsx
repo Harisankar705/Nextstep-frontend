@@ -1,8 +1,38 @@
-
-import { Home, PlaySquare, Store, Users, Menu, MessageCircle, Bell, Search } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { Home, PlaySquare, Store, Users, Menu, MessageCircle, Bell, Search,User,BriefcaseBusiness, LogOut } from 'lucide-react'
 import { Logo } from '../components/Logo'
-
+import {  useNavigate } from 'react-router-dom'
+import {useDispatch} from 'react-redux'
+import { clearUser } from '../redux/userSlice'
+import { persistor } from '../redux/store'
 export default function Navbar() {
+    const navigate = useNavigate()
+    const [dropdownOpen,setDropdownOpen]=useState(false)
+    const dispatch=useDispatch()
+
+    const handleAccountClick=()=>{
+        navigate('/candidate-profile')
+    }
+    const handleLogout=()=>{
+        dispatch(clearUser())
+        persistor.purge()
+        navigate('/login')
+        
+    }
+    useEffect(()=>{
+        const handleOutsideClick=(event:MouseEvent)=>{
+            const dropdown=document.getElementById('profile-dropdown')
+            if(dropdown && !dropdown.contains(event.target as Node))
+            {
+                setDropdownOpen(false)
+            }
+            document.addEventListener('mousedown', handleOutsideClick)
+            return ()=>{
+            document.removeEventListener('mousedown',handleOutsideClick)
+            }
+        }
+    })
+
     return (
         <div className="w-full border-b border-gray-700 bg-black">
             <div className="flex h-16 items-center px-4 gap-4">
@@ -27,13 +57,13 @@ export default function Navbar() {
                         <Home className="h-6 w-6" />
                     </button>
                     <button className="h-16 px-4 hover:bg-gray-900 text-gray-400">
-                        <PlaySquare className="h-6 w-6" />
+                        <BriefcaseBusiness className="h-6 w-6" />
                     </button>
                     <button className="h-16 px-4 hover:bg-gray-900 text-gray-400">
                         <Store className="h-6 w-6" />
                     </button>
                     <button className="h-16 px-4 hover:bg-gray-900 text-gray-400">
-                        <Users className="h-6 w-6" />
+                        <Users className="h-6 w-6" onClick={handleAccountClick}/>
                     </button>
                 </nav>
 
@@ -47,11 +77,29 @@ export default function Navbar() {
                     <button className="p-2 rounded-full hover:bg-gray-900 text-gray-400">
                         <Bell className="h-5 w-5" />
                     </button>
-                    <div className="h-9 w-9 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium">
-                        PF
+                    <div className='relative'>
+                        <div className="h-9 w-9 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium" onClick={() => setDropdownOpen(!dropdownOpen)}
+                            aria-expanded={dropdownOpen} aria-haspopup='true'>
+                                <User className='h-5 w-5'/>
                     </div>
+                    
+                    
+                    {dropdownOpen && (
+                        <div id='profile-dropdown'  className='absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-10'>
+                            <div className='py-2'>
+                                <button className='flex items-center w-full px-4 py-2 text-black hover:bg-gray-200' onClick={handleLogout}>
+                                    <LogOut className='h-5 w-5 mr-2'/>Logout
+                                   </button>
+                                <button className='flex items-center w-full px-4 py-2 text-black hover:bg-gray-200' onClick={handleAccountClick}>
+                                    <User className='h-5 w-5 mr-2'/>View Profile
+                                   </button>
+
+                            </div>
+                            </div>
+                    )}
                 </div>
             </div>
+        </div>
         </div>
     )
 }

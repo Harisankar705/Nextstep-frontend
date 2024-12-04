@@ -1,13 +1,31 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom'
-interface ProctectedRouteProps{
-    children:React.ReactNode
+import React,{useEffect} from 'react'
+import {useDispatch} from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import Spinner from './Spinner'
+interface ProtectedRouteProps
+{
+  children:React.ReactNode
 }
-const ProtectedRoute :React.FC<ProctectedRouteProps>=({children}) => {
-    console.log("IN PROTECTED ROUTE")
-    const token=localStorage.getItem('accessToken')
-    console.log('token',token)
-    return token? children as JSX.Element:<Navigate to ='/login' replace/>
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const {user,isAuthenticated} = useSelector((state: any) =>state.user)
+  console.log("IS AUTHENTICATED",isAuthenticated)
+  useEffect(()=>{
+    if(!isAuthenticated )
+    {
+      navigate('/login')
+    }
+  },[isAuthenticated,user,navigate])
+  if(!isAuthenticated)
+  {
+    return <Spinner loading={true}/>
+  }
+  return <>{children}</>
+  
+  
 }
 
 export default ProtectedRoute

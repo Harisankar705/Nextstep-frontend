@@ -26,7 +26,7 @@ const InputField: React.FC<InputFieldProps> = ({
         if (status === 'invalid') return 'border-red-500'
     }
     return (
-        <div className= 'space-y-2'> 
+        <div className= 'space-y-2' >
         <label htmlFor={ label } className = 'text-sm' > { label } </label>
             < input type = { type } id = { label } value = { value } placeholder = { placeholder } onChange = { handleChange } className = {`w-full px-3 py-2 bg-[#2a2837] rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-[#8257e6] border ${inputClass()}`
 }/>

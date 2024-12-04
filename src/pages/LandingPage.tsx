@@ -68,7 +68,7 @@ const FeatureCard: React.FC<{ icon: React.ReactNode; title: string; description:
 // Landing Page Component
 const LandingPage: React.FC = () => {
   console.log("IN landing page")
-  const headerSlides = [
+  const headerSlides:Array<{title:JSX.Element;description:string,buttonText:JSX.Element,backgroundClass:string,image:string}> = [
     {
       title: (
         <>
@@ -77,7 +77,7 @@ const LandingPage: React.FC = () => {
       ),
       description: "Connect with top employers and take the next step in your career journey",
       buttonText:(
-        <button className='bg-blue text-white-500' onClick={()=>handleCandidateLogin()}>Explore jobs</button>),
+        <span className='bg-blue text-white-500' onClick={()=>handleCandidateLogin()}>Explore jobs</span>),
       backgroundClass: "bg-[#1a1625]",
       image:Image,
     },
@@ -89,7 +89,7 @@ const LandingPage: React.FC = () => {
       ),
       description: "Find the most skilled professional to drive your company's success",
       buttonText:(
-        <button className='bg-blue text-white py-2 px-2 rounded' onClick={()=>handleEmployerLogin()}>Explore Candidates</button>),
+        <span className='bg-blue text-white py-2 px-2 rounded' onClick={()=>handleEmployerLogin()}>Explore Candidates</span>),
       backgroundClass: "bg-[#1e1c29]",
       
       image: SecondImage

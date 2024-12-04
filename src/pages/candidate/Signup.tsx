@@ -65,7 +65,8 @@ const Signup: React.FC = () => {
         startCountdown();
       }
     } catch (error) {
-      setError('Same email or phonenumber already exists!');
+      setError('Same email or phonenumber already exists');
+      console.error(error)
       setLoading(false)
     }
     finally
@@ -181,6 +182,7 @@ setLoading(true)
       password,
       name: `${firstName} ${secondName}`,
       role: 'user' as "user" | "employer",
+      phonenumber
     };
     try {
       setLoading(true);
