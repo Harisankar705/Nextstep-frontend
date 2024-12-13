@@ -17,7 +17,7 @@ export const fetchLanguageSuggestions = async (query: string): Promise<string[]>
 
         return Array.from(new Set(languages));
     } catch (error) {
-        console.error("Error fetching languages:", error);
+        throw new Error("Error fetching languages:");
         toast.error("Failed to fetch language suggestions!");
         return [];
     }
@@ -37,7 +37,6 @@ export const fetchLocationSuggestions = async (query: string): Promise<{ name: s
             id: location.place_id,
         }));
     } catch (error) {
-        console.error("Error fetching locations:", error);
         toast.error("Failed to fetch location suggestions!");
         return [];
     }

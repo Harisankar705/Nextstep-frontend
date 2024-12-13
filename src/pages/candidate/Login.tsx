@@ -26,11 +26,9 @@ const Login = () => {
       setError("fill all fields!")
       return
     }
-    console.log(email, password)
     setLoading(true)
     try {
       const response = await login(email, password, 'user')
-      console.log("response", response)
       toast.success("Login success")
 
 
@@ -39,16 +37,16 @@ const Login = () => {
 
 
       if (response.user.isProfileComplete) {
-        navigate('/home')
+        navigate('/home',{replace:true})
       }
       else {
         navigate('/candidate-details', { replace: true })
       }
 
 
-    } catch (error) {
-      console.log("Login error", error)
-      setError("Check your email and password")
+    } catch (error: any) {
+
+      setError(error)
     }
     finally {
       setLoading(false)

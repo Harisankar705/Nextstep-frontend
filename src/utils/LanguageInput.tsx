@@ -34,7 +34,7 @@ const LanguageInput: React.FC<LanguageInputProps> = ({ value, onChange, error, c
           const uniqueLanguages: string[] = Array.from(new Set(languages));
           setLanguageSuggestions(uniqueLanguages);
         } catch (error) {
-          console.error("Error occurred during fetching languages", error);
+          throw new Error("Error occurred during fetching languages");
         }
       }, 500);
     } else {

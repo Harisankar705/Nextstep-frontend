@@ -1,31 +1,38 @@
-import React,{useEffect} from 'react'
-import {useDispatch} from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Spinner from './Spinner'
-interface ProtectedRouteProps
-{
-  children:React.ReactNode
+
+interface ProtectedRouteProps {
+  children: React.ReactNode
+  role?: 'candidate' | 'employer'
 }
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const dispatch = useDispatch()
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const navigate = useNavigate()
 
-  const {user,isAuthenticated} = useSelector((state: any) =>state.user)
-  console.log("IS AUTHENTICATED",isAuthenticated)
-  useEffect(()=>{
-    if(!isAuthenticated )
-    {
-      navigate('/login')
+  const { user: candidate, isAuthenticated: isCandidateAuthenticated } = useSelector((state: any) => state.user)
+  const { user: employer, isAuthenticated: isEmployerAuthenticated } = useSelector((state: any) => state.employer)
+
+  const isAuthenticated = role === 'candidate' ? isCandidateAuthenticated : isEmployerAuthenticated
+  const user = role === 'candidate' ? candidate : employer
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      if (role === 'candidate') {
+        navigate('/login')
+      } else if (role === 'employer') {
+        navigate('/employerlogin')
+      }
     }
-  },[isAuthenticated,user,navigate])
-  if(!isAuthenticated)
-  {
-    return <Spinner loading={true}/>
+  }, [isAuthenticated, role, navigate])
+
+  if (!isAuthenticated) {
+    return <Spinner loading={true} />
   }
+
   return <>{children}</>
-  
-  
 }
 
 export default ProtectedRoute

@@ -47,7 +47,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange, error, c
                     const uniqueLocations = Array.from(new Set(locations));
                     setLocationSuggestions(uniqueLocations);
                 } catch (err) {
-                    console.error("Error fetching locations", err);
+                    throw new Error('error occured')
                 }
             }, 500);
         } else {

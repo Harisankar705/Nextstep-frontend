@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Spinner from '../../utils/Spinner';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../../utils/Navbar';
 
 const Profile = () => {
     const navigate = useNavigate()
@@ -17,18 +18,17 @@ const Profile = () => {
         return <Spinner loading={true} />;
     }
 
-    const { firstName, secondName, profilePicture, email, location, skills, education, friends } = user;
-    console.log('User object:', user);
+    const { firstName, secondName, profilePicture, email, location, skills, education, friends,aboutMe } = user;
 
     const profilePictureFileName = profilePicture.includes('\\')
         ? profilePicture.split('\\').pop()
         : profilePicture;
     const profilePictureURL = `http://localhost:4000/uploads/profile-pictures/${profilePictureFileName}?t=${new Date().getTime()}`;
 
-    console.log('Profile Picture URL:', profilePictureURL);
 
     return (
         <div className="min-h-screen bg-black text-white">
+            <Navbar />
             <div className="relative h-[350px]">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-black opacity-90">
                     <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay"></div>
@@ -89,13 +89,11 @@ const Profile = () => {
                         ))}
                     </div>
 
-                    {/* Profile Content */}
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 py-4">
-                        {/* Sidebar */}
                         <div className="md:col-span-4 space-y-4">
                             <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
                                 <h2 className="text-lg font-semibold text-white mb-3">Intro</h2>
-                                <p className="text-center mb-4">About yourself</p>
+                                <p className="text-center mb-4">{aboutMe}</p>
                                 <button className="w-full py-2 px-4 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-300 mb-4 transition duration-300">
                                     Edit Bio
                                 </button>

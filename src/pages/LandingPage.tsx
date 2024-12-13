@@ -65,9 +65,7 @@ const FeatureCard: React.FC<{ icon: React.ReactNode; title: string; description:
   );
 };
 
-// Landing Page Component
 const LandingPage: React.FC = () => {
-  console.log("IN landing page")
   const headerSlides:Array<{title:JSX.Element;description:string,buttonText:JSX.Element,backgroundClass:string,image:string}> = [
     {
       title: (
@@ -98,7 +96,6 @@ const LandingPage: React.FC = () => {
   const navigate=useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0);
   const handleCandidateLogin=()=>{
-    console.log('handlecandidate clicked')
     navigate('/login')
   }
   const handleEmployerLogin=()=>{
@@ -113,7 +110,7 @@ const LandingPage: React.FC = () => {
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
-    beforeChange: (current:number, next:number) => setCurrentSlide(next),
+    beforeChange: ( next:number) => setCurrentSlide(next),
     appendDots: (dots:React.ReactNode) => (
       <div style={{ bottom: "20px", display: "flex", justifyContent: "center" }}>
         <ul className="flex space-x-2">{dots}</ul>

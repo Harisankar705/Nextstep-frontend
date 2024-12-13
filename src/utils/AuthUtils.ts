@@ -9,7 +9,7 @@ export const isTokenExpired = (token: string): boolean => {
     }
     catch(error)
     {
-        console.error("error decoding token",error)
+        throw new Error("token expired")
         return true
     }
    

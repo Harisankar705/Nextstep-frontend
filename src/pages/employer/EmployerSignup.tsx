@@ -6,6 +6,7 @@ import {toast} from 'react-hot-toast'
 import { validateConfirmPassword, validateMail, validateName, validatePassword } from "../../utils/ValidationUtils";
 import { checkEmailOrPhone, register, sendOTP, verifyOTP, resendOTP } from "../../services/authService";
 import { EyeOff, Eye } from "lucide-react";
+import Spinner from "../../utils/Spinner";
 
 const EmployerSignup = () => {
   const [email, setEmail] = useState("");
@@ -32,6 +33,7 @@ const EmployerSignup = () => {
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    setLoading(true)
     setError("");
 
     const nameError = validateName(companyName);
@@ -84,7 +86,6 @@ const EmployerSignup = () => {
       setError("");
       setOtp(["", "", "", "", "", ""]);
       const response = await resendOTP(email, "employer");
-      console.log("RESEND respons",response)
       if (response.message="OTP resended!") {
         setOtpSend(true);
         toast.success("OTP has been resended!")
@@ -119,28 +120,27 @@ const EmployerSignup = () => {
   };
 
   const handleVerify = async () => {
+    
     const otpString = otp.join("");
     try {
+      setLoading(true)
       const verified = await verifyOTP(email, otpString, "employer");
     if (verified.message === "OTP verification successfull!") {
       setOtpVerified(true);
       handleRegister();
       toast.success("OTP verified successfully!");
+     
     } else {
-      // setError("OTP verification failed");
       toast.error("OTP verification failed! Try again!");
     }
     } catch (error) {
-      // setError("OTP verification failed");
       toast.error("OTP verification failed! Try again!");
     }
     
   };
 
   const handleRegister = async () => {
-    console.log("IN handleregister")
 
-    console.log("OTPVERIFIED", otpVerified)
     const employerData = {
       companyName,
       email,
@@ -150,11 +150,9 @@ const EmployerSignup = () => {
       secondName: "",
       name: companyName
     };
-    console.log("EMPLOYERDATA", employerData)
     try {
       setLoading(true);
       const response = await register(employerData, otp.join(""));
-      console.log("RESPONSE", response)
       toast.success("Registration completed");
       setLoading(false);
       setIsRegistered(true);
@@ -276,12 +274,14 @@ const EmployerSignup = () => {
                   </span>
                 </div>
                 {error && <p className="text-red-500">{error}</p>}
-                <button
-                  type="submit" disabled={loading||otpSent}
-                  className="w-full bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0DD3B4]/90 transition-colors"
-                >
-                  {loading ? "Loading..." : "Sign Up"}
-                </button>
+                  <button
+                    type="submit"
+                    disabled={loading || otpSent}
+                    className="w-full bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0DD3B4]/90 transition-colors"
+                  >
+                    {loading ? <Spinner loading={true} /> : "Sign Up"}
+                  </button>
+
               </form>
             )}
             <button

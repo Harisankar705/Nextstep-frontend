@@ -4,7 +4,10 @@ const initialState={
     userName:null,
     email:null,
     profilePicture:null,
-    isAuthenticated:false
+    isAuthenticated:false,
+    phoneNumber:null,
+    skills:null,
+    languages:null
 }
 const userSlice=createSlice({
     name:"user",

@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authService";
 import { EyeOff, Eye } from "lucide-react";
 import {toast} from 'react-hot-toast'
+import { setEmployer } from "../../redux/employerSlice";
+import { useDispatch } from "react-redux";
 
 const EmployerLogin = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +15,7 @@ const EmployerLogin = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch=useDispatch()
 
   const handleSignup = () => {
     navigate("/employersignup");
@@ -28,23 +31,19 @@ const EmployerLogin = () => {
     setLoading(true);
     try {
       const response = await login(email, password, "employer");
-      console.log("RESPONSE",response)
-      if (response && response.accessToken) {
-        localStorage.setItem("accessToken", response.accessToken);
-        navigate('/home')
-        toast.success("Login Successfull!")
-        
-      } else {
-        if(response.message && response.message.includes("OTP verification failed!"))
-        {
-          toast.error("OTP Verification failed")
-        }
-        console.log(error)
-        setError("Login failed! Please check your credentials.");
+      toast.success("Login success")
+      dispatch(setEmployer(response.user))
+      if(response.user.isProfileComplete)
+      {
+        navigate('/employerhome')
       }
-    } catch (error) {
-      console.error("Login error", error);
-      setError("Check your credentials!");
+      else
+      {
+        navigate('/employerdetails',{replace:true})
+      }
+      
+    } catch (error:any) {
+      setError(error)
       
     } finally {
       setLoading(false);

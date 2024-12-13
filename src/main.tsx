@@ -7,10 +7,7 @@ import { Provider } from 'react-redux'
 import { persistor, store } from './redux/store.ts'
 import { PersistGate } from 'redux-persist/integration/react'
 const clientId = import.meta.env.VITE_AUTH_GOOGLE_ID
-if (!clientId) {
-  console.error('google auth missing')
-}
-console.log("CLIEND", clientId)
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={clientId}>

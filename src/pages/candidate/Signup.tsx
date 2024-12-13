@@ -11,7 +11,7 @@ import Spinner from "../../utils/Spinner";
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const handleLoginClick = () => {
-    navigate("/login");
+    navigate("/login",{replace:true});
   };
 
   const [firstName, setFirstName] = useState('');
@@ -57,16 +57,14 @@ const Signup: React.FC = () => {
       else {
         if (otpSent) return
         setLoading(true)
-        const response = await sendOTP(email, 'user');
+         await sendOTP(email, 'user');
         
-        console.log("RESPONSE", response.message);
         setOtpSent(true);
         toast.success("OTP sended!Check your mail")
         startCountdown();
       }
     } catch (error) {
       setError('Same email or phonenumber already exists');
-      console.error(error)
       setLoading(false)
     }
     finally
@@ -143,17 +141,14 @@ const Signup: React.FC = () => {
     
     try {
       const verified = await verifyOTP(email, otpString, 'user');
-    console.log("VERIFIED", verified)
     if (verified.message === "OTP verification successfull!") {
 setLoading(true)
-      console.log('OTP verified successfully');
       toast.success("OTP verified successfull!")
 
       setOtpVerified(true);
       await handleRegister()
 
-      navigate('/login');
-      console.log(otpVerified)
+      navigate('/login',{replace:true});
     } 
     else if (verified.message === "Failed to verify otp") {
       setError('OTP verification failed');
@@ -186,14 +181,12 @@ setLoading(true)
     };
     try {
       setLoading(true);
-      console.log("Loading state:", loading);
 
-      console.log("IN handleregister")
       const response = await register(userData, otp.join(''));
       toast.success("Registeration successfull!")
       setLoading(true);
       setIsRegistered(true);
-      navigate('/candidate-details');
+      
     } catch (error) {
       setLoading(false);
       setError("Registration failed");
