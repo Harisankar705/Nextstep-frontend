@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import SideBar from "./SideBar";
 import SearchBar from "./SearchBar";
-import { getUser, toogleStatus } from "../../services/authService";
 import { Candidate, UserCandidate } from "../../types/Candidate"; 
+import { getUser, toogleStatus } from "../../services/adminService";
 
 const role = 'user';
 const Candidates = () => {
@@ -32,7 +32,7 @@ const Candidates = () => {
                 if (candidate.id === id) {
                     return {
                         ...candidate,
-                        status: candidate.status === "Active" ? "Inactive" : "Active",  // Toggle status
+                        status: candidate.status === "Active" ? "Inactive" : "Active",  
                     };
                 }
                 return candidate;

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import SideBar from "./SideBar";
 import SearchBar from "./SearchBar";
-import { getUser, toogleStatus } from "../../services/authService";
 import { Candidate, Employer, UserCandidate } from "../../types/Candidate";
+import { getUser, individualDetails, toogleStatus } from "../../services/adminService";
+import { useNavigate } from "react-router-dom";
 
 const role = 'employer';
 const Employers = () => {
     const [employers, setEmployers] = useState<Candidate[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const navigate=useNavigate()
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -41,6 +43,9 @@ const Employers = () => {
            throw new Error("Error occured while changing status")
         }
     }
+    const handleViewDetails=(id:string)=>{
+        navigate(`/verifyemployer/${id}`)
+    }
 
     const isEmployer = (employer: Candidate): employer is Employer=> {
         return (employer as Employer).companyName !== undefined;
@@ -60,6 +65,7 @@ const Employers = () => {
                                 <th className="text-left px-6 py-4 text-sm font-medium text-gray-500">EMAIL</th>
                                 <th className="text-left px-6 py-4 text-sm font-medium text-gray-500">STATUS</th>
                                 <th className="text-left px-6 py-4 text-sm font-medium text-gray-500">ACTION</th>
+                                <th className="text-left px-6 py-4 text-sm font-medium text-gray-500">VIEW DETAILS</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,6 +86,14 @@ const Employers = () => {
                                             className={`px-4 py-1 rounded-full text-sm ${employer.status === 'Active' ? 'bg-teal-50 text-teal-600' : 'bg-red-50 text-red-600'}`}
                                         >
                                             {employer.status === 'Active' ? 'Block' : 'Unblock'}
+                                        </button>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <button
+                                            onClick={() => handleViewDetails(employer.id)}
+                                            className='px-4 py-1 rounded-full text-sm text-gray-500 bg-yellow-300'
+                                        >
+                                        View Details
                                         </button>
                                     </td>
                                 </tr>

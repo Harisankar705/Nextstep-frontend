@@ -16,9 +16,20 @@ export interface Employer extends BaseUser
 {
     companyName:string
     industry:string
+    location:string,
+    employees:string,
+    website:string,
+    dateFounded:Date,
+    isVerified:string,
+    documentType:string,
+    documentNumber:string,
+    document:string,
+    description:string,
+    logo:string
 }
 export interface LocationSuggestion{
-    name:string;
-    id:number
+    name:string,
+    id:number,
+
 }
 export type Candidate=UserCandidate|Employer

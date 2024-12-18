@@ -1,6 +1,4 @@
-import axios from 'axios'
 import { axiosError } from '../utils/AxiosError'
-import dotenv from 'dotenv';
 import { isTokenExpired } from '../utils/AuthUtils'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_AUTH_GOOGLE_ID
@@ -8,7 +6,6 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_AUTH_GOOGLE_ID
 
 
 import api from '../utils/api'
-import { Candidate } from '../types/Candidate';
 interface SendOTPResponse {
     message: string
     success: boolean
@@ -44,6 +41,21 @@ export const sendOTP = async (email: string, role: role): Promise<SendOTPRespons
         throw error
     }
 }
+export const createPost=async(formData:FormData,role:role)=>{
+    try {
+        console.log('in createpost')
+        const response = await api.post('/createpost', formData,{
+            headers:{
+                'Content-Type': 'multipart/form-data', 
+            }
+        })
+        
+        return response
+    } catch (error) {
+        axiosError(error,'createPost')
+        throw error
+    }
+}
 export const resendOTP = async (email: string, role: role): Promise<SendOTPResponse> => {
     try {
 
@@ -70,7 +82,7 @@ export const verifyOTP = async (email: string, otp: string, role: role): Promise
 }
 export const register = async (userData: UserData, otp: string) => {
     try {
-
+        console.log('in register')
         const response = await api.post('/signup', { userData, otp },{withCredentials:false})
         return response.data
     } catch (error: unknown) {
@@ -168,22 +180,3 @@ export const googleAuthentication = async (token: string, role: string): Promise
 // }
 
 
-export const getUser = async (role: 'user'|'employer'): Promise<Candidate[]> => {
-    try {
-        const response = await api.get(`/userdetails/${role}`);  
-        return response.data
-    } catch (error) {
-        axiosError(error, 'getCandidates')
-        throw error
-    }
-}
-export const toogleStatus = async (id: string, role: string): Promise<Candidate[]> => {
-    try {
-        const response = await api.post(`/togglestatus/${id}`, { role })
-        return response.data
-    }
-    catch (error) {
-        axiosError(error, 'toogleStatus')
-        throw error
-    }
-}

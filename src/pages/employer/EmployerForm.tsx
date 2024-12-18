@@ -4,7 +4,6 @@ import * as Yup from 'yup'
 import { fetchLocationSuggestions } from "../../utils/LanguageAndLocation";
 import { LocationSuggestion } from "../../types/Candidate";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 interface CompanyFormProps {
   initialData?: {
@@ -15,16 +14,24 @@ interface CompanyFormProps {
     industry: string,
     description: string;
     logo: string | null,
-    dateFounded: string | null
+    dateFounded: string | null,
+
+    documentType: string,
+    documentNumber: string,
+    companyDocuments: {
+      fileUrl: string
+    } | null
   }
   onSubmit: (formData: FormData) => Promise<void>
   buttonText?: string
+  isEdit?:boolean
 }
-const EmployerForm = ({ initialData, onSubmit,}: CompanyFormProps) => {
+const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   const [logo, setLogo] = useState<string | null>("");
 
   const [locationInput, setLocationInput] = useState('')
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([])
+  const [documentName,setDocumentName]=useState('')
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -39,10 +46,12 @@ const EmployerForm = ({ initialData, onSubmit,}: CompanyFormProps) => {
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const formatDate = (dateString: string | Date | null | undefined) => {
-    if (!dateString) return '';  
+    if (!dateString) return '';
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
-    return date.toISOString().split("T")[0]; 
+    return date.toISOString().split("T")[0];
   };
+
+
 
   const formik = useFormik({
     initialValues: {
@@ -53,7 +62,11 @@ const EmployerForm = ({ initialData, onSubmit,}: CompanyFormProps) => {
       industry: initialData?.industry || "",
       dateFounded: formatDate(initialData?.dateFounded) || '',
       description: initialData?.description || '',
-      logo: initialData?.logo || null
+      logo: initialData?.logo || null,
+      documentType: initialData?.documentType || '',
+      documentNumber: initialData?.documentNumber || '',
+      companyDocuments: initialData?.companyDocuments || null
+
 
     },
     validationSchema: Yup.object({
@@ -68,8 +81,36 @@ const EmployerForm = ({ initialData, onSubmit,}: CompanyFormProps) => {
           }
         ),
       companyName: Yup.string().required("Company name is required"),
+      documentType: Yup.string().required("Document type is required"),
+      documentNumber: Yup.string().when('documentType', {
+        is: (documentType: string) => ['PAN', 'GST', 'INCORPORATION_CERTIFICATE', 'OTHER'].includes(documentType),
+        then: (schema) => {
+          switch (formik.values.documentType) {
+            case 'PAN':
+              return schema.matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN number format').required("PAN number is required");
+            case 'GST':
+              return schema.matches(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, 'Invalid GST number format').required("GST number is required");
+            case 'INCORPORATION_CERTIFICATE':
+              return schema.matches(/^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$/, 'Invalid incorporation certificate number').required("Certificate number is required");
+            case 'OTHER':
+              return schema.min(3, "Document number must be at least 3 characters").required("Document number is required");
+            default:
+              return schema;
+          }
+        },
+        otherwise: (schema) => schema
+      }),
+      companyDocuments: Yup.mixed().required("Document file is required")
+        .test('fileSize', 'File size is too large',
+          (value) => {
+            if (!value) return false
+            return value instanceof File ? value.size <= 5000000 : true
+          }
+        ),
       website: Yup.string()
-        .url("Invalid URL format")
+        .matches(
+          /^www\.[a-zA-Z0-9\-]+\.[a-zA-Z]{2,}$/,
+          "Website must start with 'www.' and be in the format 'www.example.com'")
         .required("Website is required"),
       location: Yup.string().required("Location is required"),
       employees: Yup.string().required("Number of employees is required"),
@@ -85,6 +126,16 @@ const EmployerForm = ({ initialData, onSubmit,}: CompanyFormProps) => {
       if (logo) {
         formData.append('logo', logo)
       }
+      if (value.companyDocuments instanceof File) {
+        formData.append('document', value.companyDocuments)
+        console.log('Document added to FormData:', {
+          fileName: value.companyDocuments.name,
+          fileSize: value.companyDocuments.size,
+          fileType: value.companyDocuments.type
+        })
+        formData.append('documentType', value.documentType)
+        formData.append('documentNumber', value.documentNumber)
+      }
       formData.append('companyName', value.companyName);
       formData.append('website', value.website);
       formData.append('location', value.location);
@@ -92,7 +143,10 @@ const EmployerForm = ({ initialData, onSubmit,}: CompanyFormProps) => {
       formData.append('industry', value.industry);
       formData.append('dateFounded', value.dateFounded);
       formData.append('description', value.description);
-
+      console.log('FormData entries:')
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1])
+      }
 
       try {
         const response = await onSubmit(formData)
@@ -237,7 +291,7 @@ const EmployerForm = ({ initialData, onSubmit,}: CompanyFormProps) => {
                   Website
                 </label>
                 <input
-                  type="url"
+                  type="string"
                   required
 
                   {...formik.getFieldProps('website')}
@@ -340,6 +394,102 @@ const EmployerForm = ({ initialData, onSubmit,}: CompanyFormProps) => {
                 </div>
 
               </div>
+              {isEdit && (
+                <section>
+                  <h3 className="text-sm font-medium mb-2">Company Documents</h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    Upload required company documents for verification
+                  </p>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-2">
+                          Document Type
+                        </label>
+                        <select {...formik.getFieldProps('documentType')}
+                          className="w-full bg-[#1A1A1A] border border-gray-800 rounded-lg px-4 py-2 focus:outline-none foucs:border-[#0DD3B4]">
+                          <option value="">Select document type</option>
+                          <option value='PAN'>PAN CARD</option>
+                          <option value='GST'>GST CERTIFICATE</option>
+                          <option value="INCORPORATION_CERTIFICATE">INCORPORATION CERTIFICATE</option>
+                          <option value="OTHER">OTHER</option>
+                        </select>
+                        {formik.touched.documentType && formik.errors.documentType && (
+                          <span className="text-red-500 text-sm">{formik.errors.documentType}</span>
+                        )}
+                      </div>
+                      <div>
+                        <label className='block text-sm text-gray-400 mb-2'>
+                          Document Number
+                        </label>
+                        <input type='text' {...formik.getFieldProps('documentNumber')}
+                          className="w-full bg-[#1A1A1A] border border-gray-800 rounded-lg px-4 py-2 focus:outline-none foucs:border-[#0DD3B4]" />
+
+                        {formik.touched.documentNumber && formik.errors.documentNumber && (
+                          <span className="text-red-500 text-sm">{formik.errors.documentNumber}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-6">
+                      <label className="flex-1 border-2 border-dashed border-gray-600 rounded-lg p-4 cursor-pointer hover:border-gray-500 transition-colors">
+                        <div className="flex flex-col items-center gap-2 text-sm text-gray-400">
+                          <svg
+                            className="w-6 h-6"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                            />
+                          </svg>
+                          {documentName ? (
+                            <>
+                              <span className="text-[#0DD3B4]">Selected file</span>
+                              <span className="text-[#0DD3B4]">{documentName}</span>
+
+                            </>
+                          ) : (
+                            <>
+                              <span>Click to upload document</span>
+                              <span className="text-xs">
+                                PDF,PNG,JPG (max.5MB)
+                              </span>
+                            </>
+                          )}
+
+
+
+
+                        </div>
+                        <input
+                          type="file"
+                          className="hidden"
+                          name='companyDocuments'
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              formik.setFieldValue('companyDocuments', file)
+                              setDocumentName(file.name)
+                            }
+                          }}
+                          accept=".pdf,.jpg,.jpeg,.png"
+
+
+                        />
+
+                      </label>
+                      {formik.touched.companyDocuments && formik.errors.companyDocuments && (
+                        <span className="text-red-500 text-sm">{formik.errors.companyDocuments}</span>
+                      )}
+                    </div>
+                  </div>
+                </section>
+              )}
+             
 
             </div>
           </section>

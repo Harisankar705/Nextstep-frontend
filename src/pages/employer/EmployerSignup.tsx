@@ -24,33 +24,70 @@ const EmployerSignup = () => {
   const [isResending, setIsResenting] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
+  const [passwordErrors,setPasswordErrors]=useState({noMatch:false,passwordError:''})
   
   const navigate = useNavigate();
 
   const handleLogin = () => {
     navigate("/employerlogin");
   };
-
+  const handlePasswordChange=(value:string)=>{
+    setPassword(value)
+    setPasswordErrors(prev=>({...prev,noMatch:false,passwordError:''}))
+    setError('')
+  }
+  const handleConfirmPasswordChange=(value:string)=>{
+    setConfirmPassword(value)
+    setPasswordErrors(prev=>({
+      ...prev,
+      noMatch:false
+     
+    }))
+    setError('')
+  }
+  const validatePasswords=()=>{
+    const passwordValidation=validatePassword(password)
+    if(passwordValidation)
+    {
+      setPasswordErrors(prev=>({
+        ...prev,
+        passwordError:passwordValidation
+      }))
+      return false
+    }
+    if(password!==confirmPassword)
+    {
+      setPasswordErrors(prev=>({
+        ...prev,
+        noMatch:true
+      }))
+      return false
+    }
+    return true
+  }
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setLoading(true)
+    setLoading(false)
     setError("");
 
     const nameError = validateName(companyName);
     const emailError = validateMail(email);
-    const passwordError = validatePassword(password);
+    const passwordValid = validatePasswords();
     const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
+  
 
-    if (nameError || emailError || passwordError || confirmPasswordError) {
-      setError(nameError || emailError || passwordError || confirmPasswordError || "");
+    if (nameError || emailError || !passwordValid || confirmPasswordError) {
+      setError(nameError || emailError  || confirmPasswordError || "");
       return;
-    }
+        }
 
     try {
+      setLoading(true)
       const isTaken = await checkEmailOrPhone(email,"",  'employer',companyName);
       if (isTaken) {
         setError("Email already registered");
         toast.error("Email already registered");
+        setLoading(false)
         return;
       }
 
@@ -58,9 +95,10 @@ const EmployerSignup = () => {
       const response = await sendOTP(email, "employer");
       setOtpSend(true);
       toast.success('OTP has been sended!Check your mail!')
+      setLoading(false)
       startCountDown();
     } catch (error) {
-      
+      setLoading(false)
       setError("Error occurred while checking for OTP");
     }
   };
@@ -120,6 +158,12 @@ const EmployerSignup = () => {
   };
 
   const handleVerify = async () => {
+    const isOTPComplete=otp.every(digit=>digit!=='')
+    if(!isOTPComplete)
+    {
+      toast.error("Please enter complete OTP")
+      return
+    }
     
     const otpString = otp.join("");
     try {
@@ -131,9 +175,12 @@ const EmployerSignup = () => {
       toast.success("OTP verified successfully!");
      
     } else {
+      setLoading(false)
       toast.error("OTP verification failed! Try again!");
     }
     } catch (error) {
+      setLoading(false)
+
       toast.error("OTP verification failed! Try again!");
     }
     
@@ -153,8 +200,8 @@ const EmployerSignup = () => {
     try {
       setLoading(true);
       const response = await register(employerData, otp.join(""));
+      console.log(response)
       toast.success("Registration completed");
-      setLoading(false);
       setIsRegistered(true);
       navigate("/employerlogin");
     } catch (error) {
@@ -198,7 +245,7 @@ const EmployerSignup = () => {
                   onClick={handleVerify}
                   className="w-full bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0DD3B4]/90 transition-colors"
                 >
-                  Verify OTP
+                  {loading ?<Spinner loading={true}/>:"Verify OTP"}
                 </button>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Didn’t receive OTP?</span>
@@ -243,11 +290,14 @@ const EmployerSignup = () => {
                   </label>
                   <input
                     id="password"
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
                     placeholder="Enter your password"
                     className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DD3B4] focus:border-transparent"
                     type={showPassword ? "text" : "password"}
                   />
+                  {passwordErrors.passwordError && (
+                    <p className="text-red-500 text-sm">{passwordErrors.passwordError}</p>
+                  )}
                   <span
                     className="absolute top-9 right-3 cursor-pointer text-gray-500"
                     onClick={() => setShowPassword(!showPassword)}
@@ -261,11 +311,14 @@ const EmployerSignup = () => {
                   </label>
                   <input
                     id="confirm_password"
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => handleConfirmPasswordChange(e.target.value)}
                     placeholder="Confirm your password"
                     className="w-full px-3 py-2 bg-transparent border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DD3B4] focus:border-transparent"
                     type={showConfirmPassword ? "text" : "password"}
                   />
+                    {passwordErrors.noMatch && (
+                      <p className="text-red-500 text-sm">Passwords do not match</p>
+                    )}
                   <span
                     className="absolute top-9 right-3 cursor-pointer text-gray-500"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -273,6 +326,7 @@ const EmployerSignup = () => {
                     {showConfirmPassword ? <EyeOff /> : <Eye />}
                   </span>
                 </div>
+        
                 {error && <p className="text-red-500">{error}</p>}
                   <button
                     type="submit"

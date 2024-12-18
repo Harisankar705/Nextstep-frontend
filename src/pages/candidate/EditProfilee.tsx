@@ -78,7 +78,6 @@ type FormData = z.infer<typeof formSchema>;
 
 const EditProfile = () => {
   const user = useSelector((state: any) => state.user);
-  console.log("USER",user)
   const navigate = useNavigate()
   const [languageSuggestions, setLanguageSuggestions] = useState<string[]>([]);
   const [locationSuggestions, setLocationSuggestions] = useState<

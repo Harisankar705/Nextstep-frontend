@@ -20,6 +20,7 @@ import EmployerForm from './pages/employer/EmployerForm.tsx';
 import { EmployerDetails,EditProfile } from './pages/employer/EmployerProfileForm.tsx';
 import Profile from './pages/candidate/Profile.tsx';
 import EditProfilee from './pages/candidate/EditProfilee.tsx'
+import Verification from './pages/admin/Verification.tsx';
 const App = () => {
   return (
     <div>
@@ -40,6 +41,7 @@ const App = () => {
           <Route path='admindashboard'element={<Dashboard/>}/>
           <Route path='/candidates'element={<Candidates/>}/>
           <Route path='/employers' element={<Employers/>}/>
+          <Route path='/verifyemployer/:id' element={<Verification />}/>
 
           <Route path='/employersignup' element={<EmployerSignup />} />
           <Route path='/employerlogin' element={<EmployerLogin />} />

@@ -1,10 +1,10 @@
-import { Building2, CheckSquare, LayoutDashboard, LogOut, Users } from "lucide-react"
+import { Building2, CheckSquare, LogOut, Users } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Logo } from "../../components/Logo"
 
 const SideBar = () => {
   return (
-    <div className='w-64 bg-white border-r border-gray-200 h-screen p-4 relative hidden md:block'>
+    <div className='w-64 bg-white border-r border-gray-200 h-screen p-4 fixed hidden md:block'>
           <div className="flex items-center justify-center mb-8 bg-gray-300 p-4 rounded-lg">
             <Logo/>
         </div>

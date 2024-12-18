@@ -10,13 +10,20 @@ export const EmployerDetails = () => {
     const handleSubmit = async (formData: FormData) => {
         try {
             const response = await employerDetails(formData)
+            if (response.success && response.redirectTo) {
+                dispatch(setEmployer(response.updatedUser))
+                setTimeout(() => {
+                    window.location.href = response.redirectTo
+                }, 2000)
+
+            }
            
         } catch (error) {
             
            throw new Error("Error occured while updating details")
         }
     }
-    return <EmployerForm onSubmit={handleSubmit} buttonText="Save changes" />
+    return <EmployerForm onSubmit={handleSubmit} buttonText="Update profile" isEdit={true} />
 }
 
 export const EditProfile = () => {
@@ -40,6 +47,7 @@ export const EditProfile = () => {
         } catch (error) {
             throw new Error('error occured in editprofile')
         }
+        <EmployerForm onSubmit={handleSubmit} buttonText="save changes" isEdit={false}/>
     }
 
     return (
