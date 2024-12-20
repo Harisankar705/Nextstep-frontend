@@ -46,7 +46,7 @@ const Login = () => {
 
     } catch (error: any) {
 
-      setError(error)
+      setError(error?.message || 'Check your email and password!');
     }
     finally {
       setLoading(false)

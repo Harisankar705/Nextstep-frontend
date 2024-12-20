@@ -21,6 +21,7 @@ import { EmployerDetails,EditProfile } from './pages/employer/EmployerProfileFor
 import Profile from './pages/candidate/Profile.tsx';
 import EditProfilee from './pages/candidate/EditProfilee.tsx'
 import Verification from './pages/admin/Verification.tsx';
+import { EditPost } from './pages/candidate/CreatePost/Editpost.tsx';
 const App = () => {
   return (
     <div>

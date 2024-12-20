@@ -54,6 +54,16 @@
                 const currentYear = new Date().getFullYear();
                 return value ? parseInt(value) <= currentYear : false;
               }
+            ).test("Graduation year seems invalid based on the dateof birth",
+              function (value)
+              {
+                const {dateofbirth}=this.parent
+                if(!value||!dateofbirth)return true
+                const birthYear=new Date(dateofbirth).getFullYear()
+                const gradDiffer=parseInt(value)
+                const yearDifference=gradDiffer-birthYear
+                return yearDifference>=20 && yearDifference<=60
+              }
             ),
           institution: Yup.string().required("Instituiton is required"),
         }),
@@ -62,6 +72,19 @@
           .matches(
             /^(\d+(\.\d+)?\s*(years?|yrs?|months?|mo)|\d+)$/i,
             "Please enter valid experience (e.g., '5 years', '6 months', '2.5 years')"
+          ).test("Experience check","Experience seems invalid based on gradution year",
+            function (value)
+            {
+              if(!value)return 
+              const {education}=this.parent
+              const experienceMatch = value.match(/^(\d+(\.\d+)?)/);
+              if(!experienceMatch)return false
+              const experienceYears=parseFloat(experienceMatch[1])
+              const graduationYear=parseInt(education.year)
+              const currentYear=new Date().getFullYear()
+              const yearDifference=currentYear-graduationYear
+              return experienceYears<=yearDifference+1
+            }
           ),
         languages: Yup.array().of(Yup.string()).min(1, "Languages is required"),
         resumeFile: Yup.mixed()

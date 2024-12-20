@@ -41,6 +41,16 @@ export const sendOTP = async (email: string, role: role): Promise<SendOTPRespons
         throw error
     }
 }
+export const getUserPosts=async()=>{
+    try {
+        const response = await api.get('/userposts',)
+        return response.data 
+    } catch (error) {
+        axiosError(error,'getUserPosts')
+        throw error
+    }
+    
+}
 export const createPost=async(formData:FormData,role:role)=>{
     try {
         console.log('in createpost')
@@ -139,6 +149,17 @@ export const checkEmailOrPhone = async (email: string, phoneNumber: string, role
         throw error
 
     }
+}
+export const search=async(query:string)=>{
+    try {
+        console.log(query)
+        const response = await api.post('/search', { query })
+        return response  
+    } catch (error) {
+    axiosError(error,'search')        
+    }
+    
+
 }
 export const refreshToken = async () => {
     try {

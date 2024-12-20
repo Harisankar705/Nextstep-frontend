@@ -5,6 +5,7 @@ import {  useNavigate } from 'react-router-dom'
 import {useDispatch} from 'react-redux'
 import { clearUser } from '../redux/userSlice'
 import { persistor } from '../redux/store'
+import SearchUtil from './Search/SearchUtil'
 export default function Navbar() {
     const navigate = useNavigate()
     const [dropdownOpen,setDropdownOpen]=useState(false)
@@ -26,12 +27,27 @@ export default function Navbar() {
             {
                 setDropdownOpen(false)
             }
+        }
             document.addEventListener('mousedown', handleOutsideClick)
             return ()=>{
             document.removeEventListener('mousedown',handleOutsideClick)
             }
+        },[])
+    const handleSearchResultSelect = (result:any) => {
+        switch (result.type) {
+            case 'user':
+                navigate(`/profile/${result.id}`);
+                break;
+            case 'job':
+                navigate(`/job/${result.id}`);
+                break;
+            case 'company':
+                navigate(`/company/${result.id}`);
+                break;
+            default:
+                break;
         }
-    })
+    };
 
     return (
         <div className="w-full border-b border-gray-700 bg-black">
@@ -42,14 +58,9 @@ export default function Navbar() {
 
 
                     </a>
-                    <div className="relative flex items-center">
-                        <Search className="absolute left-2 h-4 w-4 text-gray-400" />
-                        <input
-                            type="search"
-                            placeholder="Search on nextstep"
-                            className="w-[240px] pl-8 pr-3 py-2 bg-gray-900 border border-gray-800 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                    </div>
+                   <SearchUtil 
+                   className='flex-1'
+                   onResultSelect={handleSearchResultSelect}/>
                 </div>
 
                 <nav className="flex items-center gap-6 max-w-4xl flex-1 justify-center">

@@ -1,14 +1,41 @@
 import { Edit, GraduationCap, Home, MessageSquare, Share, ThumbsUp, Users } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Spinner from '../../utils/Spinner';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../utils/Navbar';
+import { PostType } from '../../types/Candidate';
+import Post from './Post';
+import { getUserPosts } from '../../services/authService';
+import { getImageURL } from '../../utils/ImageUtils';
 
 const Profile = () => {
     const navigate = useNavigate()
     const user = useSelector((state: any) => state.user);
+    console.log(user)
     const [isEditing,setIsEditing]=useState(false)
+    const [posts,setPosts]=useState([])
+    const [loading,setLoading]=useState(false)
+    console.log("POSTS",posts)
+    useEffect(()=>{
+        const fetchPosts=async()=>{
+            try {
+                console.log('in fetchposts')
+                const response = await getUserPosts()
+                console.log("response",response)
+                setPosts(response)
+            } catch (error) {
+                console.error("Error fetching posts",error)
+
+            }
+            finally
+            {
+                setLoading(false)
+            }
+        }
+        fetchPosts()
+        
+    },[])
     const handleEditProfile=()=>{
         navigate('/edit-profile')
         setIsEditing(true)
@@ -20,11 +47,7 @@ const Profile = () => {
 
     const { firstName, secondName, profilePicture, email, location, skills, education, friends,aboutMe } = user;
 
-    const profilePictureFileName = profilePicture.includes('\\')
-        ? profilePicture.split('\\').pop()
-        : profilePicture;
-    const profilePictureURL = `http://localhost:4000/uploads/profile-pictures/${profilePictureFileName}?t=${new Date().getTime()}`;
-
+   const profilePictureURL=getImageURL(profilePicture,'profile-pictures')
 
     return (
         <div className="min-h-screen bg-black text-white">
@@ -115,10 +138,10 @@ const Profile = () => {
                                         <Home className="h-5 w-5 text-gray-400" />
                                         <span>{location || 'No location'}</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    {/* <div className="flex items-center gap-2">
                                         <Users className="h-5 w-5 text-gray-400" />
                                         <span>{friends ? `${friends.length} friends` : 'No friends'}</span>
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <button className="w-full py-2 px-3 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-300 mt-4 transition duration-300">
                                     Edit details
@@ -145,41 +168,25 @@ const Profile = () => {
                                     />
                                 </div>
                             </div>
+                            {loading ? (
+                                <Spinner loading={true}/>
+                            ):posts.length>0 ? (
+                                    posts.map((post:PostType)=>(
+                                        <Post key={post._id} post={post}/>
+                                    ))
+                                ):(
+                                    <div className='text-center text-gray-400 py-8'>
+                                        No posts to display
+                                    </div>
+                                
+                                )}
+                                </div>
+                            
+                                
 
-                            {/* Post Display */}
-                            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-                                <div className="flex items-center space-x-3 mb-4">
-                                    <div className="h-10 w-10 rounded-full overflow-hidden">
-                                        <img
-                                            src="/placeholder.svg"
-                                            alt="Post"
-                                            className="h-full w-full object-cover"
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-white">Username</p>
-                                        <p className="text-sm text-gray-400">1 hour ago</p>
-                                    </div>
-                                </div>
-                                <p className="text-white mb-4">This is a sample post content.</p>
-                                <div className="border-t border-b border-gray-800 py-2 my-2">
-                                    <div className="flex justify-between text-gray-400">
-                                        <button className="flex items-center space-x-2 hover:text-purple-500 transition duration-300">
-                                            <ThumbsUp className="w-5 h-5" />
-                                            <span>Like</span>
-                                        </button>
-                                        <button className="flex items-center space-x-2 hover:text-purple-500 transition duration-300">
-                                            <MessageSquare className="w-5 h-5" />
-                                            <span>Comment</span>
-                                        </button>
-                                        <button className="flex items-center space-x-2 hover:text-purple-500 transition duration-300">
-                                            <Share className="w-5 h-5" />
-                                            <span>Share</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                           
+                            
+                        
                     </div>
                 </div>
             </div>
