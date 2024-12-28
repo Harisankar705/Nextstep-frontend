@@ -90,8 +90,16 @@ const SearchUtil: React.FC<SearchBarProps> = ({
             key={user._id}
         
             className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
-            onClick={() => onResultSelect?.({ _id: user.id, name: `${user.firstName} ${user.secondName}`, type: 'user' })}
+            onClick={() => {
+               
+                onResultSelect?.({
+                    _id: user._id,
+                    name: `${user.firstName} ${user.secondName}`,
+                    type: 'user'
+                });
+            }}
         >
+
             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
                 {user.profilePicture ? (
                     <img
@@ -121,7 +129,7 @@ const SearchUtil: React.FC<SearchBarProps> = ({
         <div
             key={employer._id}
             className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
-            onClick={() => onResultSelect?.({ _id: employer.id, name: employer.companyName, type: 'company' })}
+            onClick={() => onResultSelect?.({ _id: employer._id, name: employer.companyName, type: 'company' })}
         >
             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
                 {employer.logo ? (

@@ -10,22 +10,18 @@ import Spinner from "../../utils/Spinner"
 import { toast } from 'react-hot-toast'
 
 
-
 const Verification = () => {
     const [employer, setEmployer] = useState<Employer | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [verified,setVerifying]=useState(false)
     const { id } = useParams<{ id: string }>()
-    console.log("ID HEE",id)
 
     useEffect(() => {
         const fetchEmployerDetails = async () => {
             try {
                 if (id) {
-                    console.log("ID ",id)
-                    const employerData = await individualDetails(id)
-                    console.log("Employer data",employerData)
+                    const employerData = await individualDetails(id,'employer')
                     setEmployer(employerData[0] || null); 
                 }
             }

@@ -41,9 +41,10 @@ export const sendOTP = async (email: string, role: role): Promise<SendOTPRespons
         throw error
     }
 }
-export const getUserPosts=async()=>{
+export const getUserPosts=async(userId?:string)=>{
     try {
-        const response = await api.get('/userposts',)
+        const response = await api.get('/userposts',{params:{userId}})
+        console.log('getUserpost',response)
         return response.data 
     } catch (error) {
         axiosError(error,'getUserPosts')
@@ -92,7 +93,6 @@ export const verifyOTP = async (email: string, otp: string, role: role): Promise
 }
 export const register = async (userData: UserData, otp: string) => {
     try {
-        console.log('in register')
         const response = await api.post('/signup', { userData, otp },{withCredentials:false})
         return response.data
     } catch (error: unknown) {
@@ -152,7 +152,6 @@ export const checkEmailOrPhone = async (email: string, phoneNumber: string, role
 }
 export const search=async(query:string)=>{
     try {
-        console.log(query)
         const response = await api.post('/search', { query })
         return response  
     } catch (error) {

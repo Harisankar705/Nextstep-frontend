@@ -11,8 +11,11 @@ export default function Navbar() {
     const [dropdownOpen,setDropdownOpen]=useState(false)
     const dispatch=useDispatch()
 
-    const handleAccountClick=()=>{
+    const handleAccountClick =()=>{
         navigate('/candidate-profile')
+    }
+    const handleConnectionClick=()=>{
+        navigate('/followrequests')
     }
     const handleLogout=()=>{
         dispatch(clearUser())
@@ -36,13 +39,13 @@ export default function Navbar() {
     const handleSearchResultSelect = (result:any) => {
         switch (result.type) {
             case 'user':
-                navigate(`/profile/${result.id}`);
+                navigate(`/candidate-profile/${result._id}`);
                 break;
             case 'job':
-                navigate(`/job/${result.id}`);
+                navigate(`/job/${result._id}`);
                 break;
             case 'company':
-                navigate(`/company/${result.id}`);
+                navigate(`/company/${result._id}`);
                 break;
             default:
                 break;
@@ -74,7 +77,7 @@ export default function Navbar() {
                         <Store className="h-6 w-6" />
                     </button>
                     <button className="h-16 px-4 hover:bg-gray-900 text-gray-400">
-                        <Users className="h-6 w-6" onClick={handleAccountClick}/>
+                        <Users className="h-6 w-6" onClick={handleConnectionClick}/>
                     </button>
                 </nav>
 

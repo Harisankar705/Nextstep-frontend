@@ -269,166 +269,164 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen }) => {
             return newStates
         })
     };
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white max-w-2xl p-6 rounded-lg shadow-lg">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Create Post</h2>
-                    <button
-                        className="p-2 hover:bg-gray-100 rounded-full"
-                        onClick={onClose}
-                    >
-                        <X className="w-6 h-6 text-gray-500" />
+
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
+                <div className="bg-gray-900 max-w-2xl p-6 rounded-lg shadow-lg border border-gray-800 text-white">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold text-white">Create Post</h2>
+                        <button
+                            className="p-2 hover:bg-gray-800 rounded-full transition-colors"
+                            onClick={onClose}
+                        >
+                            <X className="w-6 h-6 text-gray-400" />
+                        </button>
+                    </div>
+
+                    <button className="flex items-center gap-1 px-3 py-1 bg-gray-800 rounded-full text-sm text-gray-300">
+                        {selectedLocation && (
+                            <span>
+                                <MapPin className="inline-block w-4 h-4 mr-1 text-purple-500" />
+                                {selectedLocation}
+                            </span>
+                        )}
                     </button>
-                </div>
 
-                <h3 className="font-semibold">{/* username */}</h3>
-                <button className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm">
-                    {/* <Users className="w-4 h-4" />
-                  <span>Friends</span> */}
-                    {selectedLocation && (
-                        <span>
-                            <MapPin className="inline-block w-4 h-4 mr-1 text-red-500" />{selectedLocation}</span>
-                    )}
+                    <div className={`mb-4 p-4 rounded-lg ${selectedBackground || "bg-gray-800"}`}>
+                        <textarea
+                            placeholder="What's on your mind?"
+                            value={postText}
+                            onChange={(e) => setPostText(e.target.value)}
+                            className={`w-full min-h-[120px] bg-transparent resize-none outline-none placeholder-gray-500 ${selectedBackground ? "text-white" : "text-gray-200"
+                                }`}
+                        />
 
-                </button>
+                        {selectedImagePreview.length > 0 && (
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                                {selectedImagePreview.map((image, index) => (
+                                    <div key={index} className="relative group">
+                                        {imageLoadingStates[index] && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg animate-pulse">
+                                                <Spinner loading={true} />
+                                            </div>
+                                        )}
+                                        {imageErrorStates[index] && (
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-800 rounded-lg">
+                                                <ImagePlus className="w-8 h-8 text-gray-400 mb-2" />
+                                                <p className="text-sm text-gray-400">Failed to load image!</p>
+                                            </div>
+                                        )}
+                                        <img
+                                            src={image}
+                                            alt={`Preview ${index + 1}`}
+                                            className="w-full h-48 object-cover rounded-lg"
+                                            onLoad={() => {
+                                                setImageLoadingStates(prev => ({
+                                                    ...prev,
+                                                    [index]: false
+                                                }))
+                                            }}
+                                            onError={() => {
+                                                setImageErrorStates(prev => ({
+                                                    ...prev,
+                                                    [index]: false
+                                                }))
+                                            }}
+                                        />
+                                        <button
+                                            onClick={() => removeImage(index)}
+                                            className="absolute top-2 right-2 p-1 bg-black bg-opacity-70 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
-                <div
-                    className={`mb-4 p-4 rounded-lg ${selectedBackground || "bg-white"
-                        }`}
-                >
-                    <textarea
-                        placeholder="whats on your mind"
-                        value={postText}
-                        onChange={(e) => setPostText(e.target.value)}
-                        className={`w-full min-h-[120px] bg-transparent resize-none outline-none placeholder-gray-500 ${selectedBackground ? "text-white" : "text-gray-800"
-                            }`}
-                    />
-                    {selectedImagePreview.length > 0 && (
-                        <div className="grid grid-cols-2 gap-2 mb-4">
-                            {selectedImagePreview.map((image, index) => (
-                                <div key={index} className="relative group">
-                                    {imageLoadingStates[index] && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg animate-pulse">
-                                            <Spinner loading={true} />
-                                        </div>
-                                    )}
-                                    {imageErrorStates[index] && (
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-lg">
-                                            <ImagePlus className="w-8 h-8 text-gray-900 mb-2" />
-                                            <p className="text-sm text-gray-500">Failed to load the image!</p>
-                                        </div>
-                                    )}
-                                    <img
-                                        src={image}
-                                        alt={`Preview ${index + 1}`}
-                                        className="w-full h-48 object-cover rounded-lg"
-                                        onLoad={() => {
-                                            setImageLoadingStates(prev => ({
-                                                ...prev,
-                                                [index]: false
-                                            }))
-                                        }}
-                                        onError={() => {
-                                            setImageErrorStates(prev => ({
-                                                ...prev,
-                                                [index]: false
-                                            }))
-                                        }}
-                                    />
+                        <div className="mb-4 overflow-x-auto">
+                            <div className="flex gap-2 pb-2">
+                                {backGrounds.map((bg, index) => (
                                     <button
-                                        onClick={() => removeImage(index)}
-                                        className="absolute top-2 right-2 p-1 bg-black bg-opacity-50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    <div className="mb-4 overflow-x-auto">
-                        <div className="flex gap-2 pb-2">
-                            {backGrounds.map((bg, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setSelectedBackground(bg)}
-                                    className={`w-12 h-12 rounded-lg flex-shrink-0 ${bg} ${selectedBackground === bg
-                                        ? "ring-2 ring-blue-500"
-                                        : ""
-                                        }`}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                    <div className="border rounded-lg p-3 mb-4">
-                        <h4 className="text-sm font-medium text-gray-600 mb-2">
-                            Add to your post
-                        </h4>
-                        <div className="flex gap-2">
-                            <button className="p-2 hover:bg-gray-100 rounded-full" onClick={showUploadModal}>
-                                <Image
-                                    className="w-6 h-6 text-green-500"
-                                    
-                                />
-                            </button>
-                            {showModal && (
-                                <ImageUploadModal isOpen={showModal} onClose={()=>setShowModal(false)}
-                                onFileSelect={handleFileInput}/>
-                                
-                            )}
-                            {showLocationModal && (
-                                <LocationModal isOpen={showLocationModal} onClose={()=>setShowLocationModal(false)}
-                                locationState={locationState}
-                                searchLocation={searchLocation}
-                                onLocationSelect={(location)=>{
-                                    setSelectedLocation(location)
-                                    setSearchLocation(location)
-                                    setLocationResults([])
-                                    setShowLocationModal(false)
-                                }}
-                                onSearchChange={handleLocationChange}
-                                onRetry={handleRetry}/>
-                            )}
-                            <button className="p-2 hover:bg-gray-100 rounded-full">
-                                <Users className="w-6 h-6 text-blue-500" />
-                            </button>
-                            <button className="p-2 hover:bg-gray-100 rounded-full" onClick={() => setShowPickter(!showPicker)}>
-                                <Smile className="w-6 h-6 text-yellow-500" />
-
-                            </button>
-                            {showPicker && (
-                                <div className="absolute z-50">
-                                    <Picker data={data} onEmojiSelect={handleEmojiSelect}
+                                        key={index}
+                                        onClick={() => setSelectedBackground(bg)}
+                                        className={`w-12 h-12 rounded-lg flex-shrink-0 ${bg} ${selectedBackground === bg
+                                                ? "ring-2 ring-purple-500"
+                                                : ""
+                                            }`}
                                     />
-                                </div>
-
-                            )}
-
-                            <button className="p-2 hover:bg-gray-100 rounded-full">
-                                <MapPin
-                                    className="w-6 h-6 text-red-500"
-                                    onClick={() => setShowLocationModal(true)}
-                                />
-                            </button>
-                            
-                            
-
-
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                    <button
-                        onClick={handlePost}
-                        disabled={!postText.trim() || posting}
-                        className={`w-full py-2 rounded-lg font-medium ${postText.trim()
-                            ? "bg-blue-500 text-white hover:bg-blue-600"
-                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                            }`}
-                    >
-                        {posting ? <Spinner loading={true} /> : "Post"}
 
-                    </button>
+                        <div className="border border-gray-700 rounded-lg p-3 mb-4">
+                            <h4 className="text-sm font-medium text-gray-400 mb-2">
+                                Add to your post
+                            </h4>
+                            <div className="flex gap-2">
+                                <button className="p-2 hover:bg-gray-800 rounded-full transition-colors" onClick={showUploadModal}>
+                                    <Image className="w-6 h-6 text-purple-500" />
+                                </button>
+                                <button className="p-2 hover:bg-gray-800 rounded-full transition-colors">
+                                    <Users className="w-6 h-6 text-purple-500" />
+                                </button>
+                                <button className="p-2 hover:bg-gray-800 rounded-full transition-colors" onClick={() => setShowPickter(!showPicker)}>
+                                    <Smile className="w-6 h-6 text-purple-500" />
+                                </button>
+                                <button className="p-2 hover:bg-gray-800 rounded-full transition-colors" onClick={() => setShowLocationModal(true)}>
+                                    <MapPin className="w-6 h-6 text-purple-500" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={handlePost}
+                            disabled={!postText.trim() || posting}
+                            className={`w-full py-2 rounded-lg font-medium transition-colors ${postText.trim()
+                                    ? "bg-purple-600 text-white hover:bg-purple-700"
+                                    : "bg-gray-800 text-gray-500 cursor-not-allowed"
+                                }`}
+                        >
+                            {posting ? <Spinner loading={true} /> : "Post"}
+                        </button>
+                    </div>
                 </div>
+
+                {/* Modals */}
+                {showModal && (
+                    <ImageUploadModal
+                        isOpen={showModal}
+                        onClose={() => setShowModal(false)}
+                        onFileSelect={handleFileInput}
+                    />
+                )}
+                {showLocationModal && (
+                    <LocationModal
+                        isOpen={showLocationModal}
+                        onClose={() => setShowLocationModal(false)}
+                        locationState={locationState}
+                        searchLocation={searchLocation}
+                        onLocationSelect={(location) => {
+                            setSelectedLocation(location)
+                            setSearchLocation(location)
+                            setLocationResults([])
+                            setShowLocationModal(false)
+                        }}
+                        onSearchChange={handleLocationChange}
+                        onRetry={handleRetry}
+                    />
+                )}
+                {showPicker && (
+                    <div className="absolute z-50">
+                        <Picker
+                            data={data}
+                            onEmojiSelect={handleEmojiSelect}
+                            theme="dark"
+                        />
+                    </div>
+                )}
             </div>
-        </div>
-    )
-}
+        );
+    };
+

@@ -1,0 +1,329 @@
+import { CheckCircle, GraduationCap, Home, UserCheck } from 'lucide-react';
+import  { useEffect, useState } from 'react';
+import Spinner from '../../utils/Spinner';
+import { useNavigate, useParams } from 'react-router-dom';
+import Navbar from '../../utils/Navbar';
+import { PostType } from '../../types/Candidate';
+import Post from './Post';
+import { getUserPosts } from '../../services/authService';
+import { getImageURL } from '../../utils/ImageUtils';
+import { individualDetails } from '../../services/adminService';
+import toast from 'react-hot-toast';
+import { checkFollowStatus, toggleFollow } from '../../services/commonService';
+import {ConfirmDialog, confirmDialog} from 'primereact/confirmdialog'
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css'
+const dialogStyles = `
+.p-dialog .p-dialog-footer {
+    gap: 1rem;
+    display: flex;
+    justify-content: flex-end;
+}
+.p-dialog .p-dialog-footer button {
+    margin: 0;
+    padding: 0.75rem 1.5rem;
+    min-width: 6rem;
+}
+.p-confirm-dialog .p-dialog-content {
+    padding: 1.5rem;
+}
+.p-dialog .p-dialog-header {
+    padding: 1.25rem 1.5rem;
+}`
+const UserProfile = () => {
+    const {id:userId}=useParams()
+    const navigate = useNavigate()
+    const [isFollowing, setIsFollowing] = useState<boolean>(false)
+    const [posts, setPosts] = useState<PostType[]>([])
+    const [loading, setLoading] = useState(true)
+    const [profileData,setProfileData]=useState<any>(null)
+    useEffect(() => {
+        const fetchPosts = async () => {
+            setLoading(true)
+            try {
+                if(!userId)
+                {
+                    toast.error("user id not found")
+                    return
+                }
+
+                const [postResponse,details]=await Promise.all([
+                    getUserPosts(userId),
+                   
+                    individualDetails(userId,'user')
+                ])
+
+                setPosts(postResponse)
+                const userDetails = details[0];
+                setProfileData(userDetails);
+                const followingStatus: boolean = await checkFollowStatus(userDetails._id)
+                
+                    setIsFollowing(followingStatus)
+                
+
+            } catch (error) {
+                console.error("Error fetching posts", error)
+
+            }
+            finally {
+                setLoading(false)
+            }
+        }
+
+        fetchPosts()
+
+    }, [userId,navigate])
+   
+    
+
+    if(loading)
+    {
+        return (
+            <div className='min-h-screen bg-black text-white'>
+                <Navbar/>
+                <div className='flex justify-center items-center h-[calc(100vh-64px)]'>
+                    <Spinner loading={true}/>
+                </div>
+            </div>
+        )
+    }
+    if(!profileData)
+    {
+        return (
+            <div className='min-h-screen bg-black text-white'>
+                <Navbar/>
+                <div className='text-center py-8'>User not found</div>
+                </div>
+            
+        )
+    }
+    
+    const handleFollowToggle = async () => {
+        try {
+            if (isFollowing) {
+                confirmDialog({
+                    message: "Are you sure you want to unfollow the user",
+                    header: "Unfollow Confirmation",
+                    icon: 'pi pi-info-circle',
+                    acceptClassName: 'p-button-danger bg-purple-600 hover:bg-purple-700 text-white focus:ring-2 focus:ring-purple-500',
+                    rejectClassName: 'p-button-secondary bg-purple-500 hover:bg-purple-600 text-white focus:ring-2 focus:ring-purple-500',
+                    acceptLabel: "Yes",
+                    rejectLabel: "No",
+                    className: 'custom-confirm-dialog',
+                    accept: async () => {
+                        try {
+                            const newFollowStatus = await toggleFollow(profileData._id);
+
+                            console.log('New Follow Status:', newFollowStatus);
+
+                            const isNowFollowing = newFollowStatus.data === true;
+                            console.log('IS NOT FOLLOWING',isNowFollowing)
+
+                            setIsFollowing(isNowFollowing);
+
+                            toast.success(
+                                isNowFollowing
+                                    ? "You are now following the user"
+                                    : "You have unfollowed the user"
+                            );
+                        } catch (error) {
+                            toast.error("Failed to update follow status");
+                            console.error(error);
+                        }
+                    },
+                    reject: () => {
+                        toast.success("Unfollow cancelled");
+                    }
+                });
+            } else {
+                try {
+                    const newFollowStatus = await toggleFollow(profileData._id);
+
+                    console.log('New Follow Status:', newFollowStatus);
+
+                    const isNowFollowing = newFollowStatus.data === true;
+
+                   
+                    setIsFollowing(isNowFollowing);
+
+                    toast.success(
+                        isNowFollowing
+                            ? "You are now following this user"
+                            : "You have unfollowed this user"
+                    );
+                } catch (error) {
+                    toast.error("Failed to update follow status");
+                    console.error(error);
+                }
+            }
+        } catch (error) {
+            toast.error("Failed to send connection request");
+            console.error(error);
+        }
+    };
+
+    const profilePictureURL = getImageURL(profileData.profilePicture, 'profile-pictures')
+
+    return (
+        <div className="min-h-screen bg-black text-white">
+            <style>{dialogStyles}</style>
+            <Navbar />
+            <ConfirmDialog/>
+            <div className="relative h-[350px]">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-black opacity-90">
+                    <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay"></div>
+                </div>
+                <div className="flex flex-col items-center mb-4">
+                    <div className="h-48 w-48 rounded-full border-4 border-black overflow-hidden -mt-20 mb-4 ml-10">
+
+                    </div>
+                </div>
+            </div>
+
+
+            {/* Profile Body */}
+            <div className="bg-black text-white pt-20 px-8">
+                <div className="max-w-6xl mx-auto">
+                    <div className="relative inline-block h-48 w-48 rounded-full overflow-hidden border-4 border-black bg-gray-900 -mt-48 l-auto">
+                        <img
+                            src={profilePictureURL}
+                            alt="Profile"
+                            className="h-full w-full object-cover"
+                        />
+                    </div>
+                    {/* User Info */}
+                    <div className="flex justify-between items-start">
+
+                        <div className="text-center">
+                            <h1 className="text-3xl font-bold">
+                                {profileData.firstName} {profileData.secondName}
+                            </h1>
+                            <p className="text-purple-400 mt-1">
+                                {profileData.friends ? `${profileData.friends.length} friends` : 'No friends'}
+                            </p>
+                        </div>
+                        <div className="flex justify-center mt-4">
+                            <button className="flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition duration-300" onClick={handleFollowToggle}>
+                                {isFollowing ? (
+                                    <>
+                                    <CheckCircle className='mr-2 h-4 w-4'/>
+                                    Following
+                                    </>
+
+                                ):(
+                                    <>
+                                    <UserCheck className='mr-2 h-4 w-4'/>
+                                    Follow
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                    
+                        
+                    
+
+                    <div className="flex border-b border-gray-800 mt-8">
+                        {['Posts', 'About', 'Friends', 'Photos', 'Videos'].map((item) => (
+                            <button
+                                key={item}
+                                className={`px-4 py-4 text-sm font-medium ${item === 'Posts'
+                                    ? 'text-purple-500 border-b-2 border-purple-500'
+                                    : 'text-gray-400 hover:text-gray-300'
+                                    }`}
+                            >
+                                {item}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 py-4">
+                        <div className="md:col-span-4 space-y-4">
+                            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                                <h2 className="text-lg font-semibold text-white mb-3">Intro</h2>
+                                <p className="text-center mb-4">{profileData.aboutMe}</p>
+                                <button className="w-full py-2 px-4 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-300 mb-4 transition duration-300">
+                                  
+                                </button>
+                                <div className="space-y-3 text-gray-300">
+                                    <div className="flex items-center gap-2">
+                                        <GraduationCap className="h-5 w-5 text-gray-400" />
+                                        <span>
+                                            {profileData.education
+                                                ? profileData.education
+                                                    .map(
+                                                        (ed: { degree: string; institution: string }) =>
+                                                            `${ed.degree} at ${ed.institution}`
+                                                    )
+                                                    .join(', ')
+                                                : 'No education details'}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Home className="h-5 w-5 text-gray-400" />
+                                        <span>{profileData.location || 'No location'}</span>
+                                    </div>
+                                    {/* <div className="flex items-center gap-2">
+                                        <Users className="h-5 w-5 text-gray-400" />
+                                        <span>{friends ? `${friends.length} friends` : 'No friends'}</span>
+                                    </div> */}
+                                </div>
+                                <button className="w-full py-2 px-3 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-300 mt-4 transition duration-300">
+                                    Edit details
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Main Content */}
+                        <div className="md:col-span-8 space-y-4">
+                            {/* Post Input */}
+                            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+                                <div className="flex items-center space-x-3">
+                                    <div className="h-10 w-10 rounded-full overflow-hidden">
+                                        <img
+                                            src={profilePictureURL}
+                                            alt="Profile"
+                                            className="h-full w-full object-cover"
+                                        />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="What's on your mind?"
+                                        className="bg-gray-800 rounded-full px-4 py-2 text-white w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    />
+                                </div>
+                            </div>
+                            {loading ? (
+                                <Spinner loading={true} />
+                            ) : posts.length > 0 ? (
+                                posts.map((post: PostType) => (
+                                    <Post
+                                        key={post._id}
+                                        post={post}
+                                        profilePicture={profileData.profilePicture}
+                                        userName={`${profileData.firstName} ${profileData.secondName}`} 
+                                    />                                ))
+                            ) : (
+                                <div className='text-center text-gray-400 py-8'>
+                                    No posts to display
+                                </div>
+
+                            )}
+                        </div>
+
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default UserProfile;
+
+

@@ -34,11 +34,9 @@ export const verifyEmployer=async(id:string,status:"VERIFIED"|"DENIED")=>{
         throw error
     }
 }
-export const individualDetails = async (id: string)=>{
+export const individualDetails = async (id: string,role:string)=>{
     try {
-        console.log('in individual details')
-        const response = await api.get(`/individualdetails/${id}`,{})
-        
+        const response = await api.get(`/individualdetails/${id}`,{params:{role}})
         return response.data
 
     } catch (error) {

@@ -2,6 +2,10 @@ import { Bookmark, Image, MoreHorizontal, Users } from "lucide-react";
 import Navbar from "../../utils/Navbar";
 import { useState } from "react";
 import { CreatePost } from "./CreatePost/CreatePost";
+import { PostInput } from "./CreatePost/PostInput";
+import { getProfilePictureURL } from "../../utils/ImageUtils";
+import { useSelector } from "react-redux";
+import { UserCandidate } from "../../types/Candidate";
 
 const Skelton = ({ className = "" }: { className?: string }) => (
   <div
@@ -28,6 +32,8 @@ const LeftSideBar = ({
 
 const Home = () => {
   const [showCreatePost, setShowCreatePost] = useState(false)
+  const currentUser=useSelector((state:{user:UserCandidate})=>state.user)
+  const profilePicture=currentUser.profilePicture
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -44,25 +50,7 @@ const Home = () => {
         </div>
 
         <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
-          <div
-            className="bg-white rounded-lg shadow p-4 mb-4"
-            onClick={() => setShowCreatePost(true)}
-          >
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full overflow-hidden">
-                <Skelton className="w-full h-full" />
-              </div>
-              <div className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-gray-500">
-                What's on your mind!
-              </div>
-            </div>
-            <div className="flex justify-between mt-4 pt-4 border-t">
-              <button className="flex items-center gap-2 text-gray-500 hover:bg-gray-100 px-2 py-2 rounded-lg">
-                <Image className="h-6 w-6 text-green-500" />
-                <span>Photo/video</span>
-              </button>
-            </div>
-          </div>
+          <PostInput onClick={() => setShowCreatePost(true)} profilePicture={profilePicture}/>
           <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} />
 
 

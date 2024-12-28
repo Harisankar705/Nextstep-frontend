@@ -22,6 +22,8 @@ import Profile from './pages/candidate/Profile.tsx';
 import EditProfilee from './pages/candidate/EditProfilee.tsx'
 import Verification from './pages/admin/Verification.tsx';
 import { EditPost } from './pages/candidate/CreatePost/Editpost.tsx';
+import UserProfile from './pages/candidate/UserProfile.tsx';
+import { ConnectionRequest } from './pages/candidate/ConnectionRequest.tsx';
 const App = () => {
   return (
     <div>
@@ -34,7 +36,8 @@ const App = () => {
           <Route path='/navbar' element={<Navbar/>}/>
           <Route path='/home' element={<ProtectedRoute role='candidate'>{<Home />}</ProtectedRoute>} />
           <Route path='/candidate-details' element={<ProtectedRoute role='candidate'>{<CandidateDetails />}</ProtectedRoute>} />
-          <Route path='/candidate-profile' element={<ProtectedRoute role='candidate'>{<Profile />}</ProtectedRoute>} />
+            <Route path='/candidate-profile' element={<ProtectedRoute role='candidate'>{<Profile />}</ProtectedRoute>} />
+          <Route path='/candidate-profile/:id' element={<ProtectedRoute role='candidate'>{<UserProfile />}</ProtectedRoute>} />
           <Route path='/edit-profile' element={<ProtectedRoute role='candidate'>{<EditProfilee />}</ProtectedRoute>}/>
           
           <Route path='/admin' element={<AdminLogin/>}/>
@@ -43,6 +46,7 @@ const App = () => {
           <Route path='/candidates'element={<Candidates/>}/>
           <Route path='/employers' element={<Employers/>}/>
           <Route path='/verifyemployer/:id' element={<Verification />}/>
+          <Route path='/followrequests' element={<ConnectionRequest />}/>
 
           <Route path='/employersignup' element={<EmployerSignup />} />
           <Route path='/employerlogin' element={<EmployerLogin />} />

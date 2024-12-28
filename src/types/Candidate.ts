@@ -11,6 +11,10 @@ export interface UserCandidate extends BaseUser
     firstName:string,
     secondName:string,
     profilePicture:string
+    friends?:string
+    aboutMe?:string,
+    location?:string,
+    education?:[string]
     
 }
 export interface Employer extends BaseUser
@@ -40,7 +44,12 @@ export interface PostType
     background?:string,
     image?:string[],
     createdAt:string,
-    location:string
+    location:string,
+    profilePicture:string,
+    likes?:[],
+    comments?:Array<Comment>;
+    isLiked?:boolean
+    likedByUser?:boolean
 }
 export interface LocationState{
     isLoading:boolean,
@@ -87,4 +96,43 @@ export interface SearchResultItemProps
     result:SearchResult,
     onSelect?:(result:SearchResult)=>void
 }
+export interface ProfileHeaderProps
+{
+    user: UserCandidate,
+    isOwnProfile:boolean,
+    onEditProfile?:()=>void
+    userId?:string,
+    
+
+}
+export interface ProfileTabsProps
+{
+    activeTab:string,
+    onTabChange:(tab:string)=>void
+}
+export interface PostInputProps
+{
+    onClick:()=>void;
+    profilePicture?:string
+}
+export interface Comment {
+    _id: string,
+    postId:string,
+    comment: string,
+    likes:string[],
+    createdAt:Date,
+    replies?:Comment[]
+    userId: {
+        profilePicture:string,
+        firstName:string,
+        secondName:string
+    }
+}
+export interface Like{
+    _id:string,
+    postId:string,
+    initialLikes:number,
+    onLikeCountChange?:(newCount:number)=>void
+}
+
 export type Candidate=UserCandidate|Employer
