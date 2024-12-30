@@ -1,10 +1,14 @@
 import SideBar from "./SideBar"
 import { Plus } from "lucide-react"
 import { useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom";
 
 const EmployerDashboard = () => {
     const employer = useSelector((state:any) => state.employer);
-
+    const navigate=useNavigate()
+    const handlePostJob=()=>{
+        navigate('/addjob')
+    }
     
 
     const SkeltonCard: React.FC = () => {
@@ -25,7 +29,7 @@ const EmployerDashboard = () => {
                     <div>
                         <h2 className='text-2xl font-bold mb-1'>Good morning {employer.companyName}</h2>
                     </div>
-                    <button className='px-4 py-2 bg-[#6366F1] text-white rounded-lg flex items-center gap-2'>
+                    <button className='px-4 py-2 bg-[#6366F1] text-white rounded-lg flex items-center gap-2 ' onClick={handlePostJob}>
                         <Plus size={20} />
                         Post a job
                     </button>

@@ -129,7 +129,7 @@ const Post = ({ post,
 
             <div className="flex items-center justify-between text-sm text-gray-400 border-b border-gray-800 pb-2 mb-2">
                 <div className="flex items-center gap-1">
-                    {likeCount || 0}
+                    {likeCount }
                     <ThumbsUp className="w-4 h-4" />
 
                 </div>

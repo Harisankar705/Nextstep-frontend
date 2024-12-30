@@ -24,6 +24,7 @@ import Verification from './pages/admin/Verification.tsx';
 import { EditPost } from './pages/candidate/CreatePost/Editpost.tsx';
 import UserProfile from './pages/candidate/UserProfile.tsx';
 import { ConnectionRequest } from './pages/candidate/ConnectionRequest.tsx';
+import { JobPostingForm } from './pages/employer/job/JobPostingForm.tsx';
 const App = () => {
   return (
     <div>
@@ -52,6 +53,7 @@ const App = () => {
           <Route path='/employerlogin' element={<EmployerLogin />} />
           <Route path='/employerhome' element={<ProtectedRoute role='employer'><EmployerDashboard /></ProtectedRoute> }/>
           <Route path='/account' element={<ProtectedRoute role='employer'><Account /></ProtectedRoute>}/>
+          <Route path='/addjob' element={<ProtectedRoute role='employer'><JobPostingForm /></ProtectedRoute>}/>
           <Route path='/employerdetails' element={<ProtectedRoute role='employer'>{<EmployerDetails />}</ProtectedRoute>}/>
           <Route path='/employer/edit-profile' element={<ProtectedRoute role='employer'>{<EditProfile />}</ProtectedRoute>}/>
 
