@@ -31,6 +31,7 @@ const EmployerLogin = () => {
     setLoading(true);
     try {
       const response = await login(email, password, "employer");
+      console.log('rrrrr',response)
       toast.success("Login success")
       dispatch(setEmployer(response.user))
       if(response.user.isProfileComplete)
