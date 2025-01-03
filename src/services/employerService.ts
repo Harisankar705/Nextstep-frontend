@@ -15,3 +15,40 @@ export const employerDetails = async (details: Record<string, any>,isEdit:boolea
         throw errorDetails
     }
 }
+export const postjob=async(formData:any)=>{
+    try {
+        const response=await api.post('/createjob',{formData})
+        console.log('job response',response)
+        return response.data
+    } catch (error) {
+        const errorDetails = axiosError(error, 'postjob')
+        throw errorDetails 
+    }
+}
+export const fetchJobs=async()=>{
+    try {
+        const response=await api.get('/getjobs')
+        return response
+    } catch (error) {
+        const errorDetails = axiosError(error, 'fetchJobs')
+        throw errorDetails 
+    }
+}
+export const fetchJobById=async(jobId:string)=>{
+    try {
+        const response=await api.get(`/getjob/${jobId}`)
+        return response
+    } catch (error) {
+        const errorDetails = axiosError(error, 'fetch job by id')
+        throw errorDetails 
+    }
+}
+export const updateJob=async(jobId:string,formData:any)=>{
+    try {
+        const response=await api.put(`/updatejob/${jobId}`,formData)
+        return response
+    } catch (error) {
+        const errorDetails = axiosError(error, 'fetch job by id')
+        throw errorDetails 
+    }
+}

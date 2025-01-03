@@ -25,21 +25,26 @@ export interface StepIndicatorProps
 export interface PerksAndBenfitsProps
 {
     formData:any,
-    updateFormData:(data:any)=>void
+    updateFormData:(data:Partial<jobFormData>)=>void
     onNext:()=>void
+    onSubmit:()=>void
+
 }
-export interface Benefit
-{
-    id:string
-    icon:string,
-    title:string,
-    description:string
+export type IconType = 'heart' | 'waves' | 'laptop'
+
+export interface Benefit {
+    id: string
+    icon: IconType
+    title: string
+    description: string
 }
 export interface JobInformationProps
 {
     formData:any
     updateFormData:(data:any)=>void
-    onNext:()=>void
+    onNext:()=>void,
+    onSubmit:()=>void
+
 }
 export interface JobDescriptionProps
 {
@@ -52,4 +57,16 @@ export interface AddProps{
     onChange:(value:string)=>void
     label:string,
     placeholder?:string
+}
+export interface jobFormData {
+    jobTitle: string;
+    employmentTypes: string[]; 
+    salaryRange: { min: number; max: number };
+    categories: string[]; 
+    skills: string[]; 
+    responsibilities: string;
+    whoYouAre: string;
+    niceToHave: string;
+    benefits: Benefit[];
+    [key: string]: any;
 }

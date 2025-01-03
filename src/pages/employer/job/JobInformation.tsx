@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { JobInformationProps } from "../../../types/Employer";
 import { X } from "lucide-react";
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from 'zod';
+import { useParams } from "react-router-dom";
 
 const employmentTypes = [
     "Full-Time",
@@ -15,14 +16,27 @@ const employmentTypes = [
 
 const jobFormSchema = z.object({
     jobTitle: z.string().min(1, "Job title is required"),
+    applicationDeadline: z.string()
+    .transform((val) => new Date(val))
+    .refine((date) => date > new Date(), {
+        message: "Deadline must be in the future!",
+    }),
     employmentTypes: z.array(z.string()).min(1, "Select at least one employment type"),
     salaryRange: z.object({
-        min: z.number().min(0, "Minimum salary must be positive"),
-        max: z.number().min(0, "Maximum salary must be positive")
-    }),
+        min: z.number()
+            .min(0, "Minimum salary must be positive")
+            .transform(val => Math.floor(val)), 
+        max: z.number()
+            .min(0, "Maximum salary must be positive")
+            .transform(val => Math.floor(val))  
+    }).refine(
+        (data) => data.max >= data.min,
+        {
+            message: "Maximum salary must be greater than or equal to minimum salary",
+            path: ["max"] 
+        }
+    ),
     skills: z.array(z.string()),
-    description: z.string().min(1, "Job description is required"),
-    responsibilities: z.string().min(1, "Responsibilities are required!"),
     whoYouAre: z.string(),
     niceToHave: z.string(),
     benefits: z.array(z.string())
@@ -35,9 +49,10 @@ export const JobInformation = ({
     updateFormData,
     onNext,
 }: JobInformationProps) => {
+    const { jobId } = useParams<{ jobId: string }>(); 
     const [newSkill, setNewSkill] = useState("");
 
-    const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<JobFormData>({
+    const { control, handleSubmit, formState: { errors }, watch, setValue ,reset} = useForm<JobFormData>({
         resolver: zodResolver(jobFormSchema),
         defaultValues: formData
     });
@@ -45,7 +60,15 @@ export const JobInformation = ({
     const onSubmit = (data: JobFormData) => {
         updateFormData(data);
         onNext();
+        reset()
+        if(!jobId)
+        {
+            reset()
+        }
     };
+    useEffect(()=>{
+        reset(formData)
+    },[formData,reset])
 
     const handleEmploymentTypeChange = (type: string) => {
         const currentTypes = watch('employmentTypes') || [];
@@ -135,6 +158,7 @@ export const JobInformation = ({
                                             {...field}
                                             type="number"
                                             className="w-24 bg-transparent border border-gray-800 rounded p-2"
+                                            onChange={(e)=>field.onChange(Number(e.target.value))}
                                         />
                                     )}
                                 />
@@ -150,16 +174,36 @@ export const JobInformation = ({
                                             {...field}
                                             type="number"
                                             className="w-24 bg-transparent border border-gray-800 rounded p-2"
+                                            onChange={(e)=>field.onChange(Number(e.target.value))}
+
                                         />
                                     )}
                                 />
                             </div>
                         </div>
-                        {(errors.salaryRange?.min || errors.salaryRange?.max) && (
-                            <p className="text-red-500 text-sm mt-1">Please enter valid salary range</p>
-                        )}
-                    </div>
+                        {errors.salaryRange?.min && (
+        <p className="text-red-500 text-sm mt-1">{errors.salaryRange.min.message}</p>
+    )}
+    {errors.salaryRange?.max && (
+        <p className="text-red-500 text-sm mt-1">{errors.salaryRange.max.message}</p>
+    )}
 
+                    </div>
+                    <div>
+                        <label htmlFor="applicationDeadline" className="block text-sm mb-2">Application Deadline</label>              
+                        <Controller name='applicationDeadline' control={control} render={({field})=>(
+                            <input {...field} type="date" id='applicationDeadline'
+                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
+            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            className="w-full bg-transparent border border-gray-800 rounded p-2 text-white"/>
+                        )}
+                        />
+                        {errors.applicationDeadline && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.applicationDeadline.message}
+                            </p>
+                        )}
+                              </div>
                     <div>
                         <label className="block text-sm mb-2">Required Skills</label>
                         <div className="flex items-center space-x-2 mb-2">
@@ -174,8 +218,8 @@ export const JobInformation = ({
                                 type="button"
                                 onClick={handleAddSkill}
                                 className="px-4 py-2 bg-indigo-600 rounded text-white hover:bg-indigo-700"
-                            />
-                                Add Skills
+                            >Add Skills</button>
+                                
                             <div className="flex flex-wrap gap-2">
                                 {watch('skills').map((skill: string) => (
                                     <span

@@ -1,14 +1,8 @@
 import { Heart, Laptop, Waves, X, LucideProps } from "lucide-react"
-import { useState } from "react"
+import { Benefit, IconType } from "../../../types/Employer"
 
-type IconType = 'heart' | 'waves' | 'laptop'
 
-interface Benefit {
-    id: string
-    icon: IconType
-    title: string
-    description: string
-}
+
 
 interface PerksAndBenefitsProps {
     formData: {
@@ -16,6 +10,7 @@ interface PerksAndBenefitsProps {
     }
     updateFormData: (data: { benefits: Benefit[] }) => void
     onNext: () => void
+    onSubmit:()=>void
 }
 
 const defaultBenefits: Benefit[] = [
@@ -45,7 +40,7 @@ const IconMap: Record<IconType, React.ComponentType<LucideProps>> = {
     laptop: Laptop
 }
 
-export const PerksAndBenefits = ({ formData, updateFormData, onNext }: PerksAndBenefitsProps) => {
+export const PerksAndBenefits = ({ formData, updateFormData, onNext,onSubmit }: PerksAndBenefitsProps) => {
     const addBenefit = (benefit: Benefit) => {
         updateFormData({
             benefits: [...formData.benefits, benefit]
@@ -103,11 +98,14 @@ export const PerksAndBenefits = ({ formData, updateFormData, onNext }: PerksAndB
                     {defaultBenefits.map((benefit) => (
                         <BenefitCard key={benefit.id} benefit={benefit} />
                     ))}
+                    {defaultBenefits.map((benefit)=>(
+                        <BenefitCard key={benefit.id} benefit={benefit}/>
+                    ))}
                 </div>
             </div>
             <div className="flex justify-end">
                 <button
-                    onClick={onNext}
+                    onClick={onSubmit}
                     className="px-6 py-2 bg-indigo-600 rounded text-white hover:bg-indigo-700"
                 >
                     Post Job

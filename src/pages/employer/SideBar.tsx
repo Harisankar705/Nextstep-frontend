@@ -9,7 +9,7 @@ const navItems = [
     { name: "Dashboard", href: '/employerhome', icon: Home, badge: 0 },
     { name: "Messages", href: '#', icon: MessageSquare },
     { name: "Company Profile", paths: ['/account', '/employer/edit-profile'], icon: Building2 },
-    { name: "Job Listing", href: '#', icon: FileText },
+    { name: "Job Listing", href: '/joblistings', icon: FileText },
     { name: "My Schedule", href: '#', icon: Calendar }
 ]
 
