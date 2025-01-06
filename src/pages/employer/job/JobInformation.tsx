@@ -13,15 +13,31 @@ const employmentTypes = [
     "Internship",
     "Contract",
 ];
+const industry=[
+    "Information Technology",
+    "Healthcare",
+    "Finance",
+    "Education",
+    "Construction",
+    "Marketing",
+    "Hospitality",
+    "Retail",
+    "Manufacturing",
+    "Transportation",
+    "Government",
+    "Other"
+]
 
 const jobFormSchema = z.object({
-    jobTitle: z.string().min(1, "Job title is required"),
+    jobTitle: z.string().min(1, "Job title is required").refine((val)=>val.trim().length>0,{
+        message:"Enter valid characters!"
+    }),
     applicationDeadline: z.string()
-    .transform((val) => new Date(val))
-    .refine((date) => date > new Date(), {
+    .refine((date) => new Date(date) > new Date(), {
         message: "Deadline must be in the future!",
     }),
     employmentTypes: z.array(z.string()).min(1, "Select at least one employment type"),
+    industry: z.array(z.string()).min(1, "Select at least one industry type"),
     salaryRange: z.object({
         min: z.number()
             .min(0, "Minimum salary must be positive")
@@ -36,11 +52,17 @@ const jobFormSchema = z.object({
             path: ["max"] 
         }
     ),
-    skills: z.array(z.string()),
+    skills: z.array(z.string()).min(1,"Enter at least one skill!").refine((skills)=>skills.every(skill=>skill.trim().length>0),{
+        message:"Skills cannot be just whitespace!"
+    }),
     whoYouAre: z.string(),
     niceToHave: z.string(),
-    benefits: z.array(z.string())
-});
+    benefits: z.array(z.object({
+        id: z.string(),
+        icon: z.string(),
+        title: z.string(),
+        description: z.string()
+    }))});
 
 type JobFormData = z.infer<typeof jobFormSchema>;
 
@@ -49,26 +71,55 @@ export const JobInformation = ({
     updateFormData,
     onNext,
 }: JobInformationProps) => {
-    const { jobId } = useParams<{ jobId: string }>(); 
+    const { jobId } = useParams<{ jobId: string }>();
     const [newSkill, setNewSkill] = useState("");
-
+    console.log('formdata',formData)
     const { control, handleSubmit, formState: { errors }, watch, setValue ,reset} = useForm<JobFormData>({
         resolver: zodResolver(jobFormSchema),
-        defaultValues: formData
+        defaultValues: {
+            jobTitle:'',
+            applicationDeadline:'',
+            employmentTypes:[],
+            industry:[],
+            salaryRange:{min:0,max:0},
+            skills:[],
+            whoYouAre:'',
+            niceToHave:"",
+            benefits:[]
+        }
     });
 
     const onSubmit = (data: JobFormData) => {
+        console.log('data',data)
         updateFormData(data);
         onNext();
-        reset()
-        if(!jobId)
-        {
-            reset()
-        }
+        // if(!jobId)
+        // {
+        //     reset()
+        // }
     };
-    useEffect(()=>{
-        reset(formData)
-    },[formData,reset])
+    useEffect(() => {
+        console.log('Form errors:', errors);
+    }, [errors]);
+    useEffect(() => {
+        if (formData) {
+            const transformedData = {
+                jobTitle: formData.jobTitle || '',
+                applicationDeadline: formData.applicationDeadline 
+                ? new Date(formData.applicationDeadline).toISOString().split('T')[0]
+                : '',
+
+                employmentTypes: formData.employmentTypes || [],
+                industry: formData.industry || [],
+                salaryRange: formData.salaryRange || { min: 0, max: 0 },
+                skills: formData.skills || [],
+                whoYouAre: formData.whoYouAre || '',
+                niceToHave: formData.niceToHave || '',
+                benefits: Array.isArray(formData.benefits) ? formData.benefits : [],
+            };
+            reset(transformedData);
+        }
+    }, [formData, reset]);
 
     const handleEmploymentTypeChange = (type: string) => {
         const currentTypes = watch('employmentTypes') || [];
@@ -77,10 +128,18 @@ export const JobInformation = ({
             : [...currentTypes, type];
         setValue('employmentTypes', updated);
     };
+    const handleIndustryChange = (type: string) => {
+        const currentTypes = watch('industry') || [];
+        const updated = currentTypes.includes(type)
+            ? currentTypes.filter((t: string) => t !== type)
+            : [...currentTypes, type];
+        setValue('industry', updated);
+    };
 
     const handleAddSkill = () => {
-        if (newSkill && !watch('skills').includes(newSkill)) {
-            const updatedSkills = [...watch('skills'), newSkill];
+        const trimmedSkill=newSkill.trim()
+        if (trimmedSkill && !watch('skills').includes(trimmedSkill)) {
+            const updatedSkills = [...watch('skills'), trimmedSkill];
             setValue('skills', updatedSkills);
             setNewSkill("");
         }
@@ -141,6 +200,28 @@ export const JobInformation = ({
                             <p className="text-red-500 text-sm mt-1">{errors.employmentTypes.message}</p>
                         )}
                     </div>
+                    <div>
+                        <label className="block text-sm mb-2">Type of Industry</label>
+                        <p className="text-gray-400 text-sm mb-2">
+                            You can select multiple types of Industry
+                        </p>
+                        <div className="space-y-2">
+                            {industry.map((type) => (
+                                <label key={type} className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={watch('industry')?.includes(type)}
+                                        onChange={() => handleIndustryChange(type)}
+                                        className="rounded border-gray-800"
+                                    />
+                                    <span>{type}</span>
+                                </label>
+                            ))}
+                        </div>
+                        {errors.industry&& (
+                            <p className="text-red-500 text-sm mt-1">{errors.industry.message}</p>
+                        )}
+                    </div>
 
                     <div>
                         <label className="block text-sm mb-2">Salary</label>
@@ -191,13 +272,18 @@ export const JobInformation = ({
                     </div>
                     <div>
                         <label htmlFor="applicationDeadline" className="block text-sm mb-2">Application Deadline</label>              
-                        <Controller name='applicationDeadline' control={control} render={({field})=>(
-                            <input {...field} type="date" id='applicationDeadline'
-                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
-            onChange={(e) => field.onChange(new Date(e.target.value))}
-                            className="w-full bg-transparent border border-gray-800 rounded p-2 text-white"/>
-                        )}
-                        />
+                        <Controller 
+    name="applicationDeadline"
+    control={control}
+    render={({ field }) => (
+        <input
+            {...field}
+            type="date"
+            id="applicationDeadline"
+            className="w-full bg-transparent border border-gray-800 rounded p-2 text-white"
+        />
+    )}
+/>
                         {errors.applicationDeadline && (
                             <p className="text-red-500 text-sm mt-1">
                                 {errors.applicationDeadline.message}
@@ -239,6 +325,11 @@ export const JobInformation = ({
                             </div>
                         </div>
                     </div>
+                    {errors.skills && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.skills.message}
+                            </p>
+                        )}
                 </div>
                 <div className="flex justify-end">
                     <button

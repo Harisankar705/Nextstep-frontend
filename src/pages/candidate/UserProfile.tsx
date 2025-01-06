@@ -6,7 +6,7 @@ import Navbar from '../../utils/Navbar';
 import { PostType } from '../../types/Candidate';
 import Post from './Post';
 import { getUserPosts } from '../../services/authService';
-import { getImageURL } from '../../utils/ImageUtils';
+import { getImageURL, getProfilePictureURL } from '../../utils/ImageUtils';
 import { individualDetails } from '../../services/adminService';
 import toast from 'react-hot-toast';
 import { checkFollowStatus, toggleFollow } from '../../services/commonService';
@@ -14,6 +14,7 @@ import {ConfirmDialog, confirmDialog} from 'primereact/confirmdialog'
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css'
+import { ReusableConfirmDialog } from '../../utils/ConfirmDialog';
 const dialogStyles = `
 .p-dialog .p-dialog-footer {
     gap: 1rem;
@@ -34,6 +35,7 @@ const dialogStyles = `
 const UserProfile = () => {
     const {id:userId}=useParams()
     const navigate = useNavigate()
+    const [isDialogVisible,setDialogVisible]=useState(false)
     const [isFollowing, setIsFollowing] = useState<boolean>(false)
     const [posts, setPosts] = useState<PostType[]>([])
     const [loading, setLoading] = useState(true)
@@ -100,76 +102,65 @@ const UserProfile = () => {
     }
     
     const handleFollowToggle = async () => {
-        try {
-            if (isFollowing) {
-                confirmDialog({
-                    message: "Are you sure you want to unfollow the user",
-                    header: "Unfollow Confirmation",
-                    icon: 'pi pi-info-circle',
-                    acceptClassName: 'p-button-danger bg-purple-600 hover:bg-purple-700 text-white focus:ring-2 focus:ring-purple-500',
-                    rejectClassName: 'p-button-secondary bg-purple-500 hover:bg-purple-600 text-white focus:ring-2 focus:ring-purple-500',
-                    acceptLabel: "Yes",
-                    rejectLabel: "No",
-                    className: 'custom-confirm-dialog',
-                    accept: async () => {
-                        try {
-                            const newFollowStatus = await toggleFollow(profileData._id);
-
-                            console.log('New Follow Status:', newFollowStatus);
-
-                            const isNowFollowing = newFollowStatus.data === true;
-                            console.log('IS NOT FOLLOWING',isNowFollowing)
-
-                            setIsFollowing(isNowFollowing);
-
-                            toast.success(
-                                isNowFollowing
-                                    ? "You are now following the user"
-                                    : "You have unfollowed the user"
-                            );
-                        } catch (error) {
-                            toast.error("Failed to update follow status");
-                            console.error(error);
-                        }
-                    },
-                    reject: () => {
-                        toast.success("Unfollow cancelled");
-                    }
-                });
-            } else {
-                try {
-                    const newFollowStatus = await toggleFollow(profileData._id);
-
-                    console.log('New Follow Status:', newFollowStatus);
-
-                    const isNowFollowing = newFollowStatus.data === true;
-
-                   
-                    setIsFollowing(isNowFollowing);
-
-                    toast.success(
-                        isNowFollowing
-                            ? "You are now following this user"
-                            : "You have unfollowed this user"
-                    );
-                } catch (error) {
-                    toast.error("Failed to update follow status");
-                    console.error(error);
-                }
+        if (isFollowing) {
+            setDialogVisible(true); // Show the dialog for unfollow confirmation
+        } else {
+            try {
+                const newFollowStatus = await toggleFollow(profileData._id);
+                const isNowFollowing = newFollowStatus.data === true;
+                setIsFollowing(isNowFollowing);
+                toast.success(isNowFollowing ? "You are now following this user" : "You have unfollowed this user");
+            } catch (error) {
+                toast.error("Failed to update follow status");
+                console.error(error);
             }
+        }
+    };
+
+    const handleDialogAccept = async () => {
+        setDialogVisible(false); // Hide the dialog
+        try {
+            const newFollowStatus = await toggleFollow(profileData._id);
+            const isNowFollowing = newFollowStatus.data === true;
+            setIsFollowing(isNowFollowing);
+            toast.success("You have unfollowed the user");
         } catch (error) {
-            toast.error("Failed to send connection request");
+            toast.error("Failed to update follow status");
             console.error(error);
         }
     };
+
+    const handleDialogReject = () => {
+        setDialogVisible(false); // Hide the dialog
+        toast.success("Unfollow cancelled");
+    };
+
+    if (loading) {
+        return (
+            <div className='min-h-screen bg-black text-white'>
+                <Navbar />
+                <div className='flex justify-center items-center h-[calc(100vh-64px)]'>
+                    <Spinner loading={true} />
+                </div>
+            </div>
+        );
+    }
+    if (!profileData) {
+        return (
+            <div className='min-h-screen bg -black text-white'>
+                <Navbar />
+                <div className='flex justify-center items-center h-[calc(100vh-64px)]'>
+                    <h2>User not found</h2>
+                </div>
+            </div>
+        );
+    }
 
     const profilePictureURL = getImageURL(profileData.profilePicture, 'profile-pictures')
 
     return (
         <div className="min-h-screen bg-black text-white">
-            <style>{dialogStyles}</style>
             <Navbar />
-            <ConfirmDialog/>
             <div className="relative h-[350px]">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-black opacity-90">
                     <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay"></div>
@@ -187,7 +178,7 @@ const UserProfile = () => {
                 <div className="max-w-6xl mx-auto">
                     <div className="relative inline-block h-48 w-48 rounded-full overflow-hidden border-4 border-black bg-gray-900 -mt-48 l-auto">
                         <img
-                            src={profilePictureURL}
+                            src={getProfilePictureURL(profilePictureURL)}
                             alt="Profile"
                             className="h-full w-full object-cover"
                         />
@@ -220,6 +211,13 @@ const UserProfile = () => {
                             </button>
                         </div>
                     </div>
+                    <ReusableConfirmDialog visible={isDialogVisible}
+                    onHide={()=>setDialogVisible(false)}
+                    message='Are you sure you want to unfollow the user?'
+                    header='Unfollow Confirmation'
+                    onAccept={handleDialogAccept}
+                    onReject={handleDialogReject}
+                    />
                     
                         
                     

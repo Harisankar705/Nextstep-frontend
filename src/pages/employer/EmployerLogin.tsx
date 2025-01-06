@@ -29,6 +29,7 @@ const EmployerLogin = () => {
     }
 
     setLoading(true);
+    setError('')
     try {
       const response = await login(email, password, "employer");
       console.log('rrrrr',response)
@@ -44,7 +45,9 @@ const EmployerLogin = () => {
       }
       
     } catch (error:any) {
-      setError(error)
+      const errorMessage = error.response?.data?.message || "Login failed";
+      setError(errorMessage);
+
       
     } finally {
       setLoading(false);

@@ -6,15 +6,19 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { jobFormData } from "../../../types/Employer";
-import { fetchJobs } from "../../../services/employerService";
+import { deleteJob, fetchJobs } from "../../../services/employerService";
 import Spinner from "../../../utils/Spinner";
 import SideBar from "../SideBar";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { ReusableConfirmDialog } from "../../../utils/ConfirmDialog";
 
 export const JobListing = () => {
     const navigate=useNavigate()
+    const [jobToDelete,setJobToDelete]=useState<string|null>(null)
   const [jobListings, setJobListings] = useState<jobFormData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dialogVisible,setDialogVisible]=useState(false)
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const fetchJobListing = async () => {
@@ -32,7 +36,35 @@ export const JobListing = () => {
     fetchJobListing();
   }, []);
   const handleEditClick=(jobId:string)=>{
-    navigate('/editjobs')
+    navigate(`/editjob/${jobId}`)
+  }
+  const handleDeleteJob
+=async(jobId:string)=>{
+    if(jobToDelete)
+    {
+      try {
+        const response=await deleteJob(jobToDelete)
+        if(response.status===204)
+        {
+          toast.success("Job deleted successfully!")
+          setJobListings((prev)=>prev.filter(job=>job._id!==jobToDelete))
+        }
+      } catch (error) {
+        toast.error("Error occured while deleting job!")
+        console.log('error occured while deleting job',error)
+        return
+      }
+      finally{
+        setDialogVisible(false)
+        setJobToDelete(null)
+      }
+    }
+   
+  }
+  const handleDialogReject=()=>{
+    setDialogVisible(false)
+    setJobToDelete(null)
+    toast.success("Unfollow cancelled!")
   }
   if (loading) {
     return <Spinner loading={true} />;
@@ -97,18 +129,42 @@ export const JobListing = () => {
                       day: "numeric",
                     }).format(new Date(job.createdAt))}
                   </td>
-                  <td className="p-4">{job.applicants}</td>
+                  <td className="p-4">
+                    {new Intl.DateTimeFormat("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }).format(new Date(job.applicationDeadline))}
+                  </td>
                   <td className="p-4">{job.employmentTypes}</td>
+                  <td className="p-4">{job.applicants}</td>
+                  
                   <td className="p-4">{job.applicants || 0}</td>
                   <td className="p-4">
-                    <button className="flex justify-between items-center bg-teal-300 px-4 rounded-lg text-black" onClick={()=>handleEditClick(job.id)}>
+                    <button className="flex justify-between items-center bg-teal-300 px-4 rounded-lg text-black" onClick={()=>handleEditClick(job._id)}>
                       Edit
+                    </button>
+                  </td>
+                  <td className="p-4">
+                  <button className="flex justify-between items-center bg-teal-300 px-4 rounded-lg text-black" onClick={() => {
+                      setJobToDelete(job._id); // Set the job ID to delete
+                      setDialogVisible(true); // Show the dialog
+                    }}>
+                      Delete
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <ReusableConfirmDialog visible={dialogVisible}
+          onHide={()=>setDialogVisible(false)}
+          message='Are you sure to delete the job?'
+          header="Delete confirmation!"
+          onAccept={() => handleDeleteJob
+(jobToDelete!)} 
+          onReject={handleDialogReject}
+          />
           <div className="flex justify-between items-center p-4 border-t border-gray-700">
             <div className="flex items-center space-x-2">
               <span>view</span>

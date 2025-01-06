@@ -7,9 +7,10 @@ import { Jobdescription } from "./JobDescription"
 import toast from "react-hot-toast"
 import { fetchJobById, fetchJobs, postjob, updateJob } from "../../../services/employerService"
 import { jobFormData } from "../../../types/Employer"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 export const JobPostingForm = () => {
+    const navigate=useNavigate()
     const {jobId}=useParams()
     const [isEditing,setIsEditing]=useState(!!jobId)
     const [currentStep, setCurrentStep] = useState(1)
@@ -24,6 +25,7 @@ export const JobPostingForm = () => {
         whoYouAre: "",
         niceToHave: "",
         benefits: [],
+        industry:[]
         
     })
     useEffect(()=>{
@@ -32,13 +34,14 @@ export const JobPostingForm = () => {
             {
                 try {
                     const response=await fetchJobById(jobId)
+                    console.log('fetchedjob',response)
                     if(response)
                     {
-                        const jobData=await response.json()
+                        const jobData=await response.data
                         setFormData(jobData)
                     }
                 } catch (error) {
-                    console.log('error occured while fetching jobs')
+                    console.log('error occured while fetching jobs',error)
                 }
             }
         }
@@ -52,6 +55,7 @@ export const JobPostingForm = () => {
     ]
     const CurrentStepComponent = steps[currentStep - 1].component
     const handleNext = () => {
+        console.log('in handle next')
         if (currentStep < steps.length) {
             setCurrentStep(currentStep + 1)
         }
@@ -69,7 +73,7 @@ export const JobPostingForm = () => {
         setIsSubmitting(true)
         try {
             const requiredFields=[
-                'jobTitle','employmentTypes','responsibilities','whoYouAre'
+                'jobTitle','employmentTypes','responsibilities','whoYouAre','industry'
             ]
             const missingFields = requiredFields.filter(field => 
                 !formData[field] || 
@@ -81,11 +85,14 @@ export const JobPostingForm = () => {
                     toast.error("Please fill all the following fields")
                     return
                 }   
-                console.log('formdata',formData)
-            const response=isEditing ? await updateJob(jobId,formData):await postjob(formData)
-            if(response.message)
+                console.log(isEditing)
+                const response = isEditing ? await updateJob(jobId as string, formData) : await postjob(formData);
+                            if(response.status===200)
             {
-                toast.success("Job posted!")
+                toast.success("Job updated!")
+                setTimeout(()=>{
+                    navigate('/joblistings')
+                },2000)
             }
         } catch (error) {
             toast.error("Failed to update job")

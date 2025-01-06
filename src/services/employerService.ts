@@ -46,9 +46,20 @@ export const fetchJobById=async(jobId:string)=>{
 export const updateJob=async(jobId:string,formData:any)=>{
     try {
         const response=await api.put(`/updatejob/${jobId}`,formData)
+        console.log('response',response)
         return response
     } catch (error) {
         const errorDetails = axiosError(error, 'fetch job by id')
+        throw errorDetails 
+    }
+}
+export const deleteJob=async(jobId:string,)=>{
+    try {
+        const response=await api.delete(`/deletejob/${jobId}`)
+        console.log('response',response)
+        return response
+    } catch (error) {
+        const errorDetails = axiosError(error, 'delete job')
         throw errorDetails 
     }
 }

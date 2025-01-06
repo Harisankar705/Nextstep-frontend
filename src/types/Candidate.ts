@@ -134,5 +134,19 @@ export interface Like{
     initialLikes:number,
     onLikeCountChange?:(newCount:number)=>void
 }
+export interface ConfirmDialogProps
+{
+    visible:boolean;
+    onHide:()=>void;
+    message:string,
+    header:string,
+    acceptLabel?:string,
+    rejectLabel?:string,
+    acceptClassName?:string,
+    rejectClassName?:string,
+    onAccept:()=>void,
+    onReject:()=>void
+
+}
 
 export type Candidate=UserCandidate|Employer

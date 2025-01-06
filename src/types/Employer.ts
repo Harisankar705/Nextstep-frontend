@@ -68,5 +68,7 @@ export interface jobFormData {
     whoYouAre: string;
     niceToHave: string;
     benefits: Benefit[];
+    industry:string[],
+    description:string
     [key: string]: any;
 }

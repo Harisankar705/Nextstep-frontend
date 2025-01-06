@@ -8,6 +8,7 @@ import { Like } from "./CreatePost/Like";
 import Comments from "./CreatePost/Comments";
 import { interactionCount } from "../../services/commonService";
 import toast from "react-hot-toast";
+import { SharePost } from "./CreatePost/SharePost";
 
 const Post = ({ post,
     profilePicture,
@@ -23,6 +24,7 @@ const Post = ({ post,
     const [likeCount, setLikeCount] = useState(0)
     const [likedByUser, setLikedByUser] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isShareModalOpen,setIsShareModalOpen]=useState(false)
     useEffect(() => {
         const isRecent =
             new Date().getTime() - new Date(post.createdAt).getTime() < 360000;
@@ -76,6 +78,12 @@ const Post = ({ post,
     const handleCommentCountchange = (newCount: number) => {
         setCommentCount(newCount)
     }
+    const handleShareClick=()=>{
+        setIsShareModalOpen(true)
+    }
+    const handleShareClose=()=>{
+        setIsShareModalOpen(false)
+    }
     const currentUser = useSelector((state: any) => state.user);
     const finalProfilePicture = profilePicture
         ? getProfilePictureURL(profilePicture)
@@ -85,7 +93,13 @@ const Post = ({ post,
         : `${currentUser?.firstName || "User"} ${currentUser?.lastName || ""}`;
     console.log("POST", post)
     return (
+        
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+              {isShareModalOpen && (
+            <SharePost isOpen={isShareModalOpen}
+            onClose={handleShareClose}
+            post={post}/>
+        )}
             <div className="flex items-center space-x-3 mb-4">
                 <div className="h-10 w-10 rounded-full overflow-hidden">
                     <img
@@ -94,6 +108,7 @@ const Post = ({ post,
                         className="h-full w-full object-cover"
                     />
                 </div>
+              
                 <div>
                     <p className="font-medium text-white">{finalUserName}</p>
                     <div className="flex items-center text-sm text-gray-400">
@@ -155,7 +170,7 @@ const Post = ({ post,
                     <span>Comment</span>
                 </button>
 
-                <button className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors">
+                <button onClick={()=>setIsShareModalOpen(true)} className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors">
                     <Share2 className="w-5 h-5" />
                     <span>Share</span>
                 </button>

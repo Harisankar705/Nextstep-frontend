@@ -98,9 +98,7 @@ export const PerksAndBenefits = ({ formData, updateFormData, onNext,onSubmit }: 
                     {defaultBenefits.map((benefit) => (
                         <BenefitCard key={benefit.id} benefit={benefit} />
                     ))}
-                    {defaultBenefits.map((benefit)=>(
-                        <BenefitCard key={benefit.id} benefit={benefit}/>
-                    ))}
+                    
                 </div>
             </div>
             <div className="flex justify-end">

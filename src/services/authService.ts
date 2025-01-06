@@ -120,20 +120,13 @@ export const candidateDetails = async (details: Record<string, any>): Promise<an
 export const login = async (email: string, password: string, role: role) => {
     try {
         const response = await api.post('/login', { email, password, role }, { withCredentials: true })
-        if (!response?.data) {
-            console.log("NO response from the backend")
+        if (response?.data) {
+            return response.data
         }
-        return response.data
+        console.log('response',response)
     } catch (error: any) {
-        if (error?.message?.includes('ERR_CONNECTION_REFUSED')) {
-            throw new Error('Unable to connect to server. Please check if server is running.');
-        }
-
-        if (error?.response?.data?.message) {
-            throw new Error(error.response.data.message);
-        }
-
-        throw new Error('An unexpected error occurred. Please try again.');
+        axiosError(error, 'login')
+        throw error
 
 
 }

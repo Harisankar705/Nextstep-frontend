@@ -55,7 +55,7 @@ const App = () => {
           <Route path='/employerhome' element={<ProtectedRoute role='employer'><EmployerDashboard /></ProtectedRoute> }/>
           <Route path='/account' element={<ProtectedRoute role='employer'><Account /></ProtectedRoute>}/>
           <Route path='/addjob' element={<ProtectedRoute role='employer'><JobPostingForm /></ProtectedRoute>}/>
-          <Route path='/edit-job/:jobId' element={<ProtectedRoute role='employer'><JobPostingForm /></ProtectedRoute>} />
+          <Route path='/editjob/:jobId' element={<ProtectedRoute role='employer'><JobPostingForm /></ProtectedRoute>} />
 
           <Route path='/joblistings' element={<ProtectedRoute role='employer'><JobListing /></ProtectedRoute>}/>
           <Route path='/employerdetails' element={<ProtectedRoute role='employer'>{<EmployerDetails />}</ProtectedRoute>}/>

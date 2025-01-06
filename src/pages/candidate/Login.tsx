@@ -46,8 +46,8 @@ const Login = () => {
 
     } catch (error: any) {
 
-      setError(error?.message || 'Check your email and password!');
-    }
+      const errorMessage = error.response?.data?.message || "Login failed";
+      setError(errorMessage);    }
     finally {
       setLoading(false)
     }
