@@ -1,30 +1,39 @@
+
 import { useSelector } from "react-redux";
 import { PostType } from "../../types/Candidate";
-import { MapPin, MessageSquare, Share2, ThumbsUp, X } from 'lucide-react';
-import { getPostImageURL, getProfilePictureURL } from "../../utils/ImageUtils";
+import { Bookmark, MapPin, MessageSquare, Share2, ThumbsUp, X } from 'lucide-react';
+import { getCompanyLogo, getImageURL, getPostImageURL, getProfilePictureURL } from "../../utils/ImageUtils";
 import { useEffect, useState } from "react";
 import { getRelativeTime } from "../../utils/relativeTime";
 import { Like } from "./CreatePost/Like";
 import Comments from "./CreatePost/Comments";
-import { interactionCount } from "../../services/commonService";
+import { checkSavedStatus, interactionCount, savePost } from "../../services/commonService";
 import toast from "react-hot-toast";
 import { SharePost } from "./CreatePost/SharePost";
-
-const Post = ({ post,
+interface PostComponentProps{
+    post:PostType,
+    profilePicture?:string,
+    userName?:string
+    onUnsave?:(postId:string)=>void
+    role?:any
+}
+const Post:React.FC<PostComponentProps>=({ post,
     profilePicture,
     userName,
-}: {
-    post: PostType;
-    profilePicture?: string;
-    userName?: string;
-}) => {
+    onUnsave,
+    role
+})=> 
+    {
     const [timeAgo, setTimeAgo] = useState(getRelativeTime(post.createdAt));
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [commentCount, setCommentCount] = useState(0)
     const [likeCount, setLikeCount] = useState(0)
     const [likedByUser, setLikedByUser] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isSaved,setIsSaved]=useState(false)
     const [isShareModalOpen,setIsShareModalOpen]=useState(false)
+    
+
     useEffect(() => {
         const isRecent =
             new Date().getTime() - new Date(post.createdAt).getTime() < 360000;
@@ -35,6 +44,18 @@ const Post = ({ post,
             return () => clearInterval(interval);
         }
     }, [post.createdAt]);
+    useEffect(()=>{
+        const isPostSaved=async()=>{
+            try {
+                const savedStatus=await checkSavedStatus(post._id)
+                
+                setIsSaved(savedStatus)
+            } catch (error) {
+                console.error("Failed to fetch saved status",error)
+            }
+        }
+        isPostSaved()
+    },[post._id])
     useEffect(() => {
         setLikedByUser(post.likedByUser?? false);
     }, [post])
@@ -53,14 +74,26 @@ const Post = ({ post,
             document.removeEventListener('keydown', handleEscape);
         };
     }, [isCommentsOpen]);
+    const handleSavePost=async()=>{
+        try {
+            const result=await savePost(post._id)
+            const savedStatus = result.message.toLowerCase().includes('saved');
+            setIsSaved((prevState)=>!prevState)
+            if(savedStatus && onUnsave)
+            {
+                onUnsave(post._id)
+            }
+
+            toast.success(result.message)
+        } catch (error) {
+            toast.error("Failed to save post")
+        }
+    }
     useEffect(() => {
         const fetchCount = async () => {
             try {
                 const response = await interactionCount(post._id)
-                console.log('Interaction counts fetched:', {
-                    commentCount: response.commentCount,
-                    likeCount: response.likeCount
-                });
+                
                 setCommentCount(response.commentCount)
                 setLikeCount(response.likeCount)
 
@@ -84,17 +117,22 @@ const Post = ({ post,
     const handleShareClose=()=>{
         setIsShareModalOpen(false)
     }
+    
     const currentUser = useSelector((state: any) => state.user);
     const finalProfilePicture = profilePicture
-        ? getProfilePictureURL(profilePicture)
-        : getProfilePictureURL(currentUser?.profilePicture);
+    ? role === 'employer'
+        ? getCompanyLogo(profilePicture)  // Use company logo for employers
+        : getProfilePictureURL(profilePicture)  // Use profilePicture if available
+    : getProfilePictureURL(currentUser?.profilePicture);  // Default to user's profile picture
+
+    
     const finalUserName = userName
         ? userName
         : `${currentUser?.firstName || "User"} ${currentUser?.lastName || ""}`;
-    console.log("POST", post)
+    
     return (
         
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 shadow-md">
               {isShareModalOpen && (
             <SharePost isOpen={isShareModalOpen}
             onClose={handleShareClose}
@@ -142,15 +180,14 @@ const Post = ({ post,
                 </div>
             )}
 
-            <div className="flex items-center justify-between text-sm text-gray-400 border-b border-gray-800 pb-2 mb-2">
-                <div className="flex items-center gap-1">
+<div className="flex items-center justify-between border-t border-gray-800 pt-2">
+<div className="flex items-center gap-1">
                     {likeCount }
                     <ThumbsUp className="w-4 h-4" />
 
                 </div>
                 <div className="flex items-center gap-4">
                     <span>{commentCount} comments</span>
-                    <span>1 share</span>
                 </div>
             </div>
 
@@ -173,6 +210,10 @@ const Post = ({ post,
                 <button onClick={()=>setIsShareModalOpen(true)} className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors">
                     <Share2 className="w-5 h-5" />
                     <span>Share</span>
+                </button>
+                <button onClick={handleSavePost} className={`flex items-center gap-2 ${isSaved ?'text-gray-400 bg-purple-600':'text-gray-400 hover:bg-gray-800'}  px-4 py-2 rounded-lg transition-colors`}>
+                    <Bookmark className={`w-5 h-5 ${isSaved?'fill-current':''}`} />
+                    <span>{isSaved?"Saved":"Save"}</span>
                 </button>
             </div>
 

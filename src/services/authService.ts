@@ -44,7 +44,7 @@ export const sendOTP = async (email: string, role: role): Promise<SendOTPRespons
 export const getUserPosts=async(userId?:string)=>{
     try {
         const response = await api.get('/userposts',{params:{userId}})
-        console.log('getUserpost',response)
+        
         return response.data 
     } catch (error) {
         axiosError(error,'getUserPosts')
@@ -54,7 +54,7 @@ export const getUserPosts=async(userId?:string)=>{
 }
 export const createPost=async(formData:FormData,role:role)=>{
     try {
-        console.log('in createpost')
+        
         const response = await api.post('/createpost', formData,{
             headers:{
                 'Content-Type': 'multipart/form-data', 
@@ -123,7 +123,7 @@ export const login = async (email: string, password: string, role: role) => {
         if (response?.data) {
             return response.data
         }
-        console.log('response',response)
+        
     } catch (error: any) {
         axiosError(error, 'login')
         throw error

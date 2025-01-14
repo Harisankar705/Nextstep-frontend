@@ -31,7 +31,7 @@ export const fetchLocationSuggestions = async (query: string): Promise<{ name: s
         const response = await axios.get(
             `https://api.locationiq.com/v1/autocomplete.php?key=pk.737e7a51608e0777c2ffe0680fb255b1&q=${query}`
         );
-        console.log("language response",response)
+        
         return response.data.map((location: any) => ({
             name: location.display_name,
             id: location.place_id,

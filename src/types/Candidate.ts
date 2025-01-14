@@ -1,22 +1,56 @@
+import { Socket } from "socket.io-client";
+import { Benefit } from "./Employer";
 
 export interface BaseUser
 {
     id:string,
     email:string,
     status:"Active"|"Inactive",
-    role:'user'|"employer"
+    role:'user'|"employer",
+
 }
-export interface UserCandidate extends BaseUser
+interface Education 
 {
-    firstName:string,
-    secondName:string,
-    profilePicture:string
-    friends?:string
-    aboutMe?:string,
-    location?:string,
-    education?:[string]
-    
+    degree:string,
+    institution:string,
+    year:number;
+    description?:string
 }
+interface InterviewSchedule {
+    date: string;
+    time: string;
+    interviewer: string;
+    platform: string;
+    meetingLink?: string;
+  }
+export interface UserCandidate {
+    id: string;
+    firstName: string;
+    secondName: string;
+    email: string;
+    phonenumber?: string;
+    role: 'user' | 'employer';
+    status: string;
+    profilePicture?: string;
+    gender?: string;
+    dateOfBirth?: string;
+    languages?: string[];
+    location?: string;
+    aboutMe?: string;
+    experience?: string;
+    skills?: string[];
+    resume?: string;
+    instagram?: string;
+    twitter?: string;
+    website?: string;
+    education?: {
+      degree: string;
+      institution: string;
+      year: string;
+    }[];
+    interviewSchedule?: InterviewSchedule;
+
+  }
 export interface Employer extends BaseUser
 {
     companyName:string
@@ -47,9 +81,20 @@ export interface PostType
     location:string,
     profilePicture:string,
     likes?:[],
+    user?: {
+        profilePicture: string;
+        firstName: string;
+        secondName: string;
+    };
+    company?: {
+        logo: string;
+        companyName: string;
+    };
     comments?:Array<Comment>;
     isLiked?:boolean
     likedByUser?:boolean
+    saved?:boolean,
+    userId:string
 }
 export interface LocationState{
     isLoading:boolean,
@@ -58,7 +103,8 @@ export interface LocationState{
 }
 export interface CreatePostProps{
     onClose:()=>void;
-    isOpen:boolean
+    isOpen:boolean;
+    role:'user'|'employer'
 }
 export interface LocationModalProps{
     isOpen:boolean
@@ -114,6 +160,7 @@ export interface PostInputProps
 {
     onClick:()=>void;
     profilePicture?:string
+    companyLogo?:string
 }
 export interface Comment {
     _id: string,
@@ -148,5 +195,51 @@ export interface ConfirmDialogProps
     onReject:()=>void
 
 }
+export interface EmployerType {
+    _id: string;
+    companyName: string;
+    logo?:string,
+    email?:string,
+    website?:string
+  }
+  
+  export interface JobType {
+    _id: string;
+    isActive:boolean,
+    description:string
+    jobTitle: string;
+    skills?:string[],
+    niceToHave?:string
+    responsibilities?:string,
+    employmentTypes: string[];
+    location: string;
+    salaryRange: {
+      min: number;
+      max: number;
+    };
+    applicationDeadline?:string
+    benefits:Benefit[]
+    createdAt: string;
+    employerId:EmployerType
+    hasApplied:boolean
+  }
+  
+  
 
+export interface Message{
+    _id:string,
+    text:string,
+    sent:boolean
+}
+export interface SocketContextType
+{
+    socket:Socket|null
+}
+
+export interface ChatHistoryItem {
+  _id: string; 
+  contactName: string;
+  lastMessage: string;
+  timeStamp: string;
+}
 export type Candidate=UserCandidate|Employer

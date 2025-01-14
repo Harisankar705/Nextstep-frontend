@@ -38,7 +38,7 @@ const SearchUtil: React.FC<SearchBarProps> = ({
         setIsSearching(true);
         try {
             const response = await search(query);
-            console.log(response)
+            
 
             if (response?.status === 200 && response?.data?.data) {
                 setSearchResults({

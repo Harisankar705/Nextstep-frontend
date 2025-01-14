@@ -29,9 +29,9 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
         const fetchPosts = async () => {
             if(!displayedUser)return
             try {
-                console.log('in fetchposts')
+                
                 const response = await getUserPosts()
-                console.log("response", response)
+                
                 setPosts(response)
             } catch (error) {
                 console.error("Error fetching posts", error)
@@ -79,7 +79,7 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
                         {isOwnProfile && (
                             <>
                                 <PostInput onClick={() => setShowCreatePost(true)} profilePicture={displayedUser?.profilePicture} />
-                                <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} />
+                                <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role='user' />
                             </>
                         )}
 

@@ -36,3 +36,11 @@ export const getCompanyDocumentURL = (document: string | undefined): string => {
 export const getCompanyLogo = (logo: string | undefined): string => {
     return getImageURL(logo, 'company-logos', '/default-document.png');
 };
+export const getResumeFileURL = (resumePath: string | undefined): string => {
+    if (!resumePath) return '/default-resume.pdf'; // Default resume if not found
+
+    // Extract filename from the path (assuming path is correct)
+    const fileName = resumePath.split('\\').pop(); // Extract the file name
+
+    return `${BASE_URL}/profile-pictures/${fileName}`; // Construct the correct URL
+};

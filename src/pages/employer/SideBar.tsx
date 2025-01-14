@@ -1,4 +1,4 @@
-import { Building2, FileText, Calendar, Home, MessageSquare, LogOut } from "lucide-react"
+import { Building2, FileText, Calendar, Home, MessageSquare, LogOut, Rss, BookmarkCheck } from "lucide-react"
 import { Logo } from "../../components/Logo"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
@@ -8,8 +8,10 @@ import { persistor } from "../../redux/store"
 const navItems = [
     { name: "Dashboard", href: '/employerhome', icon: Home, badge: 0 },
     { name: "Messages", href: '#', icon: MessageSquare },
+    { name: "Feed", href: '/feeds', icon: Rss },
     { name: "Company Profile", paths: ['/account', '/employer/edit-profile'], icon: Building2 },
     { name: "Job Listing", href: '/joblistings', icon: FileText },
+    { name: "Saved", href: '/saved', icon: BookmarkCheck },
     { name: "My Schedule", href: '#', icon: Calendar }
 ]
 

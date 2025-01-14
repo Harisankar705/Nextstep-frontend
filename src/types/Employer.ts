@@ -72,3 +72,15 @@ export interface jobFormData {
     description:string
     [key: string]: any;
 }
+export interface Filters {
+    jobTypes: string[];
+    experienceLevels: string[];
+  }
+  
+  export interface InterviewScheduleData {
+    date: string;
+    time: string;
+    interviewer: string;
+    platform: string;
+    meetingLink?: string;
+  }

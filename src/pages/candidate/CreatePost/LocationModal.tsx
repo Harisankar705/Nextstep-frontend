@@ -14,7 +14,7 @@ export const LocationModal:React.FC<LocationModalProps>=({
     if(!isOpen)return null
     return (
         <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg w-full max-w-md p-4">
+            <div className="bg-black rounded-lg w-full max-w-md p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">
                         Search for location
@@ -31,7 +31,7 @@ export const LocationModal:React.FC<LocationModalProps>=({
                         <input
                             type="text"
                             placeholder="Enter your location"
-                            className="w-full p-2 border rounded-lg mb-4"
+                            className="w-full p-2 border rounded-lg mb-4 text-black"
                             value={searchLocation}
 
                             onChange={onSearchChange}
@@ -50,7 +50,7 @@ export const LocationModal:React.FC<LocationModalProps>=({
                             <div className="text-center py-4">
                                 <p className="text-red-500 mb-2">{locationState.error}</p>
                                 <button onClick={onRetry}
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Try again</button>
+                                    className="px-4 py-2 bg-blue-500 text-black rounded-lg hover:bg-blue-600 transition-colors">Try again</button>
                             </div>
 
 

@@ -183,7 +183,7 @@ setLoading(true)
       setLoading(true);
 
       const response = await register(userData, otp.join(''));
-      console.log(response)
+      
       toast.success("Registeration successfull!")
       setLoading(true);
       setIsRegistered(true);

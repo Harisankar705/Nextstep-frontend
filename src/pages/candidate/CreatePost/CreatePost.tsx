@@ -31,7 +31,7 @@ const backGrounds = [
     "bg-gradient-to-r from-gray-500 to-pink-900",
     "bg-gradient-to-r from-blue-500 to-purple-900",
 ];
-export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen }) => {
+export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) => {
     if(!isOpen)return null
     const [postText, setPostText] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -147,7 +147,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen }) => {
             setPosting(true)
             formData.append('text', sanitizedText)
             formData.append('background', selectedBackground)
-            formData.append('role', 'user');
+            formData.append('role', role);
 
             if (selectedLocation) {
                 formData.append('location', selectedLocation)
@@ -156,11 +156,11 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen }) => {
                 formData.append('postImage', file)
             })
             for (let pair of formData.entries()) {
-                console.log(pair[0], pair[1]);
+                
             }
-            
-                const response = await createPost(formData, 'user')
-                console.log(response)
+                
+                const response = await createPost(formData, role)
+                
                 if (response.status === 201) {
 
                     toast.success("Posted successfully!")
@@ -172,7 +172,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen }) => {
             }
             catch (error) {
                 toast.error("Error occured while posting")
-                console.log("POSTING ERROR",error)
+                
             }
             finally {
                 setPosting(false)

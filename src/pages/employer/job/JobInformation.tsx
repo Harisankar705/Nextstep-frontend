@@ -73,7 +73,7 @@ export const JobInformation = ({
 }: JobInformationProps) => {
     const { jobId } = useParams<{ jobId: string }>();
     const [newSkill, setNewSkill] = useState("");
-    console.log('formdata',formData)
+    
     const { control, handleSubmit, formState: { errors }, watch, setValue ,reset} = useForm<JobFormData>({
         resolver: zodResolver(jobFormSchema),
         defaultValues: {
@@ -90,7 +90,7 @@ export const JobInformation = ({
     });
 
     const onSubmit = (data: JobFormData) => {
-        console.log('data',data)
+        
         updateFormData(data);
         onNext();
         // if(!jobId)
@@ -99,7 +99,7 @@ export const JobInformation = ({
         // }
     };
     useEffect(() => {
-        console.log('Form errors:', errors);
+        
     }, [errors]);
     useEffect(() => {
         if (formData) {

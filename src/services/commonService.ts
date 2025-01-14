@@ -1,11 +1,12 @@
+import { InterviewScheduleData } from "../types/Employer"
 import api from "../utils/api"
 import { axiosError } from "../utils/AxiosError"
 
 export const toggleFollow =async(followingId:string):Promise<any>=>{
     try {
-        console.log('in sendfollowrequest',followingId)
+        
         const response = await api.post('/followaccount', { followingId })
-        console.log('respponse in togglefollower',response.data)
+        
         return response.data
 
     } catch (error) {
@@ -16,9 +17,9 @@ export const toggleFollow =async(followingId:string):Promise<any>=>{
 }
 export const followBack = async (connectionId:string):Promise<any>=>{
     try {
-        console.log('in sendfollowrequest', connectionId)
+        
         const response = await api.post('/followback', { connectionId })
-        console.log('respponse in togglefollower',response.data)
+        
         return response.data
 
     } catch (error) {
@@ -30,7 +31,7 @@ export const followBack = async (connectionId:string):Promise<any>=>{
 export const getPendingRequests=async()=>{
     try {
         const response = await api.get('/pendingrequests')
-        console.log('GET PENDING REQUESTS',response)
+        
         return response
     } catch (error) {
         axiosError(error,'getPendingrequests')
@@ -40,7 +41,7 @@ export const getPendingRequests=async()=>{
 export const getConnections=async()=>{
     try {
         const response = await api.get('/connections')
-        console.log('GET CONNECTIONS',response)
+        
         return response
     } catch (error) {
         axiosError(error,'getConnections')
@@ -68,7 +69,7 @@ export const likePost=async(postId:string)=>{
 export const commentPost = async (postId: string, comment:string)=>{
     try {
         const response = await api.post('/commentpost', { postId, comment })
-        console.log('commentpost',response)
+        
         return response
     } catch (error) {
         axiosError(error, 'commentpost')
@@ -78,7 +79,7 @@ export const commentPost = async (postId: string, comment:string)=>{
 export const getComments=async(postId:string)=>{
     try {
         const response=await api.get('/getComments',{params:{postId}})
-        console.log('getcomments',response)
+        
         return response.data
     } catch (error) {
         axiosError(error, 'commentpost')
@@ -97,11 +98,67 @@ export const sharePost=async(postId:string)=>{
 export const interactionCount=async(postId:string)=>{
     try {
         const response = await api.get('/getPostInteractions',{params:{postId}})
-        console.log('INTERACTION',response)
+        
         const {likeCount,commentCount}=response.data.interactions
         return {likeCount,commentCount}
     } catch (error) {
         axiosError(error, 'interactioncount')
         throw error  
+    }
+}
+export const savePost=async(postId:string)=>{
+    try {
+        const response=await api.post('/savepost',{postId})
+        
+        return response.data
+    } catch (error) {
+        axiosError(error,'savepost')
+        throw error
+    }
+}
+export const getSavedPost=async()=>{
+    try {
+        const response=await api.get('/getsavedposts')
+        
+        return response.data
+    } catch (error) {
+        axiosError(error,'getsavedpost')
+        throw error
+    }
+}
+export const checkSavedStatus=async(postId:string)=>{
+    try {
+        const response=await api.get(`/saved-posts/check/${postId}`)
+        return response.data.isSaved
+    } catch (error) {
+        axiosError(error,'checkSavedstatus')
+        throw error
+    }
+}
+export const fetchJobs=async()=>{
+    try {
+        const response=await api.post('/fetch-jobs')
+        return response
+    } catch (error) {
+        axiosError(error,'fetchjobs')
+        throw error
+    }
+}
+export const scheduleInterview=async(scheduleData:InterviewScheduleData,userId:string,jobId:string)=>{
+    try {
+        const response=await api.post('/schedule-interview',{userId,jobId,...scheduleData})
+        return response
+    } catch (error) {
+        axiosError(error,'scheduleInterview')
+        throw error
+    }
+}
+export const fetchMessages=async()=>{
+    try {
+        const response=await api.get('/messages')
+        return response
+    } catch (error) {
+        axiosError(error,'fetchMessages')
+        throw error
     }
 }

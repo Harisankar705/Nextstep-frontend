@@ -200,7 +200,6 @@ const EmployerSignup = () => {
     try {
       setLoading(true);
       const response = await register(employerData, otp.join(""));
-      console.log(response)
       toast.success("Registration completed");
       setIsRegistered(true);
       navigate("/employerlogin");

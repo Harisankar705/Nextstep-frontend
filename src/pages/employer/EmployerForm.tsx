@@ -128,11 +128,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       }
       if (value.companyDocuments instanceof File) {
         formData.append('document', value.companyDocuments)
-        console.log('Document added to FormData:', {
-          fileName: value.companyDocuments.name,
-          fileSize: value.companyDocuments.size,
-          fileType: value.companyDocuments.type
-        })
+        
         formData.append('documentType', value.documentType)
         formData.append('documentNumber', value.documentNumber)
       }
@@ -143,9 +139,9 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       formData.append('industry', value.industry);
       formData.append('dateFounded', value.dateFounded);
       formData.append('description', value.description);
-      console.log('FormData entries:')
+      
       for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1])
+        
       }
 
       try {

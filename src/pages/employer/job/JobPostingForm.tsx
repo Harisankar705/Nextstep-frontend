@@ -34,14 +34,14 @@ export const JobPostingForm = () => {
             {
                 try {
                     const response=await fetchJobById(jobId)
-                    console.log('fetchedjob',response)
+                    
                     if(response)
                     {
                         const jobData=await response.data
                         setFormData(jobData)
                     }
                 } catch (error) {
-                    console.log('error occured while fetching jobs',error)
+                    
                 }
             }
         }
@@ -55,7 +55,7 @@ export const JobPostingForm = () => {
     ]
     const CurrentStepComponent = steps[currentStep - 1].component
     const handleNext = () => {
-        console.log('in handle next')
+        
         if (currentStep < steps.length) {
             setCurrentStep(currentStep + 1)
         }
@@ -69,7 +69,7 @@ export const JobPostingForm = () => {
         setFormData(prev => ({ ...prev, ...data }))
     }
     const handleFinalSubmit=async ()=>{
-        console.log('in handlefinal submit')
+        
         setIsSubmitting(true)
         try {
             const requiredFields=[
@@ -79,15 +79,15 @@ export const JobPostingForm = () => {
                 !formData[field] || 
                 (Array.isArray(formData[field]) && formData[field].length === 0)    
             )
-            console.log('missing fields',missingFields)         
+                     
             if(missingFields.length>0)
                 {
                     toast.error("Please fill all the following fields")
                     return
                 }   
-                console.log(isEditing)
+                
                 const response = isEditing ? await updateJob(jobId as string, formData) : await postjob(formData);
-                            if(response.status===200)
+                            if(response.status===201)
             {
                 toast.success("Job updated!")
                 setTimeout(()=>{

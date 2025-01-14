@@ -26,7 +26,7 @@ const Verification = () => {
                 }
             }
             catch (error) {
-                console.log('error occured while fetching emplloyder details',error)
+                
                 setError("Failed to load employer details")
             }
             finally {
@@ -35,7 +35,7 @@ const Verification = () => {
         }
         fetchEmployerDetails()
     }, [id])
-    console.log("EMPLOYER",employer)
+    
 
     if (loading) {
         return (
@@ -58,7 +58,7 @@ const Verification = () => {
             setVerifying(true)
             try {
                 const response=await verifyEmployer(id, status)
-                console.log("in handle verify",response)
+                
                 if(response?.success===true)
                 {
                     toast.success(response.message)
@@ -71,7 +71,7 @@ const Verification = () => {
                 }
             } catch (error) {
                 toast.error("Error occured during verifying employer")
-                console.log('failed',error)
+                
                 throw new Error("Error occurred during verifying employer")
             }
             finally

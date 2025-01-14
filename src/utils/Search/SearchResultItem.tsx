@@ -8,9 +8,9 @@ export const SearchResultItem:React.FC<SearchResultItemProps> = ({
 })=>{
     const navigate=useNavigate()
     const handleClick=()=>{
-        console.log("Full Result Object:", result);
-        console.log("Result ID:", result._id);
-        console.log("Result Type:", result)
+        
+        
+        
         if(onSelect)
         {
             onSelect(result)

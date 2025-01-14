@@ -5,7 +5,7 @@ import { ThumbsUp } from 'lucide-react'
 
 export const Like = ({
     postId,
-    initialLikes = 1,
+    initialLikes = 0,
     initiallyLiked = false,
     onLikeCountChange
 }: {

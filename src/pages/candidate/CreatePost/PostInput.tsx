@@ -3,7 +3,8 @@ import { getImageURL } from '../../../utils/ImageUtils'
 import { Image } from 'lucide-react'
 import { PostInputProps } from '../../../types/Candidate'
 
-export const PostInput:React.FC<PostInputProps>=({onClick,profilePicture}) => {
+export const PostInput:React.FC<PostInputProps>=({onClick,profilePicture,companyLogo}) => {
+  
   return (
       <div className="bg-gray-900 border border-gray-900 rounded-lg shadow p-4 mb-4">
             <div className='flex gap-4 cursor-pointer'onClick={onClick}>
@@ -11,6 +12,10 @@ export const PostInput:React.FC<PostInputProps>=({onClick,profilePicture}) => {
               {profilePicture ? (
                 <img src={getImageURL(profilePicture,'profile-pictures')}
                 alt='profile'
+                className='w-full h-full object-cover'/>
+              ):companyLogo ? (
+                <img src={getImageURL(companyLogo,'company-logos')}
+                alt='company logo'
                 className='w-full h-full object-cover'/>
               ):(
                 <div className='w-full h-full bg-gray-700 animate-pulse'/>

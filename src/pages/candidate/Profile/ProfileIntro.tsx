@@ -15,10 +15,10 @@ export const ProfileIntro:React.FC<ProfileHeaderProps>= ({user,isOwnProfile}) =>
               <div className="flex items-center gap-2">
                   <GraduationCap className="h-5 w-5 text-gray-400" />
                   <span>
-                      {education && education.length > 0
-                          ? education
-                              .join(', ')
-                          : 'No education details'}
+                      {education && education.degree
+                      ?`${education.degree} fromm ${education.institution} in ${education.year}`
+                      :"No education details!"
+                      }
                   </span>
 
               </div>
