@@ -141,7 +141,7 @@ const UserProfile = () => {
     }
   };
   const handleMessageClick=()=>{
-    navigate(`/messages/${userId}`);
+    navigate(`/messages/${userId}/${role}`);
 
   }
 

@@ -153,10 +153,29 @@ export const scheduleInterview=async(scheduleData:InterviewScheduleData,userId:s
         throw error
     }
 }
-export const fetchMessages=async()=>{
+export const getURL=async(url:string)=>{
     try {
-        const response=await api.get('/messages')
-        return response
+        const response=await api.post('/fetchurl',{url})
+        return response.data
+    } catch (error) {
+        axiosError(error,'getURL')
+        throw error
+    }
+}
+export const fetchUserMessages=async(id:string)=>{
+    try {
+        const response=await api.get(`/get-chat/${id}`)
+        console.log(response)
+        return response.data
+    } catch (error) {
+        axiosError(error,'fetchMessages')
+        throw error
+    }
+}
+export const sendMessage=async(messageData:any)=>{
+    try {
+        const response=await api.post(`/send-message/`,{messageData})
+        return response.data
     } catch (error) {
         axiosError(error,'fetchMessages')
         throw error

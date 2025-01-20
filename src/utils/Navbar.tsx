@@ -9,7 +9,7 @@ import SearchUtil from './Search/SearchUtil';
 
 export default function Navbar() {
     const navigate = useNavigate();
-    const location = useLocation(); // Access current route
+    const location = useLocation(); 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dispatch = useDispatch();
 

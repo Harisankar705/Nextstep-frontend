@@ -1,9 +1,11 @@
-import { Building2, FileText, Calendar, Home, MessageSquare, LogOut, Rss, BookmarkCheck } from "lucide-react"
+import { Building2, FileText, Calendar, Home, MessageSquare, LogOut, Rss, BookmarkCheck, Search } from "lucide-react"
 import { Logo } from "../../components/Logo"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { clearEmployer } from "../../redux/employerSlice"
 import { persistor } from "../../redux/store"
+import { useState } from "react"
+import SearchUtil from "../../utils/Search/SearchUtil"
 
 const navItems = [
     { name: "Dashboard", href: '/employerhome', icon: Home, badge: 0 },
@@ -16,6 +18,13 @@ const navItems = [
 ]
 
 const SideBar = () => {
+    const [isSearchModalOpen,setIsSearchModalOpen]=useState(false)
+    const handleSearchClick=()=>{
+        setIsSearchModalOpen(true)
+    }
+    const handleCloseSearch=()=>{
+        setIsSearchModalOpen(false)
+    }
     const dispatch=useDispatch()
     const navigate=useNavigate()
     const location = useLocation()
@@ -25,6 +34,18 @@ const SideBar = () => {
         navigate('/employerlogin')
 
     }
+    const handleResultSelect = (result: any) => {
+        switch (result.type) {
+            case 'user':
+                navigate(`/search-profile/${result._id}/user`);
+                break;
+            case 'company':
+                navigate(`/search-profile/${result._id}/employer`);
+                break;
+            // Add more cases as needed
+        }
+        setIsSearchModalOpen(false);
+    };
 
     return (
         <div className="w-64 bg-[#1E2235] text-white h-screen fixed left-0 flex flex-col">
@@ -32,6 +53,11 @@ const SideBar = () => {
                 <Logo width={150} height={40} className="cursor-pointer" />
             </div>
             <nav className='flex-1 p-4'>
+                <button onClick={handleSearchClick}
+                className={`flex items-center gap-3 px-4 py-2 rounded-lg mb-2 text-gray-400 hover:bg-[#0AA594] hover:text-white`}>
+                    <Search size={20}/>
+                    <span>Search</span>
+                </button>
                 {navItems.map((item) => (
                     <a
                         key={item.name}
@@ -55,6 +81,13 @@ const SideBar = () => {
                     </a>
                 ))}
             </nav>
+            {isSearchModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" onClick={()=>setIsSearchModalOpen(false)}>\
+                <div className="w-full max-w-md" onClick={(e)=>e.stopPropagation()}>
+                    <SearchUtil onResultSelect={handleResultSelect} placeholder="Search on nextstep" className="w-full"/>
+                </div>
+                </div>
+            )}
             <div className="p-4 border-t border-gray-700">
                 <button
                     className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-gray-400 hover:bg-[#0AA594] hover:text-white transition-colors"

@@ -227,9 +227,21 @@ export interface EmployerType {
   
 
 export interface Message{
-    _id:string,
-    text:string,
-    sent:boolean
+    _id?:string,
+    senderId?:string
+    content:string,
+    receiverId:string|undefined
+    sent?:boolean
+    timestamp?:any 
+    status?:string
+    file?:any
+}
+type MessageStatus='sent'|'delivered'|'seen'
+export interface MessageWithStatus extends Message
+{
+    status:MessageStatus,
+    seenAt?:string,
+    deliveredAt?:string
 }
 export interface SocketContextType
 {

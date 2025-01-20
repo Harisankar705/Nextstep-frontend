@@ -150,6 +150,7 @@
           navigate('/home')
         } catch (error) {
           toast.error("error occured in candidateDetails");
+          console.error("error occured in candidateDetails",error);
           return 
         }
     
