@@ -250,8 +250,11 @@ export interface SocketContextType
 
 export interface ChatHistoryItem {
   _id: string; 
-  contactName: string;
+  firstName: string;
   lastMessage: string;
   timeStamp: string;
+  companyName:string;
+  logo:string
+  profilePicture:string
 }
 export type Candidate=UserCandidate|Employer

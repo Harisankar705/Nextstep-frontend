@@ -1,9 +1,8 @@
-import { Bookmark, Image, MoreHorizontal, Users } from "lucide-react";
+import { Bookmark, MoreHorizontal, Users } from "lucide-react";
 import Navbar from "../../utils/Navbar";
 import { useState } from "react";
 import { CreatePost } from "./CreatePost/CreatePost";
 import { PostInput } from "./CreatePost/PostInput";
-import { getProfilePictureURL } from "../../utils/ImageUtils";
 import { useSelector } from "react-redux";
 import { UserCandidate } from "../../types/Candidate";
 
@@ -51,7 +50,7 @@ const Home = () => {
 
         <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
           <PostInput onClick={() => setShowCreatePost(true)} profilePicture={profilePicture}/>
-          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role='employer' />
+          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role='user ' />
 
 
 

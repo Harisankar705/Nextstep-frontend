@@ -6,13 +6,17 @@ import { useDispatch } from 'react-redux';
 import { clearUser } from '../redux/userSlice';
 import { persistor } from '../redux/store';
 import SearchUtil from './Search/SearchUtil';
+import { Notification } from '../pages/candidate/Notification';
 
 export default function Navbar() {
     const navigate = useNavigate();
     const location = useLocation(); 
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [isNotificationModalOpen,setisNotificationModalOpen]=useState(false)
     const dispatch = useDispatch();
-
+    const handleBellClick=()=>{
+        setisNotificationModalOpen(!isNotificationModalOpen)
+    }
     const handleAccountClick = () => {
         navigate('/candidate-profile');
     };
@@ -98,9 +102,13 @@ export default function Navbar() {
                     <button className="p-2 rounded-full hover:bg-gray-900 text-gray-400">
                         <LucideMessagesSquare className="h-5 w-5" onClick={handleMessageClick}/>
                     </button>
-                    <button className="p-2 rounded-full hover:bg-gray-900 text-gray-400">
+                    <button className="p-2 rounded-full hover:bg-gray-900 text-gray-400" onClick={handleBellClick}>
                         <Bell className="h-5 w-5" />
                     </button>
+                    {isNotificationModalOpen && (
+                        <Notification isOpen={isNotificationModalOpen} onClose={() => setisNotificationModalOpen(false)} />
+
+                    )}
                     <div className="relative">
                         <div 
                             className="h-9 w-9 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium" 
@@ -124,6 +132,7 @@ export default function Navbar() {
                             </div>
                         )}
                     </div>
+                  
                 </div>
             </div>
         </div>

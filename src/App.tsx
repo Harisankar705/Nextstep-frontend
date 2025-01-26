@@ -51,7 +51,6 @@ const App = () => {
           <Route path='/candidate-profile/:id/:role' element={<ProtectedRoute role='candidate'>{<UserProfile />}</ProtectedRoute>} />
           <Route path='/edit-profile' element={<ProtectedRoute role='candidate'>{<EditProfilee />}</ProtectedRoute>}/>
           <Route path='/saved' element={<ProtectedRoute role='candidate'>{<SavedPosts />}</ProtectedRoute>}/>
-          <Route path='/messages/:userId/:role' element={<ProtectedRoute role='candidate'>{<Chat />}</ProtectedRoute>}/>
           
           {/* //admin */}
           <Route path='/admin' element={<AdminLogin/>}/>
@@ -65,6 +64,7 @@ const App = () => {
           {/* employer */}
           <Route path='/employersignup' element={<EmployerSignup />} />
           <Route path='/search-profile/:id/:role' element={<SearchProfile/>} />
+          <Route path='/messages/:userId/:role' element={<Chat />}/>
 
                     <Route path='/employerlogin' element={<EmployerLogin />} />
           <Route path='/employerhome' element={<ProtectedRoute role='employer'><EmployerDashboard /></ProtectedRoute> }/>

@@ -181,3 +181,21 @@ export const sendMessage=async(messageData:any)=>{
         throw error
     }
 }
+export const getNotifications=async()=>{
+try {
+    const response=await api.get('/notifications')
+    return response.data
+} catch (error) {
+    axiosError(error,'getNotifications')
+    throw error
+}
+}
+export const markNotificationAsRead=async(notificationId:string)=>{
+    try {
+        const response=await api.post('/mark-as-read')
+        return response
+    } catch (error) {
+        axiosError(error,'markNotificationAsRead')
+        throw error
+    }
+}

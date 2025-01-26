@@ -38,11 +38,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [selectedBackground, setSelectedBackground] = useState("");
     const [searchLocation, setSearchLocation] = useState("");
-    const [locationResults, setLocationResults] = useState<LocationSuggestion[]>(
-        []
-
-    );
-
+    const [locationResults, setLocationResults] = useState<LocationSuggestion[]>([]);
     const [showPicker, setShowPickter] = useState(false)
     const [posting, setPosting] = useState(false);
     const [selectedEmoji, setSelectedEmoji] = useState('')

@@ -13,33 +13,52 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Create socket connection
     const newSocket = io('http://localhost:4000', {
       withCredentials: true,
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      autoConnect: false
     });
 
-    // Comprehensive connection handling
-    newSocket.on('connect', () => {
+    const handleConnect = () => {
       console.log('Socket connected successfully');
       setSocket(newSocket);
       setIsConnected(true);
-    });
+    };
 
-    newSocket.on('disconnect', (reason) => {
+    const handleDisconnect = (reason: string) => {
       console.log('Socket disconnected:', reason);
       setIsConnected(false);
-    });
+      
+      setTimeout(() => {
+        if (!newSocket.connected) {
+          newSocket.connect();
+        }
+      }, 1000);
+    };
 
-    newSocket.on('connect_error', (error) => {
+    const handleConnectError = (error: any) => {
       console.error('Socket connection error:', error);
       setIsConnected(false);
-    });
+      
+      setTimeout(() => {
+        newSocket.connect();
+      }, 1000);
+    };
+
+    newSocket.on('connect', handleConnect);
+    newSocket.on('disconnect', handleDisconnect);
+    newSocket.on('connect_error', handleConnectError);
+
+    newSocket.connect();
 
     return () => {
+      newSocket.off('connect', handleConnect);
+      newSocket.off('disconnect', handleDisconnect);
+      newSocket.off('connect_error', handleConnectError);
       newSocket.disconnect();
     };
   }, []);
@@ -51,8 +70,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-
-// Enhanced useSocket hook
 export const useSocket = () => {
   const context = useContext(SocketContext);
   
