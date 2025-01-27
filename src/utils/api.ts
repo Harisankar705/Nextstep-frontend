@@ -1,9 +1,7 @@
 import axios from 'axios'
-import { useDispatch } from 'react-redux';
 import { clearUser } from '../redux/userSlice';
 import { persistor } from '../redux/store';
 import {store} from '../redux/store'
-import { useNavigate } from 'react-router-dom';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -24,7 +22,7 @@ const IGNORE_ERROR_URLS=[
     '/refresh-token'
 ]
 api.interceptors.response.use(
-    (response:string) => response,
+    (response) => response,
     async (error:any) => {
 
         const originalRequest = error.config;

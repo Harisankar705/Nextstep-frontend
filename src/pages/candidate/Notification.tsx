@@ -4,7 +4,7 @@ import {
   getNotifications,
   markNotificationAsRead,
 } from "../../services/commonService";
-import { X } from "lucide-react";
+import { LoaderIcon, X } from "lucide-react";
 const socket = io("http://localhost:4000");
 interface Notification {
   _id: string;
@@ -23,18 +23,25 @@ export const Notification = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
+  const [loading,setLoading]=useState(true)
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnReadCount] = useState(0);
   useEffect(() => {
     const fetchNotification = async () => {
+      setLoading(true)
       try {
         const response: Notification[] = await getNotifications();
+        console.log('Notificationresponse',typeof response)
         setNotifications(response);
         setUnReadCount(response.filter((n) => !n.read).length);
       } catch (error) {
         console.error("error fetching notifications", error);
       }
+      finally{
+        setLoading(false)
+      }
     };
+    
     if (isOpen) {
       fetchNotification();
     }
@@ -72,9 +79,11 @@ export const Notification = ({
             <X className="w-5 h-5" />
           </button>
         </div>
-        {notifications.length === 0 ? (
-          <p className="text-gray-500">No notifications yet!</p>
-        ) : (
+        {loading ? (
+      <LoaderIcon className="w-4 h-4"/>
+    ):notifications.length===0 ? (
+      <p className="text-gray-500">No notification tes</p>
+    ): (
           <ul>
             {notifications.map((notification) => (
               <li

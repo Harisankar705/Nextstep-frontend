@@ -1,6 +1,5 @@
 import {
   Delete,
-  Image,
   Info,
   Maximize2,
   MessagesSquare,
@@ -11,9 +10,7 @@ import {
   Paperclip,
   Phone,
   PhoneOff,
-  PlusCircle,
   Send,
-  ThumbsUp,
   Video,
   VideoOff,
   X,
@@ -117,12 +114,10 @@ export const Chat = () => {
       }
     };
   
-    // Add robust event listeners
     socket.on('connect', handleConnect);
     socket.on('disconnect', connectSocket);
     socket.on('connect_error', connectSocket);
   
-    // Initial connection attempt
     connectSocket();
   
     // Cleanup

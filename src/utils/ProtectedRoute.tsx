@@ -21,7 +21,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   useEffect(() => {
     if (!isAuthenticated) {
       if (role === 'candidate') {
-        navigate('/login1')
+        navigate('/login')
       } else if (role === 'employer') {
         navigate('/employerlogin')
       }

@@ -120,9 +120,11 @@ export const candidateDetails = async (details: Record<string, any>): Promise<an
 export const login = async (email: string, password: string, role: role) => {
     try {
         const response = await api.post('/login', { email, password, role }, { withCredentials: true })
+        console.log('login response',response)
         if (response?.data) {
             return response.data
         }
+       
         
     } catch (error: any) {
         axiosError(error, 'login')

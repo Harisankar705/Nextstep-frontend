@@ -29,7 +29,6 @@ const Post:React.FC<PostComponentProps>=({ post,
     const [commentCount, setCommentCount] = useState(0)
     const [likeCount, setLikeCount] = useState(0)
     const [likedByUser, setLikedByUser] = useState(false)
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [isSaved,setIsSaved]=useState(false)
     const [isShareModalOpen,setIsShareModalOpen]=useState(false)
     
@@ -121,9 +120,9 @@ const Post:React.FC<PostComponentProps>=({ post,
     const currentUser = useSelector((state: any) => state.user);
     const finalProfilePicture = profilePicture
     ? role === 'employer'
-        ? getCompanyLogo(profilePicture)  // Use company logo for employers
-        : getProfilePictureURL(profilePicture)  // Use profilePicture if available
-    : getProfilePictureURL(currentUser?.profilePicture);  // Default to user's profile picture
+        ? getCompanyLogo(profilePicture)  
+        : getProfilePictureURL(profilePicture) 
+    : getProfilePictureURL(currentUser?.profilePicture);  
 
     
     const finalUserName = userName
@@ -197,6 +196,8 @@ const Post:React.FC<PostComponentProps>=({ post,
                     initialLikes={likeCount}
                     initiallyLiked={post.likedByUser}
                     onLikeCountChange={(newCount) => setLikeCount(newCount)}
+                    currentUser={currentUser}
+                    post={post}
                 />
 
                 <button
