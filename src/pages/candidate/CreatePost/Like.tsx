@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { likePost } from "../../../services/commonService"
 import toast from "react-hot-toast"
 import { ThumbsUp } from 'lucide-react'
 import { useSocket } from "../../../SocketContext"
@@ -28,18 +27,18 @@ export const Like = ({
         if (loading) return
         setLoading(true)
         try {
-            const response = await likePost(postId)
-            setIsLiked(response.data.isLiked)
-            const newLikeCount=response.data.isLiked?likeCount+1:likeCount-1
+            const newIsLiked=!isLiked
+            setIsLiked(newIsLiked)
+            const newLikeCount=newIsLiked?likeCount+1:likeCount-1
             setLikeCount(newLikeCount)
             onLikeCountChange?.(newLikeCount)
 
-            if(socket && !isLiked && currentUser && post)
+            if(socket  && currentUser && post)
             {
-                console.log('in newnotification')
-                socket.emit("newNotification",{
-                    recipient:post.userId,
-                    recipientModel:post.userRole==='employer'?"Employer":"User",
+                socket.emit("likePost",{
+                    userId:currentUser._id,
+                    postId:postId,
+                    recipientId:post.userId,
                     sender:currentUser._id,
                     type:"post_like",
                     content:`${currentUser.companyName || currentUser.firstName}liked your post`,

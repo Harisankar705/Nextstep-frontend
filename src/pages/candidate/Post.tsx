@@ -2,7 +2,7 @@
 import { useSelector } from "react-redux";
 import { PostType } from "../../types/Candidate";
 import { Bookmark, MapPin, MessageSquare, Share2, ThumbsUp, X } from 'lucide-react';
-import { getCompanyLogo, getImageURL, getPostImageURL, getProfilePictureURL } from "../../utils/ImageUtils";
+import { getCompanyLogo, getPostImageURL, getProfilePictureURL } from "../../utils/ImageUtils";
 import { useEffect, useState } from "react";
 import { getRelativeTime } from "../../utils/relativeTime";
 import { Like } from "./CreatePost/Like";
@@ -106,6 +106,7 @@ const Post:React.FC<PostComponentProps>=({ post,
         fetchCount()
 
     }, [post._id])
+    console.log('in post')
 
     const handleCommentCountchange = (newCount: number) => {
         setCommentCount(newCount)
@@ -237,6 +238,8 @@ const Post:React.FC<PostComponentProps>=({ post,
                         <div className="p-4 overflow-y-auto max-h-[calc(90vh-8rem)]">
                             <Comments postId={post._id}
                                 onCommentCountChange={handleCommentCountchange}
+                                currentUser={currentUser}
+                    post={post}
                             />
                         </div>
                     </div>

@@ -71,6 +71,12 @@ export interface LocationSuggestion{
     id:number,
 
 }
+export interface User{
+    _id:string,
+    firstName:string,
+    secondName:string,
+    profilePicture:string
+}
 export interface PostType
 {
     _id:string,
@@ -94,7 +100,9 @@ export interface PostType
     isLiked?:boolean
     likedByUser?:boolean
     saved?:boolean,
-    userId:string
+    userId:User
+    userType?: string; 
+
 }
 export interface LocationState{
     isLoading:boolean,
@@ -166,13 +174,16 @@ export interface Comment {
     _id: string,
     postId:string,
     comment: string,
+    
     likes:string[],
     createdAt:Date,
     replies?:Comment[]
-    userId: {
+    commentor: {
         profilePicture:string,
         firstName:string,
+        companyName?:string
         secondName:string
+        logo?:string
     }
 }
 export interface Like{

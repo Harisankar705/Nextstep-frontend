@@ -79,8 +79,9 @@ export const commentPost = async (postId: string, comment:string)=>{
 export const getComments=async(postId:string)=>{
     try {
         const response=await api.get('/getComments',{params:{postId}})
+        console.log('response',response)
         
-        return response.data
+        return response
     } catch (error) {
         axiosError(error, 'commentpost')
         throw error  
@@ -189,6 +190,16 @@ try {
     axiosError(error,'getNotifications')
     throw error
 }
+}
+export const getPostById=async(postId:string)=>{
+    try {
+        const response=await api.get('/get-post-byid',{params:postId})
+        return response.data
+
+    } catch (error) {
+        axiosError(error,'getPostbyId')
+        throw error
+    }
 }
 export const markNotificationAsRead=async(notificationId:string)=>{
     try {

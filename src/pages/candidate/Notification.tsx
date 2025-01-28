@@ -5,6 +5,7 @@ import {
   markNotificationAsRead,
 } from "../../services/commonService";
 import { LoaderIcon, X } from "lucide-react";
+import { getCompanyLogo, getProfilePictureURL } from "../../utils/ImageUtils";
 const socket = io("http://localhost:4000");
 interface Notification {
   _id: string;
@@ -13,15 +14,24 @@ interface Notification {
     firstName?: string;
     secondName?: string;
     companyName?: string;
+    logo?:string,
+    profilePicture?:string
+
   };
+  senderModel:"User"|"Employer",
+  link?:string,
   content: string;
 }
 export const Notification = ({
   isOpen,
   onClose,
+  onOpenPost,
+  notification
 }: {
   isOpen: boolean;
   onClose: () => void;
+  onOpenPost?:(postId:string)=>void
+  notification?:any
 }) => {
   const [loading,setLoading]=useState(true)
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -31,8 +41,10 @@ export const Notification = ({
       setLoading(true)
       try {
         const response: Notification[] = await getNotifications();
-        console.log('Notificationresponse',typeof response)
+        console.log('Notificationresponse',response)
         setNotifications(response);
+
+        
         setUnReadCount(response.filter((n) => !n.read).length);
       } catch (error) {
         console.error("error fetching notifications", error);
@@ -52,8 +64,9 @@ export const Notification = ({
     return () => {
       socket.off("newNotification");
     };
+    
   }, [isOpen]);
-  const handleNotificationClick = async (notificationId: string) => {
+  const handleNotificationClick = async (notificationId: string,link?:string) => {
     try {
       await markNotificationAsRead(notificationId);
       setNotifications(
@@ -62,6 +75,8 @@ export const Notification = ({
         )
       );
       setUnReadCount((prevCount) => prevCount - 1);
+      const postId=notification.link.split('/').pop()
+      onOpenPost(postId)
     } catch (error) {
       console.error("Error marking notification as read", error);
     }
@@ -69,7 +84,7 @@ export const Notification = ({
   if (!isOpen) return null;
   return (
     <div className="fixed top-16 right-4 z-50">
-      <div className="bg-white p-6  rounded-lg shadow-lg w-96 max-h-[400px] overflow-y-auto">
+      <div className="bg-black p-6  rounded-lg shadow-lg w-96 max-h-[400px] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Notifications</h2>
           <button
@@ -89,13 +104,26 @@ export const Notification = ({
               <li
                 key={notification._id}
                 onClick={() => handleNotificationClick(notification._id)}
-                className={`cursor-pointer px-4 py-2 hover:bg-gray-100 rounded-md mb-2  ${
-                  !notification.read && "font-semibold bg-gray-100"
+                className={`cursor-pointer px-4 py-2 hover:bg-gray-900 rounded-md mb-2  ${
+                  !notification.read && "font-semibold bg-gray-500"
                 }`}
               >
-                {notification.content}-{" "}
-                {notification.sender.firstName ||
-                  notification.sender.companyName}
+              <div className="flex items-center">
+                {notification.senderModel==='Employer'? (
+                  <img src={getCompanyLogo(notification.sender.logo)}
+                  className="w-8 h-8 rounded-full mr-2"/>
+                ):(
+                  <img src={getProfilePictureURL(notification.sender.profilePicture)}
+                  className="w-8 h-8 rounded-full mr-2"/>
+                )}
+                <div>
+                  <p className="font-semibold">
+                    {notification.senderModel==='Employer'? notification.sender.companyName :notification.sender.firstName}
+                  </p>
+                  <p>{notification.content}</p>
+                </div>
+              </div>
+                
               </li>
             ))}
           </ul>

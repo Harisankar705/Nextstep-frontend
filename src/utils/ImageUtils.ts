@@ -21,8 +21,8 @@ export const getImageURL = (
     }
 };
 
-// Optional: Add specific helpers for different image types
 export const getProfilePictureURL = (profilePicture: string | undefined): string => {
+    console.log('profilepicture',profilePicture)
     return getImageURL(profilePicture, 'profile-pictures', '/default-profile.png');
 };
 
@@ -34,6 +34,7 @@ export const getCompanyDocumentURL = (document: string | undefined): string => {
     return getImageURL(document, 'company-documents', '/default-document.png');
 };
 export const getCompanyLogo = (logo: string | undefined): string => {
+    console.log('logo',logo)
     return getImageURL(logo, 'company-logos', '/default-document.png');
 };
 export const getResumeFileURL = (resumePath: string | undefined): string => {

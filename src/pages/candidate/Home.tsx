@@ -1,11 +1,13 @@
 import { Bookmark, MoreHorizontal, Users } from "lucide-react";
 import Navbar from "../../utils/Navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CreatePost } from "./CreatePost/CreatePost";
 import { PostInput } from "./CreatePost/PostInput";
 import { useSelector } from "react-redux";
-import { UserCandidate } from "../../types/Candidate";
-
+import { PostType, UserCandidate } from "../../types/Candidate";
+import toast from "react-hot-toast";
+import Post from "./Post";
+import { fetchUserPosts } from "../../services/authService";
 const Skelton = ({ className = "" }: { className?: string }) => (
   <div
     className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded ${className}`}
@@ -26,19 +28,29 @@ const LeftSideBar = ({
     <span className="text-sm font-medium">{children}</span>
   </a>
 );
-
-
-
 const Home = () => {
   const [showCreatePost, setShowCreatePost] = useState(false)
   const currentUser=useSelector((state:{user:UserCandidate})=>state.user)
+  const [posts,setPosts]=useState<PostType[]>([])
   const profilePicture=currentUser.profilePicture
+  useEffect(()=>{
+    const fetchPosts=async()=>{
+      try {
+        const response=await fetchUserPosts()
+        console.log('response',response)
+        setPosts(response.posts)
 
+      } catch (error) {
+        toast.error("Failed to get posts")
+      }
+    }
+    fetchPosts()
+  },[])
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-black text-white">
       <Navbar />
       <div className="flex">
-        <div className="w-full sm:w-[360px] fixed left-0  top-16  h-[calc(100vh-64px)] p-4 overflow-y-auto bg-gray-100 z-0">
+        <div className="w-full sm:w-[360px] fixed left-0  top-16  h-[calc(100vh-64px)] p-4 overflow-y-auto bg-black z-0">
           <div className="space-y-2">
             <div className="items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-full overflow-hidden"></div>
@@ -47,40 +59,27 @@ const Home = () => {
             <LeftSideBar icon={Bookmark}>Saved</LeftSideBar>
           </div>
         </div>
-
         <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
           <PostInput onClick={() => setShowCreatePost(true)} profilePicture={profilePicture}/>
-          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role='user ' />
+          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} />
+            {posts.length>0 ?posts.map((post)=>(
+              <Post key={post._id}
+            post={post}
+            profilePicture={post.userId.profilePicture}
+            userName={`${post?.userId.firstName} ${post.userId.secondName}`}
+            
+            role={post.userType}
+            />
+            )):(
+              <div className="text-center text-gray-500">No posts available!</div>
+            )}
+            
 
-
-
-
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-lg shadow p-4 mb-4">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 rounded-full overflow-hidden">
-                  <Skelton className="w-full h-full" />
-                </div>
-                <div className="flex-1">
-                  <Skelton className="h-4 w-32 mb-2" />
-                  <Skelton className="h-3 w-24" />
-                </div>
-                <button className="text-gray-500">
-                  <MoreHorizontal className="h-6 w-6" />
-                </button>
-              </div>
-              <Skelton className="w-full h-full" />
-              <div className="flex gap-2">
-                <Skelton className="h-8 w-20" />
-                <Skelton className="h-8 w-20" />
-                <Skelton className="h-8 w-20" />
-              </div>
-            </div>
-          ))}
+            
+          
         </main>
       </div>
     </div>
   );
 };
-
 export default Home;

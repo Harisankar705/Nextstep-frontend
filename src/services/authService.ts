@@ -52,6 +52,17 @@ export const getUserPosts=async(userId?:string)=>{
     }
     
 }
+export const fetchUserPosts=async()=>{
+    try {
+        const response = await api.get('/getpost')
+        
+        return response.data 
+    } catch (error) {
+        axiosError(error,'getUserPosts')
+        throw error
+    }
+    
+}
 export const createPost=async(formData:FormData,role:role)=>{
     try {
         
