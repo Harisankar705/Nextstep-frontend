@@ -1,18 +1,6 @@
 import { Heart, Laptop, Waves, X, LucideProps } from "lucide-react"
 import { Benefit, IconType } from "../../../types/Employer"
-
-
-
-
-interface PerksAndBenefitsProps {
-    formData: {
-        benefits: Benefit[]
-    }
-    updateFormData: (data: { benefits: Benefit[] }) => void
-    onNext: () => void
-    onSubmit:()=>void
-}
-
+import { PerksAndBenefitsProps } from "../../../types/Candidate"
 const defaultBenefits: Benefit[] = [
     {
         id: '1',
@@ -33,30 +21,25 @@ const defaultBenefits: Benefit[] = [
         description: "We believe in thriving communities and that starts with our team being happy and healthy!"
     }
 ]
-
 const IconMap: Record<IconType, React.ComponentType<LucideProps>> = {
     heart: Heart,
     waves: Waves,
     laptop: Laptop
 }
-
 export const PerksAndBenefits = ({ formData, updateFormData, onNext,onSubmit }: PerksAndBenefitsProps) => {
     const addBenefit = (benefit: Benefit) => {
         updateFormData({
             benefits: [...formData.benefits, benefit]
         })
     }
-
     const removeBenefit = (id: string) => {
         updateFormData({
             benefits: formData.benefits.filter((benefit: Benefit) => benefit.id !== id)
         })
     }
-
     const BenefitCard = ({ benefit }: { benefit: Benefit }) => {
         const Icon = IconMap[benefit.icon]
         const isSelected = formData.benefits.some(b => b.id === benefit.id)
-
         return (
             <div
                 className={`relative p-4 ${isSelected ? 'bg-gray-900/50' : "bg-gray-800/30"} rounded-lg border border-gray-800 transition-colors`}
@@ -86,7 +69,6 @@ export const PerksAndBenefits = ({ formData, updateFormData, onNext,onSubmit }: 
             </div>
         )
     }
-
     return (
         <div className="space-y-8">
             <div>
@@ -98,7 +80,6 @@ export const PerksAndBenefits = ({ formData, updateFormData, onNext,onSubmit }: 
                     {defaultBenefits.map((benefit) => (
                         <BenefitCard key={benefit.id} benefit={benefit} />
                     ))}
-                    
                 </div>
             </div>
             <div className="flex justify-end">
@@ -112,5 +93,4 @@ export const PerksAndBenefits = ({ formData, updateFormData, onNext,onSubmit }: 
         </div>
     )
 }
-
 export default PerksAndBenefits

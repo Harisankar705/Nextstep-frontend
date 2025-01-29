@@ -21,7 +21,7 @@ const LeftSideBar = ({
   children: React.ReactNode;
 }) => (
   <a
-    href="#"
+    href="/saved"
     className="flex items-center gap-3 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
   >
     <Icon className="h-6 w-6" />
@@ -56,12 +56,12 @@ const Home = () => {
               <div className="w-10 h-10 rounded-full overflow-hidden"></div>
             </div>
             <LeftSideBar icon={Users}>Friends</LeftSideBar>
-            <LeftSideBar icon={Bookmark}>Saved</LeftSideBar>
+            <LeftSideBar  icon={Bookmark}>Saved</LeftSideBar>
           </div>
         </div>
         <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
           <PostInput onClick={() => setShowCreatePost(true)} profilePicture={profilePicture}/>
-          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} />
+          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role="user"/>
             {posts.length>0 ?posts.map((post)=>(
               <Post key={post._id}
             post={post}

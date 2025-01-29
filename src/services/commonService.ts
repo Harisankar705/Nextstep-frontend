@@ -87,6 +87,24 @@ export const getComments=async(postId:string)=>{
         throw error  
     }
 }
+export const stripePayment=async(amount:number)=>{
+    try {
+        const response=await api.post('/create-payment',{amount})
+        return response.data
+    } catch (error) {
+        axiosError(error,'stripepayment')
+        throw error
+    }
+}
+export const changeToPremium=async(userId:string)=>{
+    try {
+        const respnse=await api.put('/changetopremium',{userId})
+        return respnse
+    } catch (error) {
+        axiosError(error,'changeToPremium')
+        throw error
+    }
+}
 export const sharePost=async(postId:string)=>{
     try {
         const response=await api.post('/sharepost',{postId})

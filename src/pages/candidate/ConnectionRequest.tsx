@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { UserCandidate } from "../../types/Candidate"
+import { Requests, UserCandidate } from "../../types/Candidate"
 import Navbar from "../../utils/Navbar"
 import { getProfilePictureURL } from "../../utils/ImageUtils"
 import { UserCheck, UserPlus } from "lucide-react"
@@ -7,13 +7,7 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { followBack, getConnections, getPendingRequests, toggleFollow } from "../../services/commonService"
 import { useNavigate } from "react-router-dom"
-interface Requests {
-    _id: string,
-    followerId: UserCandidate,
-    followingId: UserCandidate,
-    status: string,
 
-}
 export const ConnectionRequest = () => {
     const navigate =useNavigate()
     const [requests, setRequests] = useState<Requests[]>([])
@@ -93,7 +87,6 @@ export const ConnectionRequest = () => {
                     </h2>
 
                     {activeTab === 'requests' ? (
-                        // Requests List
                         requests.length === 0 ? (
                             <p className="text-center text-gray-400">No pending requests</p>
                         ) : (

@@ -2,16 +2,9 @@ import { useEffect, useState } from "react";
 import { useSocket } from "../../../SocketContext";
 import toast from "react-hot-toast";
 import { PlusCircle, Search, X } from "lucide-react";
-import { ChatHistoryItem } from "../../../types/Candidate";
+import { ChatHistoryItem, SideBarProps } from "../../../types/Candidate";
 import { debounce, filter } from "lodash";
 import { getCompanyLogo, getProfilePictureURL } from "../../../utils/ImageUtils";
-
-interface SideBarProps {
-  chatHistory: ChatHistoryItem[]; 
-  onSelectedChat?:(chat:ChatHistoryItem)=>void
-  role:'user'|'employer'
-}
-
 export const SideBar: React.FC<SideBarProps> = ({ chatHistory = [],onSelectedChat,role }) => {
   const [loading, setLoading] = useState(false);
   const [searchQuery,setSearchQuery]=useState<string>('')
@@ -24,14 +17,12 @@ export const SideBar: React.FC<SideBarProps> = ({ chatHistory = [],onSelectedCha
     else{
         const filtered=chatHistory.filter((chat)=>
         (role==='user'?chat.firstName:chat.companyName).toLowerCase().includes(query.toLowerCase())
-        
 )
 setFilteredChats(filtered)
     }
   },300)
 useEffect(()=>{
     debouncedFilterChats(searchQuery)
-
 },[searchQuery,chatHistory])
 const sortedChats=filteredChats.sort((a,b)=>new Date(b.timeStamp).getTime()-new Date(a.timeStamp).getTime())
 const getImageUrl=(chat:ChatHistoryItem)=>{
@@ -86,11 +77,9 @@ const getImageUrl=(chat:ChatHistoryItem)=>{
               {role==='user'?chat.firstName:chat.companyName}
               </span>
               </div>
-
           ))}
         </div>
       </div>
-     
       <div className="space-y-2">
         <h2 className="text-sm font-semibold text-gray-400 mb-2">All Chats</h2>
         {loading ?(
@@ -113,7 +102,6 @@ const getImageUrl=(chat:ChatHistoryItem)=>{
                 className="p-3 bg-[#2E2E2E] rounded-lg hover:bg-[#3E3E3E] transition-colors cursor-pointer flex items-center space-x-3"
                 onClick={()=>onSelectedChat && onSelectedChat(chat)}
                 >
-               
                   <div className="w-10 h-10 rounded-full" >
                     <img src={getProfilePictureURL(chat.profilePicture)}
                     alt={chat.profilePicture}

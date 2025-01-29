@@ -46,12 +46,23 @@ export const fetchUserJobs = async (params?: Record<string, any>): Promise<JobTy
         throw errorDetails 
     }
 }
+export const isVerified=async()=>{
+    try {
+        const response=await api.get('/isverified')
+        return response
+    } catch (error) {
+        const errorDetails=axiosError(error,'isVerified')
+        throw errorDetails
+    }
+}
 export const applyJob=async(jobId:string)=>{
     try {
         const response=await api.post('/apply-job',{jobId})
+        console.log('response')
         return response
     } catch (error) {
         const errorDetails=axiosError(error,'applyjob')
+        console.log('errordetails',errorDetails)
         throw errorDetails
     }
 }

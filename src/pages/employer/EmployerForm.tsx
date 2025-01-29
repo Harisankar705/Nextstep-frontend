@@ -2,33 +2,10 @@ import { useFormik } from "formik";
 import { useEffect, useRef, useState } from "react";
 import * as Yup from 'yup'
 import { fetchLocationSuggestions } from "../../utils/LanguageAndLocation";
-import { LocationSuggestion } from "../../types/Candidate";
+import { CompanyFormProps, LocationSuggestion } from "../../types/Candidate";
 import { toast } from "react-hot-toast";
-
-interface CompanyFormProps {
-  initialData?: {
-    companyName: string;
-    website: string,
-    location: string,
-    employees: string,
-    industry: string,
-    description: string;
-    logo: string | null,
-    dateFounded: string | null,
-
-    documentType: string,
-    documentNumber: string,
-    companyDocuments: {
-      fileUrl: string
-    } | null
-  }
-  onSubmit: (formData: FormData) => Promise<void>
-  buttonText?: string
-  isEdit?:boolean
-}
 const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   const [logo, setLogo] = useState<string | null>("");
-
   const [locationInput, setLocationInput] = useState('')
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([])
   const [documentName,setDocumentName]=useState('')
@@ -43,16 +20,12 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       reader.readAsDataURL(file);
     }
   };
-
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const formatDate = (dateString: string | Date | null | undefined) => {
     if (!dateString) return '';
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
     return date.toISOString().split("T")[0];
   };
-
-
-
   const formik = useFormik({
     initialValues: {
       companyName: initialData?.companyName || '',
@@ -66,8 +39,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       documentType: initialData?.documentType || '',
       documentNumber: initialData?.documentNumber || '',
       companyDocuments: initialData?.companyDocuments || null
-
-
     },
     validationSchema: Yup.object({
       logo: Yup.mixed()
@@ -120,7 +91,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
         .max(500, "Maximum 500 characters allowed")
         .required("Description is required"),
     }),
-
     onSubmit: async (value) => {
       const formData = new FormData()
       if (logo) {
@@ -128,7 +98,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       }
       if (value.companyDocuments instanceof File) {
         formData.append('document', value.companyDocuments)
-        
         formData.append('documentType', value.documentType)
         formData.append('documentNumber', value.documentNumber)
       }
@@ -139,21 +108,16 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       formData.append('industry', value.industry);
       formData.append('dateFounded', value.dateFounded);
       formData.append('description', value.description);
-      
       for (let pair of formData.entries()) {
-        
       }
-
       try {
         const response = await onSubmit(formData)
         toast.success("Company details submitted!")
         formik.resetForm()
         return response
-
       } catch (error) {
         toast.error("error occured while submitting employerDetails")
       }
-
     }
   })
   useEffect(() => {
@@ -191,11 +155,8 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
     setLocationInput(location)
     setLocationSuggestions([])
   }
-
-
   return (
     <form className="min-h-screen bg-[#0A0A0A] text-white p-6" onSubmit={formik.handleSubmit}>
-
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold">About company</h1>
@@ -254,10 +215,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                   className="hidden"
                   onChange={handleLogoUpload}
                   accept="image/*"
-
-
                 />
-
               </label>
               {formik.touched.logo && formik.errors.logo && (
                 <p className='text-red-500 text-sm'>{formik.errors.logo}</p>
@@ -280,7 +238,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                 {formik.touched.companyName && formik.errors.companyName && (
                   <span className="text-red-500 text-sm">{formik.errors.companyName}</span>
                 )}
-
               </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-2">
@@ -289,7 +246,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                 <input
                   type="string"
                   required
-
                   {...formik.getFieldProps('website')}
                   className="w-full bg-[#1A1A1A] border border-gray-800 rounded-lg px-4 py-2 focus:outline-none focus:border-[#0DD3B4]"
                 />
@@ -305,7 +261,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                   type="text"
                   id='location'
                   required
-
                   {...formik.getFieldProps('location')}
                   onChange={(e) => {
                     formik.handleChange(e);
@@ -330,14 +285,12 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                   </ul>
                 )}
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-400">
                     Employees
                   </label>
                   <select
-
                     {...formik.getFieldProps('employees')}
                     className="w-full bg-[#1A1A1A] border border-gray-800 rounded-lg px-4 py-2 focus:outline-none focus:border-[#0DD3B4]"
                   >
@@ -346,7 +299,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                     <option value='20-50'>20-50</option>
                     <option value='50-100'>50-100</option>
                     <option value='100+'>100+</option>
-
                   </select>
                   {formik.touched.employees && formik.errors.employees && (
                     <span className="text-red-500 text-sm">{formik.errors.employees}</span>
@@ -359,7 +311,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                   <input
                     type="text"
                     required
-
                     {...formik.getFieldProps('industry')}
                     className="w-full bg-[#1A1A1A] border border-gray-800 rounded-lg px-4 py-2 focus:outline-none focus:border-[#0DD3B4]"
                   />
@@ -376,19 +327,13 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                   <input
                     type="date"
                     required
-
-
                     {...formik.getFieldProps('dateFounded')}
-
-
                     className="w-full bg-[#1A1A1A] border border-gray-800 rounded-lg px-4 py-2 focus:outline-none focus:border-[#0DD3B4]"
                   />
                   {formik.touched.dateFounded && formik.errors.dateFounded && (
                     <span className="text-red-500 text-sm">{formik.errors.dateFounded}</span>
                   )}
-
                 </div>
-
               </div>
               {isEdit && (
                 <section>
@@ -420,7 +365,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                         </label>
                         <input type='text' {...formik.getFieldProps('documentNumber')}
                           className="w-full bg-[#1A1A1A] border border-gray-800 rounded-lg px-4 py-2 focus:outline-none foucs:border-[#0DD3B4]" />
-
                         {formik.touched.documentNumber && formik.errors.documentNumber && (
                           <span className="text-red-500 text-sm">{formik.errors.documentNumber}</span>
                         )}
@@ -446,7 +390,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                             <>
                               <span className="text-[#0DD3B4]">Selected file</span>
                               <span className="text-[#0DD3B4]">{documentName}</span>
-
                             </>
                           ) : (
                             <>
@@ -456,10 +399,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                               </span>
                             </>
                           )}
-
-
-
-
                         </div>
                         <input
                           type="file"
@@ -473,10 +412,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                             }
                           }}
                           accept=".pdf,.jpg,.jpeg,.png"
-
-
                         />
-
                       </label>
                       {formik.touched.companyDocuments && formik.errors.companyDocuments && (
                         <span className="text-red-500 text-sm">{formik.errors.companyDocuments}</span>
@@ -485,8 +421,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                   </div>
                 </section>
               )}
-             
-
             </div>
           </section>
           <section>
@@ -518,7 +452,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                       />
                     </svg>
                   </button>
-
                   <button className="p-2 text-gray-400 hover:text-white">
                     <svg
                       className="w-4 h-4"
@@ -552,4 +485,3 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   );
 };
 export default EmployerForm;
-

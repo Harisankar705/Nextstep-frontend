@@ -12,8 +12,6 @@ import { fetchLocationSuggestions } from "../../../utils/LanguageAndLocation";
 import { CreatePostProps, LocationState, LocationSuggestion } from "../../../types/Candidate";
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
-
-
 import Spinner from "../../../utils/Spinner";
 import toast from "react-hot-toast";
 import { debounce } from "lodash";
@@ -52,7 +50,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
         error: null,
         results: []
     })
-   
     const checkRateLimit=useRateLimit()
     const handleFileInput = async(e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -80,7 +77,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                 return
             }
             setSelectedImages((prev) => [...prev, ...validFiles]);
-
             const imageUrls = validFiles.map((file) => URL.createObjectURL(file));
             const newLoadingStates = validFiles.reduce((acc, _, index) => {
                 const newIndex = selectedImages.length + index
@@ -90,10 +86,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                 ...prev,
                 ...newLoadingStates
             }))
-            const newErrorStates = filesArray.reduce((acc, _, index) => {
-                const newIndex = selectedImages.length + index
-                return { ...acc, [newIndex]: false }
-            })
             setSelectedImagePreviews((prev) => [...prev, ...imageUrls])
             setShowModal(false);
         }
@@ -106,7 +98,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
     const showUploadModal = () => {
         setShowModal(true);
     };
-   
     const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const query = event.target.value.trim();
         setSearchLocation(query)
@@ -115,7 +106,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
     const handleRetry = () => {
         debouncedSearchLocations(searchLocation)
     }
-
     const handlePost = async () => {
         try {
             if(!checkRateLimit())return
@@ -130,50 +120,35 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                 toast.error("Post text is too lengthy!")
                 return
             }
-
-       
             if (!sanitizedText.trim()) {
             toast.error("Post text cannot be empty!")
             return
             }
-        
-        
-        
             const formData = new FormData()
             setPosting(true)
             formData.append('text', sanitizedText)
             formData.append('background', selectedBackground)
             formData.append('role', role);
-
             if (selectedLocation) {
                 formData.append('location', selectedLocation)
             }
             selectedImages.forEach((file) => {
                 formData.append('postImage', file)
             })
-            for (let pair of formData.entries()) {
-                
-            }
-                
-                const response = await createPost(formData, role)
-                
+                const response = await createPost(formData)
                 if (response.status === 201) {
-
                     toast.success("Posted successfully!")
                     selectedImagePreview.forEach(url => URL.revokeObjectURL(url))
                     resetStates()
-                    
                     onClose()
                 }
             }
             catch (error) {
                 toast.error("Error occured while posting")
-                
             }
             finally {
                 setPosting(false)
             }
-
         }
         const resetStates=()=>{
             setPostText('')
@@ -193,10 +168,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                 results: []
             })
         }
-
-    
-
-    
     const debouncedSearchLocations = useMemo(
         () =>
             debounce(async (query: string) => {
@@ -226,24 +197,15 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                         error: "Failed to fetch locations,Please try again!"
                     }))
                 }
-
             }, 300),
         []
     );
     useEffect(()=>{
-       
         return ()=>{
             selectedImagePreview.forEach(url=>URL.revokeObjectURL(url))
             debouncedSearchLocations.cancel()
         }
     },[debouncedSearchLocations,selectedImagePreview])
-
-    
-    
-  
-
-
-
     const removeImage = (index: number) => {
         setSelectedImages((prev) => {
             const newFiles = prev.filter((_, i) => i !== index)
@@ -265,8 +227,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
             return newStates
         })
     };
-
-
         return (
             <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
                 <div className="bg-gray-900 max-w-2xl p-6 rounded-lg shadow-lg border border-gray-800 text-white">
@@ -279,7 +239,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                             <X className="w-6 h-6 text-gray-400" />
                         </button>
                     </div>
-
                     <button className="flex items-center gap-1 px-3 py-1 bg-gray-800 rounded-full text-sm text-gray-300">
                         {selectedLocation && (
                             <span>
@@ -288,7 +247,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                             </span>
                         )}
                     </button>
-
                     <div className={`mb-4 p-4 rounded-lg ${selectedBackground || "bg-gray-800"}`}>
                         <textarea
                             placeholder="What's on your mind?"
@@ -297,7 +255,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                             className={`w-full min-h-[120px] bg-transparent resize-none outline-none placeholder-gray-500 ${selectedBackground ? "text-white" : "text-gray-200"
                                 }`}
                         />
-
                         {selectedImagePreview.length > 0 && (
                             <div className="grid grid-cols-2 gap-2 mb-4">
                                 {selectedImagePreview.map((image, index) => (
@@ -340,7 +297,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                                 ))}
                             </div>
                         )}
-
                         <div className="mb-4 overflow-x-auto">
                             <div className="flex gap-2 pb-2">
                                 {backGrounds.map((bg, index) => (
@@ -355,7 +311,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                                 ))}
                             </div>
                         </div>
-
                         <div className="border border-gray-700 rounded-lg p-3 mb-4">
                             <h4 className="text-sm font-medium text-gray-400 mb-2">
                                 Add to your post
@@ -375,7 +330,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                                 </button>
                             </div>
                         </div>
-
                         <button
                             onClick={handlePost}
                             disabled={!postText.trim() || posting}
@@ -388,7 +342,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                         </button>
                     </div>
                 </div>
-
                 {/* Modals */}
                 {showModal && (
                     <ImageUploadModal
@@ -425,4 +378,3 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
             </div>
         );
     };
-

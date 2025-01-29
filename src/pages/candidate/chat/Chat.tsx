@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSocket } from "../../../SocketContext";
-import { Message, MessageWithStatus } from "../../../types/Candidate";
+import { Message, SelectedFileType, VideoCallAnswerData } from "../../../types/Candidate";
 import { SideBar } from "./SideBar";
 import toast from "react-hot-toast";
 import {
@@ -30,13 +30,6 @@ import {
   getCompanyLogo,
   getProfilePictureURL,
 } from "../../../utils/ImageUtils";
-interface SelectedFileType {
-  file: File;
-  preview: string;
-  data: string;
-  name: string;
-  type: string;
-}
 export const Chat = () => {
   const { userId, role } = useParams();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -46,7 +39,6 @@ export const Chat = () => {
   const [caller, setCaller] = useState<any>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const [isStreamSet, setIsStreamSet] = useState(false);
-
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const { socket, isConnected } = useSocket();
@@ -68,7 +60,6 @@ export const Chat = () => {
   const [selectedFile, setSelectedFile] = useState<SelectedFileType | null>(
     null
   );
-  const [sentFileOpen, setSentFileOpen] = useState(false);
   const formatDuration=(seconds:number)=>{
     const mins=Math.floor(seconds/60)
     const secs=seconds%60
@@ -98,13 +89,11 @@ export const Chat = () => {
   }
   useEffect(() => {
     if (!socket) return;
-  
     const connectSocket = () => {
       if (!isConnected) {
         socket.connect();
       }
     };
-  
     const handleConnect = () => {
       if (userId) {
         socket.emit('join', userId);
@@ -113,13 +102,10 @@ export const Chat = () => {
         }
       }
     };
-  
     socket.on('connect', handleConnect);
     socket.on('disconnect', connectSocket);
     socket.on('connect_error', connectSocket);
-  
     connectSocket();
-  
     // Cleanup
     return () => {
       socket.off('connect', handleConnect);
@@ -163,7 +149,6 @@ export const Chat = () => {
   }, []);
   useEffect(() => {
     const videoElement = localVideoRef.current;
-    
     if (videoElement && localStream) {
       videoElement.srcObject = localStream;
       setIsStreamSet(true);
@@ -192,7 +177,6 @@ export const Chat = () => {
         }
       }
     }, [localStream]);
-  
     useEffect(() => {
       if (remoteVideoRef.current && remoteStream) {
         try {
@@ -210,7 +194,6 @@ export const Chat = () => {
     if (!localStream) {
       return <div>Loading video...</div>;
     }
-
       return (
         <div ref={videoContainerRef} className="fixed inset-0 z-50 bg-black">
           {remoteStream ? (
@@ -225,13 +208,11 @@ export const Chat = () => {
           Waiting for remote video...
         </div>
           )}
-      
       <div className="absolute bottom-24 right-4 w-48 h-36 rounded-lg overflow-hidden shadow-lg">
         <video
           ref={localVideoRef}
           autoPlay
           playsInline
-          
           className="w-48 h-36 rounded-lg object-cover"
         />
       </div>
@@ -317,13 +298,9 @@ export const Chat = () => {
       </div>
     </div>
       )
-    
 }
-
-  
   useEffect(() => {
     if (!socket) return;
-
     const handleVideoCallOffer = (data: {
       senderId: string;
       receiverId: string;
@@ -334,11 +311,9 @@ export const Chat = () => {
         console.warn("Video call not intended for this user");
         return;
       }
-
       setCaller(data);
       setIsReceivingCall(true);
     };
-
     socket.on("videoCallOffer", handleVideoCallOffer);
     return () => {
       socket.off("videoCallOffer", handleVideoCallOffer);
@@ -358,7 +333,6 @@ export const Chat = () => {
         })
         console.log('Local Stream Created:', stream);
     console.log('Video Tracks:', stream.getVideoTracks());
-
       setLocalStream(stream);
       stream.getVideoTracks().forEach(track=>{
         track.enabled=true
@@ -366,29 +340,23 @@ export const Chat = () => {
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
-
       const peerConnection = new RTCPeerConnection({
         iceServers: [
           { urls: "stun:stun.l.google.com:19302" },
           { urls: "stun:stun1.google.com:19302" },
         ],
       });
-
       peerConnectionRef.current = peerConnection;
-
       stream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, stream);
       });
-
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
-
       socket?.emit("videoCallOffer", {
         senderId: selectedChat._id, 
         receiverId: userId, 
         offer,
       });
-
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           socket?.emit("newIceCandidate", {
@@ -398,20 +366,17 @@ export const Chat = () => {
           });
         }
       };
-
       peerConnection.onconnectionstatechange = () => {
         if (peerConnection.connectionState === "disconnected") {
           endVideoCall();
         }
       };
-
       peerConnection.ontrack = (event) => {
         setRemoteStream(event.streams[0]);
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = event.streams[0];
         }
       };
-
       setIsCallInProgress(true);
     } catch (error) {
       console.error("Error starting video call:", error);
@@ -425,42 +390,34 @@ export const Chat = () => {
         console.log('no caller')
         return
       }
-
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
-
       setLocalStream(stream);
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
-
       const peerConnection = new RTCPeerConnection({
         iceServers: [
           { urls: "stun:stun.l.google.com:19302" },
           { urls: "stun:stun1.google.com:19302" },
         ],
       });
-
       peerConnectionRef.current = peerConnection;
-
       stream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, stream);
       });
-
       await peerConnection.setRemoteDescription(
         new RTCSessionDescription(caller.offer)
       );
       const answer = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answer);
-
       socket?.emit("videoCallAnswer", {
         senderId: userId, 
         receiverId: caller.senderId, 
         answer,
       });
-
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           socket?.emit("newIceCandidate", {
@@ -470,20 +427,17 @@ export const Chat = () => {
           });
         }
       };
-
       peerConnection.onconnectionstatechange = () => {
         if (peerConnection.connectionState === "disconnected") {
           endVideoCall();
         }
       };
-
       peerConnection.ontrack = (event) => {
         console.log('Receiver ontrack details:', {
           streams: event.streams,
           videoTracks: event.streams[0]?.getVideoTracks(),
           audioTracks: event.streams[0]?.getAudioTracks()
         });
-      
         if (event.streams && event.streams.length > 0) {
           setRemoteStream(event.streams[0]);
           if (remoteVideoRef.current) {
@@ -494,7 +448,6 @@ export const Chat = () => {
           }
         }
       };
-
       setIsCallInProgress(true);
       setIsReceivingCall(false);
       setCaller(null);
@@ -504,7 +457,6 @@ export const Chat = () => {
       endVideoCall();
     }
   };
-  
   useEffect(() => {
     if (socket && !isConnected) {
       console.log('Attempting socket reconnection...');
@@ -522,10 +474,8 @@ export const Chat = () => {
         console.warn('Candidate not for this user or no peer connection');
         return;
       }
-      
       await peerConnectionRef.current
         .addIceCandidate(new RTCIceCandidate(data.candidate))
-        
         .catch((error) => {
           console.error("Error adding ICE candidate", error);
         });
@@ -535,30 +485,20 @@ export const Chat = () => {
       socket.off("newICECandidate", handleNewICECandidate);
     };
   }, [socket, userId]);
-  interface VideoCallAnswerData {
-    answer: RTCSessionDescriptionInit;
-    senderId: string;
-    receiverId: string;
-  }
   useEffect(() => {
     if (!socket) return;
-  
     const handleVideoCallAnswer = async (data: VideoCallAnswerData) => {
       console.log('in handleVideoCallAnswer', data);
-      
       if (!peerConnectionRef.current) return;
-      
       if (!data.answer || !data.answer.type || !data.answer.sdp) {
         console.error("Invalid answer format received", data);
         return;
       }
-  
       try {
         const answerDescription: RTCSessionDescriptionInit = {
           type: data.answer.type,
           sdp: data.answer.sdp
         };
-  
         await peerConnectionRef.current.setRemoteDescription(
           new RTCSessionDescription(answerDescription)
         );
@@ -567,9 +507,7 @@ export const Chat = () => {
         toast.error("Error establishing connection");
       }
     };
-  
     socket.on("videoCallAnswer", handleVideoCallAnswer);
-    
     return () => {
       socket.off("videoCallAnswer", handleVideoCallAnswer);
     };
@@ -579,15 +517,12 @@ export const Chat = () => {
       peerConnectionRef.current.close();
       peerConnectionRef.current = null;
     }
-
     if (localStream) {
       localStream.getTracks().forEach((track) => track.stop());
       setLocalStream(null);
     }
-
     setRemoteStream(null);
     setIsCallInProgress(false);
-
     // Send hangup event to the correct recipient
     if (selectedChat?._id) {
       socket?.emit("videoCallHangUp", {
@@ -596,7 +531,6 @@ export const Chat = () => {
       });
     }
   };
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -667,7 +601,6 @@ export const Chat = () => {
       fileInputRef.current.value = "";
     }
   };
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -677,17 +610,14 @@ export const Chat = () => {
       `%c🔌 Socket Event: ${eventName}`,
       "color: green; font-weight: bold"
     );
-
     console.groupEnd();
   };
   useEffect(() => {
     if (!socket || !selectedChat?._id) return;
-
     const markMessagesAsSeen = () => {
       const unseenMessages = messages.filter(
         (msg) => msg.senderId === selectedChat._id && msg.status !== "seen"
       );
-
       if (unseenMessages.length > 0) {
         socket.emit("messageStatus", {
           messageIds: unseenMessages.map((msg) => msg._id),
@@ -696,34 +626,27 @@ export const Chat = () => {
         });
       }
     };
-
     // Mark messages as seen when chat is opened or messages change
     markMessagesAsSeen();
-
     // Optional: Add visibility change listener
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         markMessagesAsSeen();
       }
     };
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [socket, selectedChat?._id, messages]);
-
   useEffect(() => {
     if (!socket) return;
-
     const handleMessageStatusUpdate = (data: {
       messageId: string;
       status: string;
       timestamp: string;
     }) => {
       logSocketEvent("Message Status Update", data);
-
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg._id === data.messageId
@@ -736,10 +659,8 @@ export const Chat = () => {
         )
       );
     };
-
     // Add listener for message status updates
     socket.on("messageStatusUpdate", handleMessageStatusUpdate);
-
     return () => {
       socket.off("messageStatusUpdate", handleMessageStatusUpdate);
     };
@@ -747,33 +668,26 @@ export const Chat = () => {
   // Socket Listeners
   useEffect(() => {
     if (!socket) return;
-
     const handleReceiveMessage = (message: Message) => {
       logSocketEvent("Receive Message", message);
-
       // Validate message
       if (!message || !message.content) {
         console.warn("Invalid message received");
         return;
       }
-
       // Detailed Logging
       console.group("Message Validation");
-
       console.groupEnd();
-
       // Check message relevance
       const isRelevantMessage =
         message.senderId === selectedChat?._id ||
         message.receiverId === selectedChat?._id ||
         message.senderId === userId ||
         message.receiverId === userId;
-
       if (!isRelevantMessage) {
         console.warn("Message not relevant to current chat");
         return;
       }
-
       // Update messages state
       setMessages((prevMessages) => {
         // Prevent duplicates
@@ -783,15 +697,12 @@ export const Chat = () => {
             (msg.content === message.content &&
               msg.timestamp === message.timestamp)
         );
-
         if (isDuplicate) {
           console.warn("Duplicate message prevented");
           return prevMessages;
         }
-
         // Add new message
         const updatedMessages = [...prevMessages, message];
-
         // Sort messages by timestamp
         return updatedMessages.sort(
           (a, b) =>
@@ -799,11 +710,9 @@ export const Chat = () => {
         );
       });
     };
-
     // Message Sent Confirmation
     const handleMessageSent = (data: { messageId: string; status: string }) => {
       logSocketEvent("Message Sent", data);
-
       // setMessages(prevMessages =>
       //   prevMessages.map(msg =>
       //     msg._id?.startsWith('temp-')
@@ -812,20 +721,15 @@ export const Chat = () => {
       //   )
       // );
     };
-    
     socket.on("receiveMessage", handleReceiveMessage);
     socket.on("messageSent", handleMessageSent);
-
     socket.on("connect", () => {});
-
-    socket.on("disconnect", (reason) => {
+    socket.on("disconnect", (reason:string) => {
       console.warn("Socket disconnected:", reason);
     });
-    
-    socket.on("connect_error", (error) => {
+    socket.on("connect_error", (error:string) => {
       console.error("Socket Connection Error:", error);
     });
-
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
       socket.off("messageSent", handleMessageSent);
@@ -834,24 +738,20 @@ export const Chat = () => {
       socket.off("connect_error");
     };
   }, [socket, selectedChat?._id, userId]);
-
   useEffect(() => {
     if (socket && userId) {
       socket.emit("join", userId);
-
       if (selectedChat?._id) {
         socket.emit("join", selectedChat._id);
       }
     }
   }, [socket, userId, selectedChat?._id]);
-
   const handleSend = () => {
     if (!isConnected) {
       toast.error("Reconnecting to chat. Please try again.");
       socket?.connect();
       return;
     }
-  
     if (message.trim() || selectedFile) {
       try {
         const fileData = selectedFile
@@ -861,13 +761,11 @@ export const Chat = () => {
               type: selectedFile.type,
             }
           : null;
-  
         const sendMessageWithRetry = () => {
           if (!isConnected) {
             setTimeout(sendMessageWithRetry, 1000);
             return;
           }
-  
           socket?.emit("sendMessage", {
             senderId: selectedChat._id, 
             receiverId: userId,
@@ -875,7 +773,6 @@ export const Chat = () => {
             file: fileData,
           });
         };
-  
         sendMessageWithRetry();
         setMessage("");
         setSelectedFile(null);
@@ -907,13 +804,11 @@ export const Chat = () => {
           }
         }
       };
-
       if (isS3File) {
         getSecureURL();
       }
     }, [isS3File, file.url]);
     const displayURL = isS3File ? secureURL : file.preview;
-
     return (
       <div className="rounded-lg p-3 bg-gray-800 max-w-xs">
         {isImage ? (
@@ -930,7 +825,7 @@ export const Chat = () => {
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.onerror = null;
-                  target.src = "/placeholder-image.png"; // Make sure you have a placeholder image
+                  target.src = "/placeholder-image.png"; 
                   console.error("Image failed to load:", displayURL);
                 }}
               />
@@ -941,7 +836,6 @@ export const Chat = () => {
                 </span>
               </div>
             )}
-
             {!message && !isS3File && (
               <button
                 onClick={() => {
@@ -961,7 +855,6 @@ export const Chat = () => {
             <span className="text-xs truncate">{fileName}</span>
           </div>
         )}
-
         {uploadProgress > 0 && !message && !isS3File && (
           <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
             <div
@@ -970,7 +863,6 @@ export const Chat = () => {
             />
           </div>
         )}
-
         {file.size && (
           <div className="text-xs text-gray-400 mt-1">
             {(file.size / 1024).toFixed(2)}KB
@@ -995,7 +887,6 @@ export const Chat = () => {
             }`}
           >
             {/* {msg.file && <FilePreview file={msg.file} message={msg}/>} */}
-
             {msg.content && (
               <div className="flex-1 mr-8 px-2 mt-2">{msg.content}</div>
             )}
@@ -1016,7 +907,6 @@ export const Chat = () => {
       </div>
     );
   };
-
   const fetchUserDetails = async (userId: string) => {
     try {
       setLoading(true);
@@ -1059,12 +949,9 @@ export const Chat = () => {
       socket.off("messageDeleted", handleMessageDeleted);
     };
   }, [socket]);
-
   const MessageContextMenu = ({ message }: { message: Message }) => {
     const [isOpen, setIsOpen] = useState(false);
-
     const canDelete = message.senderId === selectedChat._id; // Check if the current user is the sender
-
     if (!canDelete) return null;
     return (
       <div className="relative inline-block">
@@ -1090,19 +977,16 @@ export const Chat = () => {
       </div>
     );
   };
-
   const fetchMutualMessages = async (userId: string) => {
     try {
       setLoading(true);
       const response = await fetchUserMessages(userId); // Fetch messages for the receiver
-
       if (Array.isArray(response.messages)) {
         const sortedMessages = response.messages.sort(
           (a: Message, b: Message) =>
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
         setMessages(sortedMessages);
-
         setSelectedChat({ _id: response.userId });
       } else {
         setMessages([]);
@@ -1115,18 +999,15 @@ export const Chat = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     if (userId) {
       fetchUserDetails(userId);
       fetchMutualMessages(userId);
     }
   }, [userId]);
-
   const isMessageSent = (msg: Message) => {
     return msg.receiverId === userId;
   };
-
   const EmptyState = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full text-gray-400">
@@ -1139,10 +1020,8 @@ export const Chat = () => {
       </div>
     );
   };
-
   const renderMessageStatus = (msg: Message) => {
     if (!isMessageSent(msg)) return null;
-
     switch (msg.status) {
       case "sending":
         return (
@@ -1164,7 +1043,6 @@ export const Chat = () => {
             </svg>
           </div>
         );
-
       case "sent":
         return (
           <div className="flex items-center space-x-1">
@@ -1185,7 +1063,6 @@ export const Chat = () => {
             </svg>
           </div>
         );
-
       case "delivered":
         return (
           <div className="flex items-center space-x-1">
@@ -1207,7 +1084,6 @@ export const Chat = () => {
             </svg>
           </div>
         );
-
       case "seen":
         return (
           <div className="flex items-center space-x-1">
@@ -1230,12 +1106,10 @@ export const Chat = () => {
             </svg>
           </div>
         );
-
       default:
         return null;
     }
   };
-
   return (
     <div className="flex h-screen bg-[#1C1C1C] text-white">
       <SideBar chatHistory={chatHistory} />
@@ -1258,8 +1132,6 @@ export const Chat = () => {
               </div>
               <h3 className="text-xl font-semibold mb-2">
                 {role==='employer'?userDetails?.companyName:userDetails?.firstName}
-
-
               </h3>
               <p className="text-gray-400 mb-6">Incoming video call</p>
               <div className="flex justify-center space-x-4">
@@ -1275,14 +1147,9 @@ export const Chat = () => {
                   Decline
                 </button>
               </div>
-
             </div>
-            
           </div>
         )}
-        
-       
-
         <div className="p-4 border-b border-gray-700 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full bg-[#2E2E2E]">
@@ -1319,7 +1186,6 @@ export const Chat = () => {
             </button>
           </div>
         </div>
-
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length > 0 ? (
             messages.map((msg, index) => renderMessage(msg, index))
@@ -1328,7 +1194,6 @@ export const Chat = () => {
           )}
           <div ref={messagesEndRef} />
         </div>
-
         <div className="p-4 border-t border-gray-700">
           {selectedFile && (
             <div className="mb-2 ">
@@ -1365,7 +1230,6 @@ export const Chat = () => {
                 <Send className="w-6 h-6" />
               </button>
             ) 
-              
             :null}
           </div>
         </div>

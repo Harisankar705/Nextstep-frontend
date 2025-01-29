@@ -1,6 +1,5 @@
-
 import { useSelector } from "react-redux";
-import { PostType } from "../../types/Candidate";
+import { PostComponentProps } from "../../types/Candidate";
 import { Bookmark, MapPin, MessageSquare, Share2, ThumbsUp, X } from 'lucide-react';
 import { getCompanyLogo, getPostImageURL, getProfilePictureURL } from "../../utils/ImageUtils";
 import { useEffect, useState } from "react";
@@ -10,13 +9,6 @@ import Comments from "./CreatePost/Comments";
 import { checkSavedStatus, interactionCount, savePost } from "../../services/commonService";
 import toast from "react-hot-toast";
 import { SharePost } from "./CreatePost/SharePost";
-interface PostComponentProps{
-    post:PostType,
-    profilePicture?:string,
-    userName?:string
-    onUnsave?:(postId:string)=>void
-    role?:any
-}
 const Post:React.FC<PostComponentProps>=({ post,
     profilePicture,
     userName,
@@ -31,8 +23,6 @@ const Post:React.FC<PostComponentProps>=({ post,
     const [likedByUser, setLikedByUser] = useState(false)
     const [isSaved,setIsSaved]=useState(false)
     const [isShareModalOpen,setIsShareModalOpen]=useState(false)
-    
-
     useEffect(() => {
         const isRecent =
             new Date().getTime() - new Date(post.createdAt).getTime() < 360000;
@@ -47,7 +37,6 @@ const Post:React.FC<PostComponentProps>=({ post,
         const isPostSaved=async()=>{
             try {
                 const savedStatus=await checkSavedStatus(post._id)
-                
                 setIsSaved(savedStatus)
             } catch (error) {
                 console.error("Failed to fetch saved status",error)
@@ -64,11 +53,9 @@ const Post:React.FC<PostComponentProps>=({ post,
                 setIsCommentsOpen(false);
             }
         };
-
         if (isCommentsOpen) {
             document.addEventListener('keydown', handleEscape);
         }
-
         return () => {
             document.removeEventListener('keydown', handleEscape);
         };
@@ -82,7 +69,6 @@ const Post:React.FC<PostComponentProps>=({ post,
             {
                 onUnsave(post._id)
             }
-
             toast.success(result.message)
         } catch (error) {
             toast.error("Failed to save post")
@@ -92,46 +78,32 @@ const Post:React.FC<PostComponentProps>=({ post,
         const fetchCount = async () => {
             try {
                 const response = await interactionCount(post._id)
-                
                 setCommentCount(response.commentCount)
                 setLikeCount(response.likeCount)
-
-
-
             } catch (error) {
                 toast.error("Error occured while fetching comment")
                 console.error("Error occured while fetching comment", error)
             }
         }
         fetchCount()
-
     }, [post._id])
     console.log('in post')
-
     const handleCommentCountchange = (newCount: number) => {
         setCommentCount(newCount)
-    }
-    const handleShareClick=()=>{
-        setIsShareModalOpen(true)
     }
     const handleShareClose=()=>{
         setIsShareModalOpen(false)
     }
-    
     const currentUser = useSelector((state: any) => state.user);
     const finalProfilePicture = profilePicture
     ? role === 'employer'
         ? getCompanyLogo(profilePicture)  
         : getProfilePictureURL(profilePicture) 
     : getProfilePictureURL(currentUser?.profilePicture);  
-
-    
     const finalUserName = userName
         ? userName
         : `${currentUser?.firstName || "User"} ${currentUser?.lastName || ""}`;
-    
     return (
-        
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 shadow-md">
               {isShareModalOpen && (
             <SharePost isOpen={isShareModalOpen}
@@ -146,7 +118,6 @@ const Post:React.FC<PostComponentProps>=({ post,
                         className="h-full w-full object-cover"
                     />
                 </div>
-              
                 <div>
                     <p className="font-medium text-white">{finalUserName}</p>
                     <div className="flex items-center text-sm text-gray-400">
@@ -179,18 +150,15 @@ const Post:React.FC<PostComponentProps>=({ post,
                     <p className="text-white">{post.text}</p>
                 </div>
             )}
-
 <div className="flex items-center justify-between border-t border-gray-800 pt-2">
 <div className="flex items-center gap-1">
                     {likeCount }
                     <ThumbsUp className="w-4 h-4" />
-
                 </div>
                 <div className="flex items-center gap-4">
                     <span>{commentCount} comments</span>
                 </div>
             </div>
-
             <div className="flex items-center justify-between border-t border-gray-800 pt-2">
                 <Like
                     postId={post._id}
@@ -200,7 +168,6 @@ const Post:React.FC<PostComponentProps>=({ post,
                     currentUser={currentUser}
                     post={post}
                 />
-
                 <button
                     onClick={() => setIsCommentsOpen(true)}
                     className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors"
@@ -208,7 +175,6 @@ const Post:React.FC<PostComponentProps>=({ post,
                     <MessageSquare className="w-5 h-5" />
                     <span>Comment</span>
                 </button>
-
                 <button onClick={()=>setIsShareModalOpen(true)} className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors">
                     <Share2 className="w-5 h-5" />
                     <span>Share</span>
@@ -218,7 +184,6 @@ const Post:React.FC<PostComponentProps>=({ post,
                     <span>{isSaved?"Saved":"Save"}</span>
                 </button>
             </div>
-
             {isCommentsOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div
@@ -248,5 +213,4 @@ const Post:React.FC<PostComponentProps>=({ post,
         </div>
     );
 };
-
 export default Post;

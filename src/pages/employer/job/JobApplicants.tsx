@@ -1,22 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowLeft, MoreHorizontal, Search, ChevronDown, Star } from 'lucide-react';
+import  { useEffect, useState } from 'react';
+import { ArrowLeft, MoreHorizontal, Search, ChevronDown } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchApplicantsForJob } from '../../../services/employerService'; // Assume this function exists
 import Spinner from '../../../utils/Spinner';
 import { getProfilePictureURL } from '../../../utils/ImageUtils';
-
-interface Applicant {
-  _id: string;
-  userId: {
-    _id: string;  
-    firstName: string;
-    secondName: string;
-    profilePicture: string;
-  };
-  applicationStatus: string;
-  appliedAt: Date;
-}
-
+import { Applicant } from '../../../types/Candidate';
 const JobApplicants = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
@@ -26,7 +14,6 @@ const JobApplicants = () => {
   const [page, setPage] = useState(1);
   const [totalApplicants, setTotalApplicants] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-
   useEffect(() => {
     const fetchJobApplicants = async () => {
       try {
@@ -42,26 +29,20 @@ const JobApplicants = () => {
         setLoading(false);
       }
     };
-
     fetchJobApplicants();
-  }, [jobId, page, searchTerm]); // Add searchTerm as dependency
-
+  }, [jobId, page, searchTerm]); 
   if (loading) {
     return <Spinner loading={true} />;
   }
-
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
-
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
   const handleApplicantDetails = (userId: string, jobId: string|undefined) => {
-    navigate(`/applicant/${userId}/${jobId}`); // Use jobId as a URL parameter
+    navigate(`/applicant/${userId}/${jobId}`); 
 };
-  
-
   return (
     <div className="min-h-screen bg-[#0D1117] text-gray-200">
       <header className="border-b border-gray-800 p-4">
@@ -82,7 +63,6 @@ const JobApplicants = () => {
           </div>
         </div>
       </header>
-
       <main className="container mx-auto p-4">
         <div className="flex items-center justify-between mb-6">
           <div className="flex gap-4">
@@ -101,7 +81,6 @@ const JobApplicants = () => {
             />
           </div>
         </div>
-
         <div className="bg-[#1A1F26] rounded-lg overflow-hidden">
           <table className="w-full">
             <thead>
@@ -121,7 +100,6 @@ const JobApplicants = () => {
                       {applicant.userId.firstName} {applicant.userId.secondName}
                     </div>
                   </td>
-                  
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-sm ${applicant.applicationStatus === 'Hired' ? 'bg-teal-400/20 text-teal-400' : applicant.applicationStatus === 'Declined' ? 'bg-red-400/20 text-red-400' : 'bg-orange-400/20 text-orange-400'}`}>
                       {applicant.applicationStatus}
@@ -145,7 +123,6 @@ const JobApplicants = () => {
             </tbody>
           </table>
         </div>
-
         {/* Pagination */}
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm text-gray-400">
@@ -179,5 +156,4 @@ const JobApplicants = () => {
     </div>
   );
 };
-
 export default JobApplicants;

@@ -1,32 +1,24 @@
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
-import { getCompanyLogo } from "../../utils/ImageUtils";
 import { useSelector } from "react-redux";
 import { UserCandidate } from "../../types/Candidate";
 import { PostInput } from "../candidate/CreatePost/PostInput";
 import { CreatePost } from "../candidate/CreatePost/CreatePost";
 import SideBar from "./SideBar";
-
 export const Skelton = ({ className = "" }: { className?: string }) => (
   <div
     className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded ${className}`}
   />
 );
-
-
 const Feed = () => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const currentUser = useSelector(
     (state: { user: UserCandidate }) => state.user
   );
-  
   const logo = currentUser.logo;
-  
-
   return (
     <div className=" min-h-screen bg-[#1A1D2B] text-white">
                   <SideBar />
-
       <div className="flex">
         <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
           <PostInput
@@ -37,7 +29,6 @@ const Feed = () => {
             onClose={() => setShowCreatePost(false)}
             role="employer"
           />
-
           {[1, 2, 3].map((i) => (
             <div key={i} className="bg-white rounded-lg shadow p-4 mb-4">
               <div className="flex items-center gap-2 mb-4">
@@ -65,5 +56,4 @@ const Feed = () => {
     </div>
   );
 };
-
 export default Feed;

@@ -10,25 +10,23 @@ import {
   Globe, 
   Mail,  
 } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { applyJob, fetchJobById } from "../../services/employerService";
 import toast from "react-hot-toast";
 import Spinner from "../../utils/Spinner";
 import { JobType } from "../../types/Candidate";
 import { getCompanyLogo } from "../../utils/ImageUtils";
 import Navbar from "../../utils/Navbar";
-
 const JobDetails = () => {
   const { id } = useParams<{ id: string | undefined }>();
   const [job, setJob] = useState<JobType | null>(null);
   const [isApplying,setIsApplying]=useState(false)
+  const navigate=useNavigate()
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     const getJobDetails = async () => {
       try {
         const response = await fetchJobById(id);
-        
         const jobData: JobType = response.data;
         setJob(jobData);
       } catch (error) {
@@ -48,35 +46,66 @@ const JobDetails = () => {
     }
     setIsApplying(true)
     try {
-        
         const response=await applyJob(job._id)
+        console.log('jobresponse',response)
         if(response.status===200)
         {
             toast.success("Application submitted successfully!")
             setJob((prev) => prev && { ...prev, hasApplied: true }); 
-
         }
         else
         {
             toast.error("Error applying for this job!")
         }
-    } catch (error) {
-        toast.error("Something went wrong.Try again!")
-        console.error("Something went wrong.Try again!",error)
+    } catch (error:any) {
+        toast.error(error)
+        if(error.includes('You have reached the maximum'))
+        {
+          toast.custom((t) => (
+            <div
+              className="bg-gray-800 p-4 rounded-lg text-white flex items-center justify-between"
+              style={{ width: "100%", maxWidth: "500px" }}
+            >
+              <div>
+                <p>You have reached the maximum. Try premium to apply for unlimited jobs!</p>
+              </div>
+              <button
+                onClick={() => {
+                  navigate('/payment', {
+                    state: {
+                      redirectReason: 'job_application_limit',
+                      jobId: job?._id
+                    }
+                  });
+                  toast.dismiss(t.id); // This dismisses the toast when the button is clicked
+                }}
+                className="text-teal-500 hover:text-teal-600 ml-2"
+              >
+                Upgrade to Premium
+              </button>
+            </div>
+          ), {
+            duration: 5000,
+            position: 'top-center',
+            icon: "💼",
+          });
+        }
+        else
+        {
+          toast.error(error)
+        }
     }
     finally
     {
         setIsApplying(false)
     }
   }
-
   if (isLoading) {
     return <Spinner loading={true} />;
   }
   if (!job) {
     return <div className="text-center text-gray-400">Job not found!</div>;
   }
-
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 ">
          <Navbar />
@@ -105,13 +134,11 @@ const JobDetails = () => {
                 </div>
               </div>
             </div>
-
             {/* Job Description */}
             <div className="bg-gray-800 rounded-xl p-6 space-y-6">
               <h2 className="text-xl font-semibold text-white">Job Description</h2>
               <p className="text-gray-300 leading-relaxed">{job.description}</p>
             </div>
-
             {/* Required Knowledge */}
             <div className="bg-gray-800 rounded-xl p-6 space-y-6">
               <h2 className="text-xl font-semibold text-white">
@@ -126,7 +153,6 @@ const JobDetails = () => {
                 ))}
               </ul>
             </div>
-
             {/* Responsibilities */}
             {job.responsibilities && (
               <div className="bg-gray-800 rounded-xl p-6 space-y-6">
@@ -134,7 +160,6 @@ const JobDetails = () => {
                 <p className="text-gray-300 leading-relaxed">{job.responsibilities}</p>
               </div>
             )}
-
             {/* Nice to Have */}
             {job.niceToHave && (
               <div className="bg-gray-800 rounded-xl p-6 space-y-6">
@@ -142,7 +167,6 @@ const JobDetails = () => {
                 <p className="text-gray-300 leading-relaxed">{job.niceToHave}</p>
               </div>
             )}
-
             {/* Benefits */}
             {job.benefits && job.benefits.length > 0 && (
               <div className="bg-gray-800 rounded-xl p-6 space-y-6">
@@ -161,7 +185,6 @@ const JobDetails = () => {
               </div>
             )}
           </div>
-
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-gray-800 rounded-xl p-6">
@@ -209,8 +232,6 @@ const JobDetails = () => {
 >
   {job.hasApplied ? " Applied" : job.isActive ? "Apply Now" : "Job Closed"}
 </button>
-
-
             </div>
             <div className="bg-gray-800 rounded-xl p-6">
             <h2 className="text-xl font-semibold text-white mb-6">Company Information</h2>
@@ -239,13 +260,10 @@ const JobDetails = () => {
             </div>
           </div>
           </div>
-
           {/* Company Info */}
-          
         </div>
       </div>
     </div>
   );
 };
-
 export default JobDetails;

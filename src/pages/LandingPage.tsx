@@ -9,12 +9,9 @@ import {useNavigate} from 'react-router-dom'
 import { Logo } from "../components/Logo";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import { ArrowProps } from "../types/Candidate";
 
-interface ArrowProps{
-  className?:string
-  style?:React.CSSProperties,
-  onClick?:React.MouseEventHandler<HTMLButtonElement>
-}
+
 const categories = [
   { icon: <Briefcase className="w-8 h-8 text-[#8257e7]" />, title: "Technology" },
   { icon: <Search className="w-8 h-8 text-[#8257e7]" />, title: "HealthCare" },
@@ -38,7 +35,7 @@ function NextArrow(props:ArrowProps) {
   );
 }
 
-// Previous Arrow
+
 function PrevArrow(props:ArrowProps) {
   const { onClick } = props;
   return (

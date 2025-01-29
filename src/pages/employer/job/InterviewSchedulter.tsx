@@ -1,21 +1,8 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, Users, Video } from 'lucide-react';
-import { UserCandidate } from '../../../types/Candidate';
+import { InterviewScheduleProps } from '../../../types/Candidate';
 import toast from 'react-hot-toast';
-
-interface InterviewScheduleProps {
-  applicant: UserCandidate | null;
-  onScheduleInterview: (scheduleData: InterviewScheduleData) => Promise<void>;
-}
-
-interface InterviewScheduleData {
-  date: string;
-  time: string;
-  interviewer: string;
-  platform: string;
-  meetingLink?: string;
-}
-
+import { InterviewScheduleData } from '../../../types/Employer';
 const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onScheduleInterview }) => {
   const [scheduleData, setScheduleData] = useState<InterviewScheduleData>({
     date: '',
@@ -27,7 +14,6 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
   const [isScheduling, setIsScheduling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [scheduledInterview, setScheduledInterview] = useState<InterviewScheduleData | null>(null); // New state for scheduled interview
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setScheduleData(prev => ({
@@ -35,19 +21,14 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
       [name]: value
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsScheduling(true);
-
     try {
       await onScheduleInterview(scheduleData);
-      // Set the scheduled interview details
       setScheduledInterview(scheduleData);
       toast.success("Interview scheduled!");
-
-      // Reset form after successful scheduling
       setScheduleData({
         date: '',
         time: '',
@@ -61,7 +42,6 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
       setIsScheduling(false);
     }
   };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -72,10 +52,8 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
           </span>
         )}
       </div>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Date Selection */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-400">
               Interview Date
@@ -93,7 +71,6 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
               <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
           </div>
-
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-400">
               Interview Time
@@ -110,7 +87,6 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
               <Clock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
           </div>
-
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-400">
               Interviewer
@@ -128,8 +104,6 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
               <Users className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
           </div>
-
-          {/* Platform Selection */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-400">
               Interview Platform
@@ -149,8 +123,6 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
               <Video className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
           </div>
-
-          {/* Meeting Link (conditional) */}
           {scheduleData.platform === 'video' && (
             <div className="space-y-2 md:col-span-2">
               <label className="block text-sm font-medium text-gray-400">
@@ -167,11 +139,9 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
             </div>
           )}
         </div>
-
         {error && (
           <div className="text-red-500 text-sm">{error}</div>
         )}
-
         <div className="flex justify-end">
           <button
             type="submit"
@@ -182,8 +152,6 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
           </button>
         </div>
       </form>
-
-      {/* Display Scheduled Interview Details */}
       {scheduledInterview && (
         <div className="mt-6 p-4 bg-[#1F2937] rounded-lg">
           <h4 className="text-lg font-semibold text-[#2DD4BF]">Scheduled Interview</h4>
@@ -199,5 +167,4 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
     </div>
   );
 };
-
 export default InterviewScheduler;

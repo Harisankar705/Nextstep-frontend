@@ -1,37 +1,7 @@
 import { axiosError } from '../utils/AxiosError'
-import { isTokenExpired } from '../utils/AuthUtils'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_AUTH_GOOGLE_ID
-
-
-
 import api from '../utils/api'
-interface SendOTPResponse {
-    message: string
-    success: boolean
-}
-interface verifyOTPResponse {
-    success: boolean
-    message: string
-}
-interface UserData {
-    firstName: string
-    secondName: string
-    email: string
-    password: string
-    role: role,
-    name: string
-}
-interface GoogleAuthResponse {
-    success: string
-    token?: string
-    message?: string
-}
-
-
-type role = "user" | "employer"|"admin"
-
-
+import { SendOTPResponse, UserData, verifyOTPResponse } from '../types/Candidate'
+ export type role = "user" | "employer"|"admin"
 export const sendOTP = async (email: string, role: role): Promise<SendOTPResponse> => {
     try {
         const response = await api.post('/send-otp', { email, role }, { withCredentials: false })
@@ -44,34 +14,28 @@ export const sendOTP = async (email: string, role: role): Promise<SendOTPRespons
 export const getUserPosts=async(userId?:string)=>{
     try {
         const response = await api.get('/userposts',{params:{userId}})
-        
         return response.data 
     } catch (error) {
         axiosError(error,'getUserPosts')
         throw error
     }
-    
 }
 export const fetchUserPosts=async()=>{
     try {
         const response = await api.get('/getpost')
-        
         return response.data 
     } catch (error) {
         axiosError(error,'getUserPosts')
         throw error
     }
-    
 }
-export const createPost=async(formData:FormData,role:role)=>{
+export const createPost=async(formData:FormData)=>{
     try {
-        
         const response = await api.post('/createpost', formData,{
             headers:{
                 'Content-Type': 'multipart/form-data', 
             }
         })
-        
         return response
     } catch (error) {
         axiosError(error,'createPost')
@@ -80,7 +44,6 @@ export const createPost=async(formData:FormData,role:role)=>{
 }
 export const resendOTP = async (email: string, role: role): Promise<SendOTPResponse> => {
     try {
-
         const response = await api.post('/resend-otp', { email, role }, { withCredentials: false })
         return response.data
     } catch (error: unknown) {
@@ -88,19 +51,14 @@ export const resendOTP = async (email: string, role: role): Promise<SendOTPRespo
         throw error
     }
 }
-
 export const verifyOTP = async (email: string, otp: string, role: role): Promise<verifyOTPResponse> => {
     try {
-
         const response = await api.post('/verify-otp', { email, otp, role }, { withCredentials: false })
         return response.data
-
     } catch (error: unknown) {
         axiosError(error, 'verifyOTP')
         throw error
-
     }
-
 }
 export const register = async (userData: UserData, otp: string) => {
     try {
@@ -117,17 +75,13 @@ export const candidateDetails = async (details: Record<string, any>): Promise<an
             headers: {
                 'Content-Type': "multipart/form-data"
             },
-           
         })
         return response.data
-
     } catch (error: unknown) {
         axiosError(error, 'candidateDetails')
         throw error
     }
 }
-
-
 export const login = async (email: string, password: string, role: role) => {
     try {
         const response = await api.post('/login', { email, password, role }, { withCredentials: true })
@@ -135,16 +89,11 @@ export const login = async (email: string, password: string, role: role) => {
         if (response?.data) {
             return response.data
         }
-       
-        
     } catch (error: any) {
         axiosError(error, 'login')
         throw error
-
-
 }
 }
-
 export const checkEmailOrPhone = async (email: string, phoneNumber: string, role: role, name: string) => {
     try {
         const response = await api.post('/check-email-phone', { email, phoneNumber, role, name }, { withCredentials: false })
@@ -162,7 +111,6 @@ export const checkEmailOrPhone = async (email: string, phoneNumber: string, role
     catch (error) {
         axiosError(error, 'checkEmailorPhone')
         throw error
-
     }
 }
 export const search=async(query:string)=>{
@@ -172,8 +120,6 @@ export const search=async(query:string)=>{
     } catch (error) {
     axiosError(error,'search')        
     }
-    
-
 }
 export const refreshToken = async () => {
     try {
@@ -187,20 +133,15 @@ export const refreshToken = async () => {
         throw error
     }
 }
-
-export const googleAuthentication = async (token: string, role: string): Promise<GoogleAuthResponse> => {
-    try {
-
-        const response = await api.post('/googleauth', { tokenId: token, role })
-        return response.data
-
-
-
-    } catch (error) {
-        axiosError(error, 'googleAuthentication')
-        throw error
-    }
-}
+// export const googleAuthentication = async (token: string, role: string): Promise<GoogleAuthResponse> => {
+//     try {
+//         const response = await api.post('/googleauth', { tokenId: token, role })
+//         return response.data
+//     } catch (error) {
+//         axiosError(error, 'googleAuthentication')
+//         throw error
+//     }
+// }
 // export const userAuthenticated = async (): Promise<boolean> => {
 //     try {
 //         const response = await api.get('/protected')
@@ -213,5 +154,3 @@ export const googleAuthentication = async (token: string, role: string): Promise
 //         throw error
 //     }
 // }
-
-

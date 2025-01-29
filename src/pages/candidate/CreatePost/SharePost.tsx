@@ -1,13 +1,7 @@
 import { Copy, Facebook, Linkedin, Twitter, X } from "lucide-react"
 import toast from "react-hot-toast"
-import { PostType } from "../../../types/Candidate"
+import { SharePostProps } from "../../../types/Candidate"
 type SharePlatForm='facebook'|'twitter'|'linkedin'
-interface SharePostProps{
-    isOpen:boolean,
-    onClose:()=>void,
-    post:PostType
-}
-
 export const SharePost:React.FC<SharePostProps>=({isOpen,onClose,post}) => {
     const url=typeof window!=='undefined' ?window.location.href:''
     const shareLinks:Record<SharePlatForm,string>={
@@ -37,7 +31,6 @@ export const SharePost:React.FC<SharePostProps>=({isOpen,onClose,post}) => {
                 className="p-1 hover:bg-gray-800 rounded-full transition-colors">
                     <X className="w-5 h-5 text-gray-400"/>
                 </button>
-
             </div>
             <div className="grid grid-cols-3 gap-4">
                 <button onClick={()=>handleShare('facebook')}
@@ -48,12 +41,12 @@ export const SharePost:React.FC<SharePostProps>=({isOpen,onClose,post}) => {
                 <button onClick={()=>handleShare('twitter')}
                 className="flex items-center justify-center gap-2 p-3 text-white  bg-sky-600 rounded-lg hover:bg-sky-600  transition-colors">
                     <Twitter className="w-5 h-5"/>
-                    <span>Facebook</span>
+                    <span>Twitter</span>
                 </button>
                 <button onClick={()=>handleShare('linkedin')}
                 className="flex items-center justify-center gap-2 p-3 text-white  bg-blue-700 rounded-lg hover:bg-blue-800  transition-colors">
                     <Linkedin className="w-5 h-5"/>
-                    <span>Facebook</span>
+                    <span>LinkedIn</span>
                 </button>
                 <button onClick={copyToClipboard}
                 className="w-full flex items-center justify-center gap-2 p-3 text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">

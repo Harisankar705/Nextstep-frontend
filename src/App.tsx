@@ -32,6 +32,8 @@ import JobApplicants from './pages/employer/job/JobApplicants.tsx';
 import Applicant from './pages/employer/job/Applicant.tsx';
 import { Chat } from './pages/candidate/chat/Chat.tsx';
 import SearchProfile from './pages/employer/SearchProfile.tsx';
+import { Payment } from './pages/candidate/Payment.tsx';
+import { PaymentSuccess } from './pages/candidate/PaymentSuccess.tsx';
 const App = () => {
   return (
     <div>
@@ -51,6 +53,8 @@ const App = () => {
           <Route path='/candidate-profile/:id/:role' element={<ProtectedRoute role='candidate'>{<UserProfile />}</ProtectedRoute>} />
           <Route path='/edit-profile' element={<ProtectedRoute role='candidate'>{<EditProfilee />}</ProtectedRoute>}/>
           <Route path='/saved' element={<ProtectedRoute role='candidate'>{<SavedPosts />}</ProtectedRoute>}/>
+          <Route path='/payment' element={<ProtectedRoute role='candidate'>{<Payment />}</ProtectedRoute>}/>
+          <Route path='/payment-success' element={<ProtectedRoute role='candidate'>{<PaymentSuccess />}</ProtectedRoute>}/>
           
           {/* //admin */}
           <Route path='/admin' element={<AdminLogin/>}/>
@@ -65,8 +69,7 @@ const App = () => {
           <Route path='/employersignup' element={<EmployerSignup />} />
           <Route path='/search-profile/:id/:role' element={<SearchProfile/>} />
           <Route path='/messages/:userId/:role' element={<Chat />}/>
-
-                    <Route path='/employerlogin' element={<EmployerLogin />} />
+          <Route path='/employerlogin' element={<EmployerLogin />} />
           <Route path='/employerhome' element={<ProtectedRoute role='employer'><EmployerDashboard /></ProtectedRoute> }/>
           <Route path='/feeds' element={<ProtectedRoute role='employer'><Feed /></ProtectedRoute> }/>
           <Route path='/account' element={<ProtectedRoute role='employer'><Account /></ProtectedRoute>}/>

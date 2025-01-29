@@ -6,22 +6,8 @@ import {
 } from "../../services/commonService";
 import { LoaderIcon, X } from "lucide-react";
 import { getCompanyLogo, getProfilePictureURL } from "../../utils/ImageUtils";
+import { INotification } from "../../types/Candidate";
 const socket = io("http://localhost:4000");
-interface Notification {
-  _id: string;
-  read: boolean;
-  sender: {
-    firstName?: string;
-    secondName?: string;
-    companyName?: string;
-    logo?:string,
-    profilePicture?:string
-
-  };
-  senderModel:"User"|"Employer",
-  link?:string,
-  content: string;
-}
 export const Notification = ({
   isOpen,
   onClose,
@@ -34,17 +20,15 @@ export const Notification = ({
   notification?:any
 }) => {
   const [loading,setLoading]=useState(true)
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
   const [unreadCount, setUnReadCount] = useState(0);
   useEffect(() => {
     const fetchNotification = async () => {
       setLoading(true)
       try {
-        const response: Notification[] = await getNotifications();
+        const response: INotification[] = await getNotifications();
         console.log('Notificationresponse',response)
         setNotifications(response);
-
-        
         setUnReadCount(response.filter((n) => !n.read).length);
       } catch (error) {
         console.error("error fetching notifications", error);
@@ -53,7 +37,6 @@ export const Notification = ({
         setLoading(false)
       }
     };
-    
     if (isOpen) {
       fetchNotification();
     }
@@ -64,7 +47,6 @@ export const Notification = ({
     return () => {
       socket.off("newNotification");
     };
-    
   }, [isOpen]);
   const handleNotificationClick = async (notificationId: string,link?:string) => {
     try {
@@ -123,7 +105,6 @@ export const Notification = ({
                   <p>{notification.content}</p>
                 </div>
               </div>
-                
               </li>
             ))}
           </ul>

@@ -40,7 +40,6 @@ export const ImageUploadModal:React.FC<ImageUploadModalProps>=({
                     <div className="flex items-center gap-2">
                         <Smartphone className="w-5 h-5 text-gray-600" />
                         <span className="text-sm text-gray-600 ">
-                            Add Photos from your mobile phone
                         </span>
                     </div>
                     <label className="cursor-pointer">
