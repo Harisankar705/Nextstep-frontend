@@ -59,11 +59,12 @@ const App = () => {
           {/* //admin */}
           <Route path='/admin' element={<AdminLogin/>}/>
           <Route path='/sidebar' element={<Employers/>}/>
-          <Route path='admindashboard'element={<Dashboard/>}/>
-          <Route path='/candidates'element={<Candidates/>}/>
-          <Route path='/employers' element={<Employers/>}/>
-          <Route path='/verifyemployer/:id' element={<Verification />}/>
-          <Route path='/followrequests' element={<ConnectionRequest />}/>
+          <Route path='/admindashboard'element={<ProtectedRoute role='admin'>{<Dashboard/>}</ProtectedRoute>}/>
+          <Route path='/candidates'element={<ProtectedRoute role='admin'>{<Candidates/>}</ProtectedRoute>}/>
+          <Route path='/employers'element={<ProtectedRoute role='admin'>{<Employers/>}</ProtectedRoute>}/>
+          <Route path='/verifyemployer/:id'element={<ProtectedRoute role='admin'>{<Verification/>}</ProtectedRoute>}/>
+          <Route path='followrequests'element={<ProtectedRoute role='admin'>{<ConnectionRequest/>}</ProtectedRoute>}/>
+         
 
           {/* employer */}
           <Route path='/employersignup' element={<EmployerSignup />} />

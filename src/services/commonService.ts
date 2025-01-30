@@ -1,37 +1,27 @@
 import { InterviewScheduleData } from "../types/Employer"
 import api from "../utils/api"
 import { axiosError } from "../utils/AxiosError"
-
 export const toggleFollow =async(followingId:string):Promise<any>=>{
     try {
-        
         const response = await api.post('/followaccount', { followingId })
-        
         return response.data
-
     } catch (error) {
         axiosError(error, 'sendFollowRequest')
                 throw error
     }
-   
 }
 export const followBack = async (connectionId:string):Promise<any>=>{
     try {
-        
         const response = await api.post('/followback', { connectionId })
-        
         return response.data
-
     } catch (error) {
         axiosError(error, 'sendFollowRequest')
                 throw error
     }
-   
 }
 export const getPendingRequests=async()=>{
     try {
         const response = await api.get('/pendingrequests')
-        
         return response
     } catch (error) {
         axiosError(error,'getPendingrequests')
@@ -41,7 +31,6 @@ export const getPendingRequests=async()=>{
 export const getConnections=async()=>{
     try {
         const response = await api.get('/connections')
-        
         return response
     } catch (error) {
         axiosError(error,'getConnections')
@@ -69,7 +58,6 @@ export const likePost=async(postId:string)=>{
 export const commentPost = async (postId: string, comment:string)=>{
     try {
         const response = await api.post('/commentpost', { postId, comment })
-        
         return response
     } catch (error) {
         axiosError(error, 'commentpost')
@@ -79,8 +67,6 @@ export const commentPost = async (postId: string, comment:string)=>{
 export const getComments=async(postId:string)=>{
     try {
         const response=await api.get('/getComments',{params:{postId}})
-        console.log('response',response)
-        
         return response
     } catch (error) {
         axiosError(error, 'commentpost')
@@ -117,7 +103,6 @@ export const sharePost=async(postId:string)=>{
 export const interactionCount=async(postId:string)=>{
     try {
         const response = await api.get('/getPostInteractions',{params:{postId}})
-        
         const {likeCount,commentCount}=response.data.interactions
         return {likeCount,commentCount}
     } catch (error) {
@@ -128,7 +113,6 @@ export const interactionCount=async(postId:string)=>{
 export const savePost=async(postId:string)=>{
     try {
         const response=await api.post('/savepost',{postId})
-        
         return response.data
     } catch (error) {
         axiosError(error,'savepost')
@@ -138,7 +122,6 @@ export const savePost=async(postId:string)=>{
 export const getSavedPost=async()=>{
     try {
         const response=await api.get('/getsavedposts')
-        
         return response.data
     } catch (error) {
         axiosError(error,'getsavedpost')
@@ -184,7 +167,6 @@ export const getURL=async(url:string)=>{
 export const fetchUserMessages=async(id:string)=>{
     try {
         const response=await api.get(`/get-chat/${id}`)
-        console.log(response)
         return response.data
     } catch (error) {
         axiosError(error,'fetchMessages')
@@ -213,7 +195,6 @@ export const getPostById=async(postId:string)=>{
     try {
         const response=await api.get('/get-post-byid',{params:postId})
         return response.data
-
     } catch (error) {
         axiosError(error,'getPostbyId')
         throw error

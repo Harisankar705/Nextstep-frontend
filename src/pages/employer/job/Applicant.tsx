@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Mail, Phone, Instagram, Twitter, Globe, MoreHorizontal, ChevronDown } from 'lucide-react';
 import { applicantDetails, individualDetails } from '../../../services/adminService';
@@ -9,19 +9,15 @@ import { InterviewScheduleData } from '../../../types/Employer';
 import { scheduleInterview } from '../../../services/commonService';
 import toast from 'react-hot-toast';
 import { changeApplicationStatus } from '../../../services/employerService';
-
 type ApplicationStatus =  'Pending' | 'Accepted' |'In-review'|'Shortlisted'| 'Rejected' |'Interview'| 'Interview Scheduled' | 'Interview Completed';
 const statusOrder = ['pending' ,'accepted' ,'in-review','shortlisted', 'rejected' ,'interview', 'Interview Scheduled' , 'interviewCompleted'];
-
 const getStatusIndex = (status: ApplicationStatus) => {
   return statusOrder.indexOf(status);
 };
-
 const getProgressWidth = (status: ApplicationStatus) => {
   const index = getStatusIndex(status);
   return index === -1 ? '0%' : `${(index / (statusOrder.length - 1)) * 100}%`;
 };
-
 const Applicant = () => {
   const { userId, jobId } = useParams<{ userId: string; jobId: string }>();
   const navigate = useNavigate();
@@ -29,16 +25,13 @@ const Applicant = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('profile');
-  const [applicationStatus, setApplicationStatus] = useState<ApplicationStatus>('pending');
+  const [applicationStatus, setApplicationStatus] = useState<ApplicationStatus>('Pending');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-
   const handleScheduleInterview = async (scheduleData: InterviewScheduleData) => {
     try {
-      
       if (!userId || !jobId) {
         throw new Error('User  ID or Job ID is missing');
       }
-
       const response = await scheduleInterview(scheduleData, userId, jobId);
       if (response.status === 200) {
         toast.success("Interview scheduled!");
@@ -46,33 +39,25 @@ const Applicant = () => {
         toast.error("Failed to schedule interview.");
       }
     } catch (error) {
-      console.error(error);
       toast.error("An error occurred while scheduling the interview.");
     }
   };
-
   useEffect(() => {
     const fetchApplicant = async () => {
         try {
             const userResponse = await individualDetails(userId, 'user');
             const user = userResponse[0];
-
             const applicationStatus = await applicantDetails(userId, jobId); // Fetch application status
-
             setApplicant(user);
             setApplicationStatus(applicationStatus as ApplicationStatus); // Set the application status
-
         } catch (err) {
             setError('Failed to load applicant details');
-            console.error('error',err);
         } finally {
             setLoading(false);
         }
     };
-
     fetchApplicant();
 }, [userId, jobId]); 
-
   const handleStatusChange = async (newStatus: ApplicationStatus) => {
     try {
       await changeApplicationStatus(newStatus,userId as string)
@@ -80,11 +65,9 @@ const Applicant = () => {
       setShowStatusDropdown(false);
       toast.success("Status updated successfully!");
     } catch (err) {
-      console.error('Failed to update status:', err);
       toast.error("Failed to update status.");
     }
   };
-
   const StatusDropdown = () => (
     <div className="relative">
       <button
@@ -94,7 +77,6 @@ const Applicant = () => {
         Change Status
         <ChevronDown size={16} />
       </button>
-      
       {showStatusDropdown && (
         <div className="absolute right-0 mt-2 w-48 bg-[#151923] rounded-lg shadow-lg overflow-hidden z-10">
           {statusOrder.map((status) => (
@@ -112,7 +94,6 @@ const Applicant = () => {
       )}
     </div>
   );
-
   const renderContent = () => {
     switch (activeTab) {
       case 'hiring':
@@ -133,7 +114,6 @@ const Applicant = () => {
                 {statusOrder.map((status, index) => {
                   const isCompleted = getStatusIndex(applicationStatus) >= index;
                   const isCurrent = applicationStatus === status;
-
                   return (
                     <div key={status} className="flex flex-col items-center">
                       <div
@@ -182,7 +162,6 @@ const Applicant = () => {
             </div>
           </div>
         );
-
       case 'profile':
         return (
           <div className="space-y-8">
@@ -211,7 +190,6 @@ const Applicant = () => {
                 </div>
               </div>
             </section>
-
             <section>
               <h3 className="text-lg font-semibold mb-4">Professional Info</h3>
               <div className="space-y-6">
@@ -237,7 +215,6 @@ const Applicant = () => {
                 </div>
               </div>
             </section>
-
             {applicant?.education && applicant.education.length > 0 && (
               <section>
                 <h3 className="text-lg font-semibold mb-4">Education</h3>
@@ -254,7 +231,6 @@ const Applicant = () => {
             )}
           </div>
         );
-
       case 'resume':
         return (
           <div className="space-y-8">
@@ -265,12 +241,10 @@ const Applicant = () => {
                 const resumeUrl = resumePath
                   ? `http://localhost:4000/uploads/profile-pictures/${resumePath.split("\\").pop()}`
                   : null;
-
                 return (
                   <div className="space-y-6">
                     <div className="flex justify-between items-center">
                       <h3 className="text-lg font-semibold">Resume</h3>
-
                       {resumeUrl ? (
                         <a
                           href={resumeUrl}
@@ -284,7 +258,6 @@ const Applicant = () => {
                         <div className="text-gray-500">No resume uploaded</div>
                       )}
                     </div>
-
                     {resumeUrl && resumeUrl.endsWith('.pdf') ? (
                       <iframe
                         src={resumeUrl}
@@ -306,7 +279,6 @@ const Applicant = () => {
             </div>
           </div>
         );
-
       case 'interview':
         return (
           <div className="space-y-8">
@@ -342,16 +314,13 @@ const Applicant = () => {
                 </div>
               </div>
             ) : null}
-            
             <InterviewScheduler applicant={applicant} onScheduleInterview={handleScheduleInterview} />
           </div>
         );
-
       default:
         return <div className="text-gray-400">Content not available</div>;
     }
   };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0B0E14] flex items-center justify-center">
@@ -359,7 +328,6 @@ const Applicant = () => {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="min-h-screen bg-[#0B0E14] flex items-center justify-center">
@@ -367,7 +335,6 @@ const Applicant = () => {
       </div>
     );
   }
-
   if (!applicant) {
     return (
       <div className="min-h-screen bg-[#0B0E14] flex items-center justify-center">
@@ -375,7 +342,6 @@ const Applicant = () => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-[#0B0E14] text-white p-6">
       <div className="flex justify-between items-center mb-8">
@@ -391,7 +357,6 @@ const Applicant = () => {
           <MoreHorizontal size={20} />
         </button>
       </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="space-y-6">
           <div className="flex items-center gap-4">
@@ -411,7 +376,6 @@ const Applicant = () => {
               </div>
             </div>
           </div>
-
           <div className="bg-[#151923] rounded-lg p-6">
             <div className=" flex justify-between text-sm mb-4">
               <span className="text-gray-400">Profile Completion</span>
@@ -425,7 +389,6 @@ const Applicant = () => {
               {applicant.role === 'user' ? 'Job Seeker Profile' : 'Employer Profile'}
             </p>
           </div>
-
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Contact</h3>
             <div className="space-y-3">
@@ -462,7 +425,6 @@ const Applicant = () => {
             </div>
           </div>
         </div>
-
         <div className="lg:col-span-2 bg-[#151923] rounded-lg p-6">
           <div className="flex gap-8 mb-8 border-b border-gray-800 overflow-x-auto">
             <button 
@@ -506,12 +468,10 @@ const Applicant = () => {
               Interview Schedule
             </button>
           </div>
-
           {renderContent()}
         </div>
       </div>
     </div>
   );
 };
-
 export default Applicant;

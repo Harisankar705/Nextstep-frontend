@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MapPin,
   Clock,
@@ -31,7 +31,6 @@ const JobDetails = () => {
         setJob(jobData);
       } catch (error) {
         toast.error("Error fetching job details");
-        console.error("Error fetching job details",error);
       } finally {
         setIsLoading(false);
       }
@@ -47,7 +46,6 @@ const JobDetails = () => {
     setIsApplying(true)
     try {
         const response=await applyJob(job._id)
-        console.log('jobresponse',response)
         if(response.status===200)
         {
             toast.success("Application submitted successfully!")

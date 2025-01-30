@@ -22,7 +22,6 @@ export const validateOTP=(otp:string):string|null=>{
         return null
     }
     return 'otp must be 6 digits!'
-
 }
 export const validatePhoneNumber=(phonenumber:string)=>{
     if(!phonenumber.trim())
@@ -35,23 +34,16 @@ export const validatePhoneNumber=(phonenumber:string)=>{
     return null
 }
 export const  validatePassword=(password:string):string|null=>{
-    if(password.length<8)
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    if(!password.trim())
     {
-        return "Password must be 8 characters long"
+        return 'Password is required!'
     }
-    if (!/[A-Z]/.test(password)) {
-        return "Password must contain at least one uppercase letter";
-      }
-      if (!/[a-z]/.test(password)) {
-        return "Password must contain at least one lowercase letter";
-      }
-      if (!/\d/.test(password)) {
-        return "Password must contain at least one digit";
-      }
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-        return "Password must contain at least one special character";
-      }
-      return null
+    if(!passwordRegex.test(password))
+    {
+        return "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character";
+    }
+    return null
 }
 export const validateConfirmPassword=(password:string,confirmPassword:string):string|null=>{
     if(password!==confirmPassword )

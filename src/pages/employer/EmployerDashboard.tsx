@@ -18,13 +18,12 @@ const EmployerDashboard = () => {
             try {
                 setIsLoading(true)
                 const response=await isVerified()
-                console.log('isverireid',response.data)
                 if(response.data.message==='isVerified')
                 {
                     setVerified(true)
                 }
             } catch (error) {
-                console.error('Verification check failed',error)
+                toast.error('Verification check failed')
                 setVerified(false)
             }
             finally

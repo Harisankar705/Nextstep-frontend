@@ -16,12 +16,10 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       autoConnect: false
     });
     const handleConnect = () => {
-      console.log('Socket connected successfully');
       setSocket(newSocket);
       setIsConnected(true);
     };
     const handleDisconnect = (reason: string) => {
-      console.log('Socket disconnected:', reason);
       setIsConnected(false);
       setTimeout(() => {
         if (!newSocket.connected) {
@@ -30,7 +28,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       }, 1000);
     };
     const handleConnectError = (error: any) => {
-      console.error('Socket connection error:', error);
       setIsConnected(false);
       setTimeout(() => {
         newSocket.connect();

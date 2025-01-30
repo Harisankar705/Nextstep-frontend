@@ -7,6 +7,7 @@ import {
 import { LoaderIcon, X } from "lucide-react";
 import { getCompanyLogo, getProfilePictureURL } from "../../utils/ImageUtils";
 import { INotification } from "../../types/Candidate";
+import toast from "react-hot-toast";
 const socket = io("http://localhost:4000");
 export const Notification = ({
   isOpen,
@@ -27,11 +28,10 @@ export const Notification = ({
       setLoading(true)
       try {
         const response: INotification[] = await getNotifications();
-        console.log('Notificationresponse',response)
         setNotifications(response);
         setUnReadCount(response.filter((n) => !n.read).length);
       } catch (error) {
-        console.error("error fetching notifications", error);
+        toast.error("error fetching notifications");
       }
       finally{
         setLoading(false)
@@ -60,7 +60,7 @@ export const Notification = ({
       const postId=notification.link.split('/').pop()
       onOpenPost(postId)
     } catch (error) {
-      console.error("Error marking notification as read", error);
+      toast.error("Error marking notification as read");
     }
   };
   if (!isOpen) return null;

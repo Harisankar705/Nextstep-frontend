@@ -1,4 +1,4 @@
-import { Bookmark, MoreHorizontal, Users } from "lucide-react";
+import { Bookmark, Users } from "lucide-react";
 import Navbar from "../../utils/Navbar";
 import { useEffect, useState } from "react";
 import { CreatePost } from "./CreatePost/CreatePost";
@@ -37,9 +37,7 @@ const Home = () => {
     const fetchPosts=async()=>{
       try {
         const response=await fetchUserPosts()
-        console.log('response',response)
         setPosts(response.posts)
-
       } catch (error) {
         toast.error("Failed to get posts")
       }
@@ -67,16 +65,11 @@ const Home = () => {
             post={post}
             profilePicture={post.userId.profilePicture}
             userName={`${post?.userId.firstName} ${post.userId.secondName}`}
-            
             role={post.userType}
             />
             )):(
               <div className="text-center text-gray-500">No posts available!</div>
             )}
-            
-
-            
-          
         </main>
       </div>
     </div>

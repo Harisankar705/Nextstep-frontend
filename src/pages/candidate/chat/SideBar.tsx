@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { useSocket } from "../../../SocketContext";
-import toast from "react-hot-toast";
 import { PlusCircle, Search, X } from "lucide-react";
 import { ChatHistoryItem, SideBarProps } from "../../../types/Candidate";
-import { debounce, filter } from "lodash";
+import { debounce } from "lodash";
 import { getCompanyLogo, getProfilePictureURL } from "../../../utils/ImageUtils";
 export const SideBar: React.FC<SideBarProps> = ({ chatHistory = [],onSelectedChat,role }) => {
   const [loading, setLoading] = useState(false);

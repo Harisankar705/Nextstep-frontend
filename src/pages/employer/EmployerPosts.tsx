@@ -5,6 +5,7 @@ import { PostType } from '../../types/Candidate';
 import SideBar from './SideBar';
 import { getUserPosts } from '../../services/authService';
 import Post from '../candidate/Post';
+import toast from 'react-hot-toast';
 
 const EmployerPosts: React.FC = () => {
     const [posts, setPosts] = useState<PostType[]>([]);
@@ -18,7 +19,8 @@ const EmployerPosts: React.FC = () => {
                 const employerPosts = await getUserPosts();
                 setPosts(employerPosts);
             } catch (error) {
-                console.error('Failed to fetch employer posts', error);
+                toast.error('Failed to fetch employer posts');
+                return
             } finally {
                 setIsLoading(false);
             }

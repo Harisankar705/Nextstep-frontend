@@ -26,7 +26,6 @@ export const PaymentSuccess = () => {
         }
 
         const response = await changeToPremium(userId);
-        console.log(response)
         if (response.status === 200) {
           
           setShowContent(true);
@@ -37,7 +36,6 @@ export const PaymentSuccess = () => {
           },2000)
         }
       } catch (error) {
-        console.error('Error during premium upgrade:', error);
         toast.error('An error occurred during upgrade');
         navigate('/jobs');
       } finally {

@@ -11,6 +11,15 @@ export const getUser = async (role: 'user' | 'employer'): Promise<Candidate[]> =
         throw error
     }
 }
+export const adminLogout=async()=>{
+    try {
+        const response=await api.post('/adminlogout')
+        return response
+    } catch (error) {
+        axiosError(error,'adminlogout')
+        throw error
+    }
+}
 export const toogleStatus = async (id: string, role: string): Promise<Candidate[]> => {
     try {
         const response = await api.post(`/togglestatus/${id}`, { role })

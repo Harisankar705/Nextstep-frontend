@@ -7,23 +7,22 @@
   import { useNavigate } from "react-router-dom";
   import { fetchLanguageSuggestions, fetchLocationSuggestions } from "../../utils/LanguageAndLocation";
   import { LocationSuggestion } from "../../types/Candidate"; 
-
-
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/userSlice";
   const CandidateDetails = () => {
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [profilePicture, setProfilePicture] = useState<File | null>(null);
     const [profilePicturePreview, setProfilePicturePreview] = useState<
       string | null
     >(null);
+    const dispatch=useDispatch()
     const navigate = useNavigate()
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [languageSuggestions, setLanguagesSuggestion] = useState<string[]>([]);
     const [languageInput, setLanguageInput] = useState("");
     const [locationInput, setLocationInput] = useState("");
     const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
-
     const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
     const formik = useFormik({
       initialValues: {
         experience: "",
@@ -43,7 +42,6 @@
       validationSchema: Yup.object({
         education: Yup.object({
           degree: Yup.string().required("Degree is required"),
-          
           year: Yup.string()
             .required("Year is required")
             .matches(/^\d{4}$/, "Year must be a 4-digit number")
@@ -96,9 +94,7 @@
           .test('fileType', "Unsupported file type", (value) => {
             if (!value) return true
             return ['application/pdf', 'application/msword'].includes((value as File).type)
-
           }
-
           ),
         aboutMe: Yup.string()
         .required("About me is required")
@@ -116,16 +112,13 @@
               const birthDate = new Date(value);
               let age = today.getFullYear() - birthDate.getFullYear();
               const monthDiff = today.getMonth() - birthDate.getMonth();
-
               if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
                 age--;
               }
-
               return age >= 18;
             }
           )
           .required("Date of birth is required"),
-
         gender: Yup.string().required("Gender is required"),
         skills: Yup.array()
           .of(Yup.string())
@@ -133,27 +126,25 @@
       }),
       onSubmit: async (values) => {
         const formData = new FormData();
-
-
         if (profilePicture instanceof File) {
-          
           formData.append("profilePicture", profilePicture);
         }
         if (resumeFile instanceof File) {
-        
           formData.append("resumeFile", resumeFile);
         }
         formData.append("data", JSON.stringify(values));
         try {
-          await candidateDetails(formData);
+          const response=await candidateDetails(formData);
+          if(response.message==='User updated successfully!')
+          {
+            dispatch(setUser(response.updatedUser))
+          } 
           toast.success("Details submitted successfully!");
           navigate('/home')
         } catch (error) {
           toast.error("error occured in candidateDetails");
-          console.error("error occured in candidateDetails",error);
           return 
         }
-    
       },
     });
     const handleLanguageChange = async (
@@ -165,9 +156,6 @@
         try {
           const languages=await fetchLanguageSuggestions(query)
           setLanguagesSuggestion(languages)
-          
-            
-
         } catch (error) {
           throw new Error("Error occured while language")
         }
@@ -180,18 +168,14 @@
     ) => {
       const query = event.target.value.trim();
       setLocationInput(query);
-
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }
-
       debounceRef.current = setTimeout(async () => {
         if (query) {
           try {
             const locations=await fetchLocationSuggestions(query)
             setLocationSuggestions(locations)
-
-            
           } catch (error) {
             toast.error("Failed to fetch location suggestions!");
           }
@@ -200,12 +184,10 @@
         }
       }, 500);
     };
-
     const handleLanguageSelect = (language: string) => {
       if (!formik.values.languages.includes(language)) {
         formik.setFieldValue("languages", [...formik.values.languages, language]);
       }
-
       setLanguagesSuggestion([]);
       setLanguageInput("");
     };
@@ -214,23 +196,19 @@
       setLocationInput(location);
       setLocationSuggestions([]);
     };
-
     const removeLanguage = (language: string) => {
       const updatedLanguages = formik.values.languages.filter(
         (lang) => lang !== language
       );
       formik.setFieldValue("languages", updatedLanguages);
     };
-
     const handleResumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
         const file = event.target.files[0]
-        
         setResumeFile(file);
         formik.setFieldValue("resumeFile", file)
       }
     };
-
     const handleProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
         const file = event.target.files[0];
@@ -242,19 +220,15 @@
         }
       }
     };
-
-
     const addSkill = (newSkill: string): void => {
       if (newSkill.trim() && !formik.values.skills.includes(newSkill)) {
         formik.setFieldValue("skills", [...formik.values.skills, newSkill]);
       }
     };
-
     const removeSkill = (index: number): void => {
       const updatedSkills = formik.values.skills.filter((_, i) => i !== index);
       formik.setFieldValue("skills", updatedSkills);
     };
-
     return (
       <form
         className="min-h-screen bg-black text-white p-4"
@@ -265,7 +239,6 @@
         </div>
         <div className="max-w-4xl mx-auto bg-zinc-950 border border-purple-500/20 rounded-lg p-6 space-y-8">
           <h2 className="text-lg font-semibold mb-4">Candidate Details</h2>
-
           <div>
             <label className="block text-sm text-zinc-400 mb-1">
               Upload Profile Picture
@@ -287,7 +260,6 @@
               </div>
             )}
           </div>
-
           <div>
             <label className="block text-sm text-zinc-400 mb-1">Experience</label>
             <input
@@ -309,7 +281,6 @@
               <p className="text-red-500 text-sm">{formik.errors.experience}</p>
             )}
           </div>
-
           <div>
             <label className="block text-sm text-zinc-400 mb-1">Resume</label>
             <input
@@ -327,7 +298,6 @@
               <p className="text-red-500 text-sm">{formik.errors.resumeFile}</p>
             )}
           </div>
-
           <div>
             <label className="block text-sm text-zinc-400 mb-1">Skills</label>
             <input
@@ -359,7 +329,6 @@
               Add
             </button>
           </div>
-
           <ul className="mt-2 space-y-2">
             {formik.values.skills.map((skill, index) => (
               <li
@@ -380,7 +349,6 @@
           {formik.touched.skills && formik.errors.skills && (
             <p className="text-red-500 text-sm">{formik.errors.skills}</p>
           )}
-
           <div>
             <label className="block text-sm text-zinc-400 mb-1">Languages</label>
             <input
@@ -456,7 +424,6 @@
               </ul>
             )}
           </div>
-
           <div>
             <label className="block text-sm text-zinc-400 mb-1">
               Date of Birth
@@ -476,7 +443,6 @@
               <p className="text-red-500 text-sm">{formik.errors.dateofbirth}</p>
             )}
           </div>
-
           <div>
             <label className="block text-sm text-zinc-400 mb-1">About Me</label>
             <input
@@ -524,7 +490,6 @@
               <p className="text-red-500 text-sm">{formik.errors.gender}</p>
             )}
           </div>
-
           <div>
             <label className="block text-sm text-zinc-400 mb-1">Degree</label>
             <input
@@ -591,7 +556,6 @@
                 </p>
               )}
           </div>
-
           <button
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
@@ -602,5 +566,4 @@
       </form>
     );
   };
-
   export default CandidateDetails;

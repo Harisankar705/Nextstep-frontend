@@ -1,10 +1,8 @@
 import { Edit } from "lucide-react"
-import { getImageURL } from "../../../utils/ImageUtils"
+import { getProfilePictureURL } from "../../../utils/ImageUtils"
 import { ProfileHeaderProps } from "../../../types/Candidate"
-
 export const ProfileHeader:React.FC<ProfileHeaderProps>=({user,isOwnProfile,onEditProfile}) => {
     const {firstName,secondName,profilePicture,friends}=user
-    const profilePictureURl=getImageURL(profilePicture,'profile-pictures')
   return (
     <>
     <div className="relative h-[350px]">
@@ -15,10 +13,9 @@ export const ProfileHeader:React.FC<ProfileHeaderProps>=({user,isOwnProfile,onEd
     <div className="bg-black text-white pt-20 px-8">
         <div className="max-w-6xl mx-auto">
             <div className="relative inline-block h-48 w-48 rounded-full overflow-hidden border-4 border-black bg-gray-900 -mt-48 l-auto">
-                <img src={profilePictureURl} alt='profile' className="h-full w-full object-cover"/>
+                <img src={getProfilePictureURL(profilePicture)} alt='profile' className="h-full w-full object-cover"/>
             </div>
                   <div className="flex justify-between items-start">
-
                       <div className="text-center">
                           <h1 className="text-3xl font-bold">
                               {firstName} {secondName}
@@ -34,7 +31,6 @@ export const ProfileHeader:React.FC<ProfileHeaderProps>=({user,isOwnProfile,onEd
                               </button>
                           </div>
                       )}
-                      
                   </div>
         </div>
     </div>

@@ -5,9 +5,8 @@ import { getProfilePictureURL } from "../../utils/ImageUtils"
 import { UserCheck, UserPlus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { followBack, getConnections, getPendingRequests, toggleFollow } from "../../services/commonService"
+import { followBack, getConnections, getPendingRequests } from "../../services/commonService"
 import { useNavigate } from "react-router-dom"
-
 export const ConnectionRequest = () => {
     const navigate =useNavigate()
     const [requests, setRequests] = useState<Requests[]>([])
@@ -16,11 +15,9 @@ export const ConnectionRequest = () => {
     const [connections, setConnections] = useState<Requests[]>([])
     const [error, setError] = useState('')
     const currentUser = useSelector((state: { user: UserCandidate }) => state.user)
-
     const handleViewProfile = (id: string) => {
         navigate(`/candidate-profile/${id}`); 
     }
-
     useEffect(() => {
         const fetchRequests = async () => {
             try {
@@ -32,18 +29,14 @@ export const ConnectionRequest = () => {
                 setRequests(data);
                 const connection=await getConnections()
                 setConnections(connection.data.data)
-                console.error("Expected an array but got:", connection.data);
-
             } catch (error) {
                 const errorMessage = (error as Error).message || "Error occurred while fetching requests";
-
                 setError(errorMessage)
                 toast.error("Error occured while fetching requests")
             }
         }
         fetchRequests()
     }, [])
-    
     const handleAccept = async (connectionId: string) => {
         await followBack(connectionId)
         setIsFollowedBack(true)
@@ -57,7 +50,6 @@ export const ConnectionRequest = () => {
                         <div className="items-center gap-2 mb-4">
                             <div className="w-10 h-10 rounded-full overflow-hidden">
                                 <img src={getProfilePictureURL(currentUser.profilePicture)} alt={currentUser.firstName} className="w-full h-full object-cover" />
-
                             </div>
                         </div>
                         <button onClick={() => setActiveTab('connections')}
@@ -75,9 +67,7 @@ export const ConnectionRequest = () => {
                                 <span className="ml-auto bg-purple-600 text-white text-xs px-2 py-1 rounded-full">{requests.length}</span>
                             )}
                         </button>
-
                     </div>
-
                 </div>
             </div>
             <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
@@ -85,7 +75,6 @@ export const ConnectionRequest = () => {
                     <h2 className="text-2xl text-white font-bold mb-4">
                         {activeTab === 'requests' ? 'Connection Requests' : 'Your Connections'}
                     </h2>
-
                     {activeTab === 'requests' ? (
                         requests.length === 0 ? (
                             <p className="text-center text-gray-400">No pending requests</p>
@@ -164,7 +153,5 @@ export const ConnectionRequest = () => {
                 </div>
             </main>
         </div>
-
-
     )
 }

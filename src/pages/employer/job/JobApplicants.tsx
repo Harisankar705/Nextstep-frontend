@@ -24,7 +24,6 @@ const JobApplicants = () => {
         }
       } catch (err) {
         setError('Failed to fetch applicants');
-        console.error(err);
       } finally {
         setLoading(false);
       }

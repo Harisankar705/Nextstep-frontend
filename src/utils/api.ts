@@ -2,6 +2,7 @@ import axios from 'axios'
 import { clearUser } from '../redux/userSlice';
 import { persistor } from '../redux/store';
 import {store} from '../redux/store'
+import toast from 'react-hot-toast';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -60,7 +61,7 @@ export const handleLogout = async (error?:any) => {
         await persistor.purge()
         window.location.href='/location'
     } catch (error) {
-        console.error('Logout error', error);
+        toast.error('Failed to handlelogout')
     } finally {
         window.location.href = '/login';
     }

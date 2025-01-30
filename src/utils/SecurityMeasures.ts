@@ -1,6 +1,5 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-
  export const sanitizeText=(text:string):string=>{
         return text.replace(/<[^>]*>/g, '');
     }
@@ -47,11 +46,9 @@ import toast from "react-hot-toast";
             return true
         } catch (error) {
             toast.error("Error scanning for malware")
-            console.error(error)
             return false
         }
     }
-
     export const useRateLimit=()=>{
         const [lastPostTime,setLastPostTime]=useState<number>(0)
         const COOLDOWN_PERIOD=60000

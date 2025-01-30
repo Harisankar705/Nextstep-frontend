@@ -7,7 +7,6 @@ import Spinner from "../../../utils/Spinner";
 import SideBar from "../SideBar";
 import toast from "react-hot-toast";
 import { ReusableConfirmDialog } from "../../../utils/ConfirmDialog";
-
 export const JobListing = () => {
   const navigate = useNavigate();
   const [jobToDelete, setJobToDelete] = useState<string | null>(null);
@@ -15,27 +14,22 @@ export const JobListing = () => {
   const [loading, setLoading] = useState(true);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchJobListing = async () => {
       try {
         const response = await fetchJobs();
-        
         setJobListings(response.data);
       } catch (error) {
         setError("Failed to fetch job listings");
-        console.error(error);
       } finally {
         setLoading(false);
       }
     };
     fetchJobListing();
   }, []);
-
   const handleEditClick = (jobId: string) => {
     navigate(`/editjob/${jobId}`);
   };
-
   const handleDeleteJob = async (jobId: string) => {
     if (jobToDelete) {
       try {
@@ -46,7 +40,6 @@ export const JobListing = () => {
         }
       } catch (error) {
         toast.error("Error occurred while deleting job!");
-        
         return;
       } finally {
         setDialogVisible(false);
@@ -54,23 +47,17 @@ export const JobListing = () => {
       }
     }
   };
-
   const handleDialogReject = () => {
     setDialogVisible(false);
     setJobToDelete(null);
     toast.success("Unfollow cancelled!");
   };
-
   if (loading) {
     return <Spinner loading={true} />;
   }
-
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
-
-  
-
   return (
     <div className="flex min-h-screen bg-gray-900 text-white">
       <SideBar />

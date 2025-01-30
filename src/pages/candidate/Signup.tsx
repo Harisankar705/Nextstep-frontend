@@ -7,13 +7,11 @@ import { validateConfirmPassword, validateMail, validateName, validatePassword, 
 import InputField from "../../utils/InputField";
 import { toast } from 'react-hot-toast'
 import Spinner from "../../utils/Spinner";
-
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const handleLoginClick = () => {
     navigate("/login",{replace:true});
   };
-
   const [firstName, setFirstName] = useState('');
   const [secondName, setSecondName] = useState('');
   const [email, setEmail] = useState('');
@@ -21,7 +19,7 @@ const Signup: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string|null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -31,8 +29,6 @@ const Signup: React.FC = () => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isResending, setIsResenting] = useState(false)
-
-
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setError('');
@@ -41,7 +37,6 @@ const Signup: React.FC = () => {
     const phonenumberError = validatePhoneNumber(phonenumber);
     const passwordError = validatePassword(password);
     const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
-
     if (nameError || emailError || phonenumberError || passwordError || confirmPasswordError) {
       setError(nameError || emailError || phonenumberError || passwordError || confirmPasswordError || "");
       return;
@@ -52,13 +47,11 @@ const Signup: React.FC = () => {
         setError("email or phone number is already registered!")
         toast.error("email or phone number is already registered!")
         return
-
       }
       else {
         if (otpSent) return
         setLoading(true)
          await sendOTP(email, 'user');
-        
         setOtpSent(true);
         toast.success("OTP sended!Check your mail")
         startCountdown();
@@ -71,10 +64,7 @@ const Signup: React.FC = () => {
     {
       setLoading(false)
     }
-
-    
   };
-
   const startCountdown = () => {
     setCountdown(60);
     const interval = setInterval(() => {
@@ -87,12 +77,10 @@ const Signup: React.FC = () => {
       });
     }, 1000);
   };
-
   const handleResendOTP = async () => {
     try {
       if (isResending || countdown > 0) return
       setIsResenting(true)
-
       setError('')
       setOtp(['', '', '', '', '', ''])
       const response = await resendOTP(email, 'user')
@@ -108,29 +96,24 @@ const Signup: React.FC = () => {
       setError("error occured while resending otp")
       toast.error("Failed to resend otp")
     }
-
     setOtp(['', '', '', '', '', '']);
   };
-
   const handleOtpChange = (index: number, value: string) => {
     if (/[^0-9]/.test(value)) return;
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     } else if (!value && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
-
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
-
   const handleVerify = async () => {
     const otpString = otp.join('');
     if (otpString.length !== 6) {
@@ -138,16 +121,13 @@ const Signup: React.FC = () => {
       toast.error("Please enter all the digits")
       return 
     }
-    
     try {
       const verified = await verifyOTP(email, otpString, 'user');
     if (verified.message === "OTP verification successfull!") {
 setLoading(true)
       toast.success("OTP verified successfull!")
-
       setOtpVerified(true);
       await handleRegister()
-
       navigate('/login',{replace:true});
     } 
     else if (verified.message === "Failed to verify otp") {
@@ -156,19 +136,14 @@ setLoading(true)
   }
 }
   catch (error) {
-      
     setError('error occured while otp verification')
     toast.error("An error occured during otp verification")
-    
     } 
     finally
     {
       setLoading(false)
     }
     }
-  
-  
-
   const handleRegister = async () => {
     const userData = {
       firstName,
@@ -181,13 +156,10 @@ setLoading(true)
     };
     try {
       setLoading(true);
-
       const response = await register(userData, otp.join(''));
-      
       toast.success("Registeration successfull!")
       setLoading(true);
       setIsRegistered(true);
-      
     } catch (error) {
       setLoading(false);
       setError("Registration failed");
@@ -197,9 +169,7 @@ setLoading(true)
     {
       setLoading(false)
     }
-
   };
-
   return (
     <div className="min-h-screen w-full bg-[#1a1625] text-white flex items-center justify-center">
       <div className="container max-w-[1100px] px-4">
@@ -215,7 +185,6 @@ setLoading(true)
             </div>
             <p className="text-sm text-muted-foreground">Trusted by Global Brands!</p>
           </div>
-
           {otpSent ? (
             <div className="bg-black/30 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto mt-6">
               <h2 className="text-white text-xl font-semibold mb-8">One-Time Password</h2>
@@ -252,9 +221,6 @@ setLoading(true)
                 </button>
               </div>
             </div>
-
-
-
           ) : (
             <div className="bg-[#1e1c29] rounded-lg p-6 space-y-6">
               <h2 className="text-lg font-semibold">Create an account</h2>
@@ -349,7 +315,6 @@ setLoading(true)
                     "Sign up"
                   )}
                 </button>
-
               </form>
               <div className="flex items-center gap-2 rounded-lg bg-[#2a2837] p-4">
                 <div className="h-8 w-8 rounded-lg bg-[#1e129]" />
@@ -366,5 +331,4 @@ setLoading(true)
     </div>
   );
 };
-
 export default Signup;

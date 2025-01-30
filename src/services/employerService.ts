@@ -2,15 +2,12 @@ import { AxiosResponse } from "axios"
 import api from "../utils/api"
 import { axiosError } from "../utils/AxiosError"
 import { JobType } from "../types/Candidate"
-
 export const employerDetails = async (details: Record<string, any>,isEdit:boolean=false): Promise<any> => {
     try {
         const url=isEdit?'/employerDetails?isEdit=true':"/employerDetails"
         const response = await api.post(url, details, {
             headers: { "Content-Type": 'multipart/form-data' }
         })
-
-
         return response.data
     } catch (error) {
         const errorDetails = axiosError(error, 'login')
@@ -20,7 +17,6 @@ export const employerDetails = async (details: Record<string, any>,isEdit:boolea
 export const postjob=async(formData:any)=>{
     try {
         const response=await api.post('/createjob',{formData})
-        
         return response
     } catch (error) {
         const errorDetails = axiosError(error, 'postjob')
@@ -38,7 +34,6 @@ export const fetchJobs=async()=>{
 }
 export const fetchUserJobs = async (params?: Record<string, any>): Promise<JobType[]> => {
     try {
-        
         const response:AxiosResponse<JobType[]>=await api.post('/fetch-jobs')
         return response.data;
     } catch (error) {
@@ -58,11 +53,9 @@ export const isVerified=async()=>{
 export const applyJob=async(jobId:string)=>{
     try {
         const response=await api.post('/apply-job',{jobId})
-        console.log('response')
         return response
     } catch (error) {
         const errorDetails=axiosError(error,'applyjob')
-        console.log('errordetails',errorDetails)
         throw errorDetails
     }
 }
@@ -78,7 +71,6 @@ export const fetchJobById=async(jobId:string|undefined)=>{
 export const updateJob=async(jobId:string,formData:any)=>{
     try {
         const response=await api.put(`/updatejob/${jobId}`,formData)
-        
         return response
     } catch (error) {
         const errorDetails = axiosError(error, 'fetch job by id')
@@ -88,7 +80,6 @@ export const updateJob=async(jobId:string,formData:any)=>{
 export const deleteJob=async(jobId:string,)=>{
     try {
         const response=await api.delete(`/deletejob/${jobId}`)
-        
         return response
     } catch (error) {
         const errorDetails = axiosError(error, 'delete job')
@@ -103,18 +94,14 @@ export const fetchApplicantsForJob=async(jobId:string)=>{
         const errorDetails = axiosError(error, 'delete job')
         throw errorDetails 
     }
-   
 }
-
 export const changeApplicationStatus = async (newStatus: string, userId: string) => {
     try {
         const requestBody = {
             status: newStatus,
             userId: userId
         };
-
         const response = await api.post(`/change-applicationstatus`, requestBody);
-        
         return response.data; 
     } catch (error) {
         const errorDetails = axiosError(error, 'changeApplicationStatus');

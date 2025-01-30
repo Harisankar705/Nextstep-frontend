@@ -4,7 +4,6 @@ import { getComments } from "../../../services/commonService";
 import { getCompanyLogo, getProfilePictureURL } from "../../../utils/ImageUtils";
 import { Comment } from "../../../types/Candidate";
 import { useSocket } from "../../../SocketContext";
-
 const Comments = ({
   postId,
   onCommentCountChange,
@@ -20,32 +19,23 @@ const Comments = ({
   const [comment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
   const { socket } = useSocket();
-
   const fetchComments = async () => {
     try {
       const response = await getComments(postId);
-      console.log('fetchedcomments',response.data)
       if (Array.isArray(response.data)) {
         setComments(response.data);
         onCommentCountChange?.(response.data.length);
       } else {
-        console.warn(
-          "Comments data is not in the expected format:",
-          response.data
-        );
+        toast.error("Failed to load comments")
         setComments([]);
       }
     } catch (error) {
       toast.error("Failed to load comments");
-      console.error("Error fetching comments:", error);
     }
   };
-  console.log('comments',comments)
-
   useEffect(() => {
     fetchComments();
   }, [postId, onCommentCountChange]);
-
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim()) {
@@ -62,21 +52,17 @@ const Comments = ({
             link: `/posts/${postId}`,
           });
         }
-        
         await fetchComments();
         setNewComment("");
         onCommentCountChange;
-
         toast.success("Comment added successfully!");
       } catch (error) {
         toast.error("Failed to add comment!");
-        console.error("Error adding comment:", error);
       } finally {
         setLoading(false);
       }
     }
   };
-
   return (
     <div className="space-y-4">
       <form onSubmit={handleCommentSubmit} className="flex gap-2">
@@ -136,5 +122,4 @@ const Comments = ({
     </div>
   );
 };
-
 export default Comments;

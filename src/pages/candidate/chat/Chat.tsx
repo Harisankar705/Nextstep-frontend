@@ -1,21 +1,13 @@
 import {
   Delete,
-  Info,
-  Maximize2,
   MessagesSquare,
-  Mic,
-  MicOff,
-  Minimize2,
   MoreVertical,
   Paperclip,
-  Phone,
-  PhoneOff,
   Send,
   Video,
-  VideoOff,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState } from "react";
 import { useSocket } from "../../../SocketContext";
 import { Message, SelectedFileType, VideoCallAnswerData } from "../../../types/Candidate";
 import { SideBar } from "./SideBar";
@@ -30,6 +22,7 @@ import {
   getCompanyLogo,
   getProfilePictureURL,
 } from "../../../utils/ImageUtils";
+import { VideoCallUI } from "./VideoCall";
 export const Chat = () => {
   const { userId, role } = useParams();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -60,11 +53,6 @@ export const Chat = () => {
   const [selectedFile, setSelectedFile] = useState<SelectedFileType | null>(
     null
   );
-  const formatDuration=(seconds:number)=>{
-    const mins=Math.floor(seconds/60)
-    const secs=seconds%60
-    return `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`
-  }
   const toggleMute=()=>{
     if(localStream)
     {
@@ -74,19 +62,26 @@ export const Chat = () => {
       setIsMuted(!isMuted)
     }
   }
-  const toggleVideo=()=>{
-    if(localStream)
-    {
-      localStream.getVideoTracks().forEach(track=>{
-        track.enabled=!track.enabled
-        console.log('Video track:', {
-          enabled: track.enabled,
-          id: track.id
-        });
-      })
-      setIsVideoEnabled(!isVideoEnabled)
-    }
+  const toggleVideo = () => {
+  if (localStream) {
+    localStream.getVideoTracks().forEach(track => {
+      track.enabled = !track.enabled;
+      if (localVideoRef.current) {
+        if (!track.enabled) {
+          localVideoRef.current.style.backgroundColor = '#000000';
+          localVideoRef.current.srcObject = null;
+        } else {
+          localVideoRef.current.style.backgroundColor = 'transparent';
+          localVideoRef.current.srcObject = localStream;
+          localVideoRef.current.play().catch(error => {
+            toast.error('Error playing local video:', error);
+          });
+        }
+      }
+    });
+    setIsVideoEnabled(!isVideoEnabled);
   }
+};
   useEffect(() => {
     if (!socket) return;
     const connectSocket = () => {
@@ -106,7 +101,6 @@ export const Chat = () => {
     socket.on('disconnect', connectSocket);
     socket.on('connect_error', connectSocket);
     connectSocket();
-    // Cleanup
     return () => {
       socket.off('connect', handleConnect);
       socket.off('disconnect', connectSocket);
@@ -129,18 +123,6 @@ export const Chat = () => {
       setCallDuration(0)
     }
   },[isCallInProgress])
-    const toggleFullScreen = () => {
-    if (!videoContainerRef.current) return;
-    if (!document.fullscreenElement) {
-      videoContainerRef.current.requestFullscreen().catch((err) => {
-        toast.error("Error attempting to enable full screen mode!");
-      });
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
-    }
-  };
   useEffect(() => {
     const handleFullScreenChange = () => {
       setIsFullScreen(!!document.fullscreenElement);
@@ -156,149 +138,6 @@ export const Chat = () => {
       setIsStreamSet(false);
     }
   }, [localStream]);  
-  const VideoCallUI = () => {
-    // console.log('Render Video Call UI', {
-    //   localStream: !!localStream,
-    //   remoteStream: !!remoteStream,
-    //   localVideoRef: localVideoRef.current,
-    //   remoteVideoRef: remoteVideoRef.current
-    // });
-    useEffect(() => {
-      if (localVideoRef.current && localStream) {
-        try {
-          localVideoRef.current.srcObject = localStream;
-          localVideoRef.current.onloadedmetadata = () => {
-            localVideoRef.current?.play().catch(error => {
-              console.error('Error playing local video:', error);
-            });
-          };
-        } catch (error) {
-          console.error('Error setting local stream:', error);
-        }
-      }
-    }, [localStream]);
-    useEffect(() => {
-      if (remoteVideoRef.current && remoteStream) {
-        try {
-          remoteVideoRef.current.srcObject = remoteStream;
-          remoteVideoRef.current.onloadedmetadata = () => {
-            remoteVideoRef.current?.play().catch(error => {
-              console.error('Error playing remote video:', error);
-            });
-          };
-        } catch (error) {
-          console.error('Error setting remote stream:', error);
-        }
-      }
-    }, [remoteStream]);
-    if (!localStream) {
-      return <div>Loading video...</div>;
-    }
-      return (
-        <div ref={videoContainerRef} className="fixed inset-0 z-50 bg-black">
-          {remoteStream ? (
-            <video
-        ref={remoteVideoRef}
-        autoPlay
-        playsInline
-        className="w-full h-full rounded-lg object-cover"
-      />
-          ):(
-            <div  className="w-full h-full flex items-center justify-center text-white">
-          Waiting for remote video...
-        </div>
-          )}
-      <div className="absolute bottom-24 right-4 w-48 h-36 rounded-lg overflow-hidden shadow-lg">
-        <video
-          ref={localVideoRef}
-          autoPlay
-          playsInline
-          className="w-48 h-36 rounded-lg object-cover"
-        />
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from black/80 to-transparent">
-        <div className="flex items-center justify-between max-w-md mx-auto">
-          <div className="text-white text-lg">
-            {formatDuration(callDuration)}
-          </div>
-          <div className="flex items-center space-x-6">
-            <button
-              onClick={toggleMute}
-              className={`p-4 rounded-full ${
-                isMuted ? "bg-gray-500" : "bg-red-600"
-              } hover:opacity-90 transition-colors`}
-            >
-              {isMuted ? (
-                <Mic className="w-6 h-6" />
-              ) : (
-                <MicOff className="w-6 h-6" />
-              )}
-            </button>
-            <button
-              onClick={toggleVideo}
-              className={`p-4 rounded-full ${
-                !isVideoEnabled ? "bg-red-500" : "be-gray-600"
-              } hover:opacity-90 transition-colors`}
-            >
-              {!isVideoEnabled ? (
-                <VideoOff className="w-6 h-6" />
-              ) : (
-                <Video className="w-6 h-6" />
-              )}
-            </button>
-            <button
-              onClick={toggleFullScreen}
-              className={`p-4 rounded-full ${
-                isFullScreen ? "bg-red-500" : "be-gray-600"
-              } hover:opacity-90 transition-colors`}
-            >
-              {isFullScreen ? (
-                <Minimize2 className="w-6 h-6" />
-              ) : (
-                <Maximize2 className="w-6 h-6" />
-              )}
-            </button>
-            <button
-              onClick={endVideoCall}
-              className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
-            >
-              <PhoneOff className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        className={`absolute top-0 left-0 right-0 p-6 bg-gradient-to-b from-black/80 to-transparent ${
-          isFullScreen ? "block" : "hidden"
-        }`}
-      >
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-full overflow-hidden">
-            <img
-              src={
-                role === "employer"
-                  ? getCompanyLogo(userDetails?.logo)
-                  : getProfilePictureURL(userDetails?.profilePicture)
-              }
-              alt="caller"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <h3 className="text-white font-semibold">
-              {role === "employer"
-                ? userDetails?.companyName
-                : userDetails?.firstName}
-            </h3>
-            <p className="text-white font-semibold">
-              {isVideoEnabled ? "Video Call" : "Voice call"}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-      )
-}
   useEffect(() => {
     if (!socket) return;
     const handleVideoCallOffer = (data: {
@@ -306,9 +145,7 @@ export const Chat = () => {
       receiverId: string;
       offer: RTCSessionDescriptionInit;
     }) => {
-      console.log("receiving", data);
       if (data.senderId !== userId) {
-        console.warn("Video call not intended for this user");
         return;
       }
       setCaller(data);
@@ -331,8 +168,6 @@ export const Chat = () => {
           video: true,
           audio: true,
         })
-        console.log('Local Stream Created:', stream);
-    console.log('Video Tracks:', stream.getVideoTracks());
       setLocalStream(stream);
       stream.getVideoTracks().forEach(track=>{
         track.enabled=true
@@ -379,25 +214,21 @@ export const Chat = () => {
       };
       setIsCallInProgress(true);
     } catch (error) {
-      console.error("Error starting video call:", error);
       toast.error("Error starting video call");
     }
   };
   const answerVideoCall = async () => {
     try {
-      if (!caller || !caller.offer) 
-      {
-        console.log('no caller')
-        return
+      if (!caller || !caller.offer) {
+        return;
       }
+      // Get local stream
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
       setLocalStream(stream);
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
+      // Create peer connection
       const peerConnection = new RTCPeerConnection({
         iceServers: [
           { urls: "stun:stun.l.google.com:19302" },
@@ -405,61 +236,49 @@ export const Chat = () => {
         ],
       });
       peerConnectionRef.current = peerConnection;
+      peerConnection.oniceconnectionstatechange = () => {
+      };
+      peerConnection.onconnectionstatechange = () => {
+      };
       stream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, stream);
       });
-      await peerConnection.setRemoteDescription(
-        new RTCSessionDescription(caller.offer)
-      );
+      peerConnection.ontrack = (event) => {
+        if (event.streams && event.streams[0]) {
+          setRemoteStream(event.streams[0]);
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = event.streams[0];
+            remoteVideoRef.current.play()//remove the .catch
+          }
+        } 
+      };
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(caller.offer));
       const answer = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answer);
       socket?.emit("videoCallAnswer", {
-        senderId: userId, 
-        receiverId: caller.senderId, 
+        senderId: userId,
+        receiverId: caller.senderId,
         answer,
       });
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           socket?.emit("newIceCandidate", {
-            senderId: selectedChat._id, 
+            senderId: selectedChat._id,
             receiverId: caller.senderId,
             candidate: event.candidate,
           });
-        }
-      };
-      peerConnection.onconnectionstatechange = () => {
-        if (peerConnection.connectionState === "disconnected") {
-          endVideoCall();
-        }
-      };
-      peerConnection.ontrack = (event) => {
-        console.log('Receiver ontrack details:', {
-          streams: event.streams,
-          videoTracks: event.streams[0]?.getVideoTracks(),
-          audioTracks: event.streams[0]?.getAudioTracks()
-        });
-        if (event.streams && event.streams.length > 0) {
-          setRemoteStream(event.streams[0]);
-          if (remoteVideoRef.current) {
-            remoteVideoRef.current.srcObject = event.streams[0];
-            remoteVideoRef.current.play().catch(error => {
-              console.error('Remote video play error:', error);
-            });
-          }
         }
       };
       setIsCallInProgress(true);
       setIsReceivingCall(false);
       setCaller(null);
     } catch (error) {
-      console.error("Error answering video call:", error);
       toast.error("Error answering video call");
       endVideoCall();
     }
   };
   useEffect(() => {
     if (socket && !isConnected) {
-      console.log('Attempting socket reconnection...');
       socket.connect();
     }
   }, [socket, isConnected]);
@@ -467,31 +286,30 @@ export const Chat = () => {
     if (!socket) return;
     const handleNewICECandidate = async(data: {
       senderId: string;
-      receiverId:string
+      receiverId: string;
       candidate: RTCIceCandidate;
     }) => {
-      if (!peerConnectionRef.current ) {
-        console.warn('Candidate not for this user or no peer connection');
+      if (!peerConnectionRef.current) {
         return;
       }
-      await peerConnectionRef.current
-        .addIceCandidate(new RTCIceCandidate(data.candidate))
-        .catch((error) => {
-          console.error("Error adding ICE candidate", error);
-        });
+      try {
+        await peerConnectionRef.current.addIceCandidate(
+          new RTCIceCandidate(data.candidate)
+        );
+      } catch (error) {
+        return
+      }
     };
     socket.on("newICECandidate", handleNewICECandidate);
     return () => {
       socket.off("newICECandidate", handleNewICECandidate);
     };
-  }, [socket, userId]);
+  }, [socket]);
   useEffect(() => {
     if (!socket) return;
     const handleVideoCallAnswer = async (data: VideoCallAnswerData) => {
-      console.log('in handleVideoCallAnswer', data);
       if (!peerConnectionRef.current) return;
       if (!data.answer || !data.answer.type || !data.answer.sdp) {
-        console.error("Invalid answer format received", data);
         return;
       }
       try {
@@ -503,7 +321,6 @@ export const Chat = () => {
           new RTCSessionDescription(answerDescription)
         );
       } catch (error) {
-        console.error("Error setting remote description:", error);
         toast.error("Error establishing connection");
       }
     };
@@ -523,7 +340,6 @@ export const Chat = () => {
     }
     setRemoteStream(null);
     setIsCallInProgress(false);
-    // Send hangup event to the correct recipient
     if (selectedChat?._id) {
       socket?.emit("videoCallHangUp", {
         senderId: selectedChat._id,
@@ -541,7 +357,6 @@ export const Chat = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-    console.log("ffile", file?.type);
     if (!file) {
       return;
     }
@@ -556,18 +371,15 @@ export const Chat = () => {
       const base64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
-          console.log("file read successfully", reader.result);
           setFilePreview(reader.result as string);
           resolve(reader.result as string);
         };
         reader.onerror = (error) => {
-          console.log("file reader error", error);
           reject(error);
         };
         reader.onprogress = (event) => {
           if (event.lengthComputable) {
             const progress = (event.loaded / event.total) * 100;
-            console.log("PROGRESS", progress);
             setUploadProgress(progress);
           }
         };
@@ -581,7 +393,6 @@ export const Chat = () => {
         type: file.type,
       });
     } catch (error) {
-      console.error("file processing error", error);
       toast.error("file processing error");
     } finally {
       setUploadProgress(0);
@@ -605,13 +416,6 @@ export const Chat = () => {
     scrollToBottom();
   }, [messages]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const logSocketEvent = (eventName: string, data: any) => {
-    console.group(
-      `%c🔌 Socket Event: ${eventName}`,
-      "color: green; font-weight: bold"
-    );
-    console.groupEnd();
-  };
   useEffect(() => {
     if (!socket || !selectedChat?._id) return;
     const markMessagesAsSeen = () => {
@@ -626,9 +430,7 @@ export const Chat = () => {
         });
       }
     };
-    // Mark messages as seen when chat is opened or messages change
     markMessagesAsSeen();
-    // Optional: Add visibility change listener
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         markMessagesAsSeen();
@@ -646,7 +448,6 @@ export const Chat = () => {
       status: string;
       timestamp: string;
     }) => {
-      logSocketEvent("Message Status Update", data);
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg._id === data.messageId
@@ -659,38 +460,26 @@ export const Chat = () => {
         )
       );
     };
-    // Add listener for message status updates
     socket.on("messageStatusUpdate", handleMessageStatusUpdate);
     return () => {
       socket.off("messageStatusUpdate", handleMessageStatusUpdate);
     };
   }, [socket]);
-  // Socket Listeners
   useEffect(() => {
     if (!socket) return;
     const handleReceiveMessage = (message: Message) => {
-      logSocketEvent("Receive Message", message);
-      // Validate message
       if (!message || !message.content) {
-        console.warn("Invalid message received");
         return;
       }
-      // Detailed Logging
-      console.group("Message Validation");
-      console.groupEnd();
-      // Check message relevance
       const isRelevantMessage =
         message.senderId === selectedChat?._id ||
         message.receiverId === selectedChat?._id ||
         message.senderId === userId ||
         message.receiverId === userId;
       if (!isRelevantMessage) {
-        console.warn("Message not relevant to current chat");
         return;
       }
-      // Update messages state
       setMessages((prevMessages) => {
-        // Prevent duplicates
         const isDuplicate = prevMessages.some(
           (msg) =>
             msg._id === message._id ||
@@ -698,21 +487,16 @@ export const Chat = () => {
               msg.timestamp === message.timestamp)
         );
         if (isDuplicate) {
-          console.warn("Duplicate message prevented");
           return prevMessages;
         }
-        // Add new message
         const updatedMessages = [...prevMessages, message];
-        // Sort messages by timestamp
         return updatedMessages.sort(
           (a, b) =>
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
       });
     };
-    // Message Sent Confirmation
     const handleMessageSent = (data: { messageId: string; status: string }) => {
-      logSocketEvent("Message Sent", data);
       // setMessages(prevMessages =>
       //   prevMessages.map(msg =>
       //     msg._id?.startsWith('temp-')
@@ -725,10 +509,8 @@ export const Chat = () => {
     socket.on("messageSent", handleMessageSent);
     socket.on("connect", () => {});
     socket.on("disconnect", (reason:string) => {
-      console.warn("Socket disconnected:", reason);
     });
-    socket.on("connect_error", (error:string) => {
-      console.error("Socket Connection Error:", error);
+    socket.on("connect_error", (error:any) => {
     });
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
@@ -794,10 +576,8 @@ export const Chat = () => {
           setIsLoading(true); 
           try {
             const response = await getURL(file.url);
-            console.log("getsecureurl", response);
             setSecureURL(response.secureURL);
           } catch (error) {
-            console.error("Failed to get secure URL");
             setSecureURL(file.url);
           } finally {
             setIsLoading(false); 
@@ -826,7 +606,6 @@ export const Chat = () => {
                   const target = e.target as HTMLImageElement;
                   target.onerror = null;
                   target.src = "/placeholder-image.png"; 
-                  console.error("Image failed to load:", displayURL);
                 }}
               />
             ) : (
@@ -951,7 +730,7 @@ export const Chat = () => {
   }, [socket]);
   const MessageContextMenu = ({ message }: { message: Message }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const canDelete = message.senderId === selectedChat._id; // Check if the current user is the sender
+    const canDelete = message.senderId === selectedChat._id; 
     if (!canDelete) return null;
     return (
       <div className="relative inline-block">
@@ -980,7 +759,7 @@ export const Chat = () => {
   const fetchMutualMessages = async (userId: string) => {
     try {
       setLoading(true);
-      const response = await fetchUserMessages(userId); // Fetch messages for the receiver
+      const response = await fetchUserMessages(userId); 
       if (Array.isArray(response.messages)) {
         const sortedMessages = response.messages.sort(
           (a: Message, b: Message) =>
@@ -994,7 +773,6 @@ export const Chat = () => {
       }
     } catch (error) {
       toast.error("Failed to fetch user messages");
-      console.error("Failed to fetch user messages", error);
     } finally {
       setLoading(false);
     }
@@ -1114,7 +892,7 @@ export const Chat = () => {
     <div className="flex h-screen bg-[#1C1C1C] text-white">
       <SideBar chatHistory={chatHistory} />
       <div className="flex-1 flex flex-col">
-        {isCallInProgress && <VideoCallUI/>}
+        {isCallInProgress &&( <VideoCallUI localStream={localStream}isMuted={isMuted} callDuration={callDuration} remoteStream={remoteStream} isVideoEnabled={isVideoEnabled} toggleMute={toggleMute} toggleVideo={toggleVideo} endVideoCall={endVideoCall}/>)}
           {isReceivingCall && (
           <div className="fixed inset-0 z-50 flex-col items-center justify-center bg-black bg-opacity-75">
             <div className="bg-[#2e2e2e] p-8 rounded-xl shadow-lg text-center">
@@ -1171,18 +949,12 @@ export const Chat = () => {
             </span>
           </div>
           <div className="flex space-x-4">
-            <button className="p-2 hover:bg-[#2E2E2E] rounded-full">
-              <Phone className="w-6 h-6" />
-            </button>
             <button
               className="p-2 hover:bg-[#2E2E2E] rounded-full  "
               disabled={!selectedChat?._id || isCallInProgress}
               onClick={startVideoCall}
             >
               <Video className="w-6 h-6" />
-            </button>
-            <button className="p-2 hover:bg-[#2E2E2E] rounded-full">
-              <Info className="w-6 h-6" />
             </button>
           </div>
         </div>

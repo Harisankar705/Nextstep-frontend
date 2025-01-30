@@ -50,7 +50,6 @@ const SearchUtil: React.FC<SearchBarProps> = ({
                 setSearchResults(INITIAL_RESULTS);
             }
         } catch (error) {
-            console.error("Search error:", error);
             setSearchResults(INITIAL_RESULTS);
         } finally {
             setIsSearching(false);

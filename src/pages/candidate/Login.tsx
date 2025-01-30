@@ -29,7 +29,7 @@ const Login = () => {
     setLoading(true)
     try {
       const response = await login(email, password, 'user')
-      toast.success("Login success")
+      toast.success("Login success",response)
 
 
       dispatch(setUser(response.user))

@@ -39,7 +39,7 @@ const Post:React.FC<PostComponentProps>=({ post,
                 const savedStatus=await checkSavedStatus(post._id)
                 setIsSaved(savedStatus)
             } catch (error) {
-                console.error("Failed to fetch saved status",error)
+                toast.error("Failed to fetch saved status")
             }
         }
         isPostSaved()
@@ -82,12 +82,10 @@ const Post:React.FC<PostComponentProps>=({ post,
                 setLikeCount(response.likeCount)
             } catch (error) {
                 toast.error("Error occured while fetching comment")
-                console.error("Error occured while fetching comment", error)
             }
         }
         fetchCount()
     }, [post._id])
-    console.log('in post')
     const handleCommentCountchange = (newCount: number) => {
         setCommentCount(newCount)
     }

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { useLocation } from "react-router-dom";
+import {useElements, useStripe } from "@stripe/react-stripe-js";
 import toast from "react-hot-toast";
 import { stripePayment } from "../../services/commonService";
 export const Payment = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +15,6 @@ export const Payment = () => {
       jobId?: string;
     };
     if (state?.redirectReason === "job_application_limit") {
-      console.log("Redirected due to job limit");
     }
   }, [location]);
   const handlePremiumUpgrade = async (event: React.FormEvent) => {
@@ -27,18 +25,14 @@ export const Payment = () => {
     try {
       setIsLoading(true);
       const response = await stripePayment(amount); 
-            console.log('respnse',response)
             const url=await response.url
             window.location.href=url
-      
     } catch (error) {
       toast.error("Payment Failed");
-      console.error("Payment failed", error);
     } finally {
       setIsLoading(false);
     }
   };
-  
   return (
     <div className="payment-page">
       <h1 className="text-2xl font-bold mb-4">Upgrade to Premium</h1>

@@ -1,55 +1,29 @@
 import {
-  ChartArea,
   CheckCircle,
   GraduationCap,
   Home,
   LucideMessageSquareText,
-  MessageCircle,
-  MessageCircleX,
   UserCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Spinner from "../../utils/Spinner";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../utils/Navbar";
 import { PostType } from "../../types/Candidate";
 import Post from "./Post";
 import { getUserPosts } from "../../services/authService";
 import {
-  getCompanyLogo,
   getImageURL,
-  getProfilePictureURL,
 } from "../../utils/ImageUtils";
 import { individualDetails } from "../../services/adminService";
 import toast from "react-hot-toast";
 import { checkFollowStatus, toggleFollow } from "../../services/commonService";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import { ReusableConfirmDialog } from "../../utils/ConfirmDialog";
-const dialogStyles = `
-.p-dialog .p-dialog-footer {
-    gap: 1rem;
-    display: flex;
-    justify-content: flex-end;
-}
-.p-dialog .p-dialog-footer button {
-    margin: 0;
-    padding: 0.75rem 1.5rem;
-    min-width: 6rem;
-}
-.p-confirm-dialog .p-dialog-content {
-    padding: 1.5rem;
-}
-.p-dialog .p-dialog-header {
-    padding: 1.25rem 1.5rem;
-}`;
 const UserProfile = () => {
   const { id: userId, role } = useParams();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-
   const navigate = useNavigate();
   const [isDialogVisible, setDialogVisible] = useState(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
@@ -64,31 +38,25 @@ const UserProfile = () => {
           toast.error("user id not found");
           return;
         }
-
         const [postResponse, details] = await Promise.all([
           getUserPosts(userId),
-
           individualDetails(userId, role as string),
         ]);
-
         setPosts(postResponse);
         const userDetails = details[0];
         setProfileData(userDetails);
         const followingStatus: boolean = await checkFollowStatus(
           userDetails._id
         );
-
         setIsFollowing(followingStatus);
       } catch (error) {
-        console.error("Error fetching posts", error);
+        toast.error("Error fetching posts");
       } finally {
         setLoading(false);
       }
     };
-
     fetchPosts();
   }, [userId, navigate]);
-
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -107,7 +75,6 @@ const UserProfile = () => {
       </div>
     );
   }
-
   const handleFollowToggle = async () => {
     if (isFollowing) {
       setDialogVisible(true);
@@ -123,11 +90,9 @@ const UserProfile = () => {
         );
       } catch (error) {
         toast.error("Failed to update follow status");
-        console.error(error);
       }
     }
   };
-
   const handleDialogAccept = async () => {
     setDialogVisible(false);
     try {
@@ -137,19 +102,15 @@ const UserProfile = () => {
       toast.success("You have unfollowed the user");
     } catch (error) {
       toast.error("Failed to update follow status");
-      console.error(error);
     }
   };
   const handleMessageClick=()=>{
     navigate(`/messages/${userId}/${role}`);
-
   }
-
   const handleDialogReject = () => {
     setDialogVisible(false);
     toast.success("Unfollow cancelled");
   };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -170,12 +131,10 @@ const UserProfile = () => {
       </div>
     );
   }
-
   const profilePictureURL =
     role === "user"
       ? getImageURL(profileData.profilePicture, "profile-pictures")
       : getImageURL(profileData.logo, "company-logos");
-
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
@@ -187,7 +146,6 @@ const UserProfile = () => {
           <div className="h-48 w-48 rounded-full border-4 border-black overflow-hidden -mt-20 mb-4 ml-10"></div>
         </div>
       </div>
-
       {/* Profile Body */}
       <div className="bg-black text-white pt-20 px-8">
         <div className="max-w-6xl mx-auto">
@@ -206,7 +164,6 @@ const UserProfile = () => {
                   ? `${profileData.firstName} ${profileData.secondName}`
                   : profileData.companyName}
               </h1>
-
               <p className="text-purple-400 mt-1">
                 {profileData.friends
                   ? `${profileData.friends.length} friends`
@@ -244,7 +201,6 @@ const UserProfile = () => {
             onAccept={handleDialogAccept}
             onReject={handleDialogReject}
           />
-
           <div className="flex border-b border-gray-800 mt-8">
             {["Posts", "About", "Friends", "Photos", "Videos"].map((item) => (
               <button
@@ -259,7 +215,6 @@ const UserProfile = () => {
               </button>
             ))}
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 py-4">
             <div className="md:col-span-4 space-y-4">
               <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
@@ -294,11 +249,9 @@ const UserProfile = () => {
                 </button>
               </div>
             </div>
-
             {/* Main Content */}
             <div className="md:col-span-8 space-y-4">
               {/* Post Input */}
-
               {loading ? (
                 <Spinner loading={true} />
               ) : posts.length > 0 ? (
@@ -333,5 +286,4 @@ const UserProfile = () => {
     </div>
   );
 };
-
 export default UserProfile;

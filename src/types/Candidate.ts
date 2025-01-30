@@ -48,7 +48,7 @@ export interface VideoCallAnswerData {
 export interface SideBarProps {
   chatHistory: ChatHistoryItem[];
   onSelectedChat?: (chat: ChatHistoryItem) => void;
-  role: "user" | "employer";
+  role?: "user" | "employer";
 }
 interface Education {
   degree: string;
@@ -154,6 +154,7 @@ export interface UserCandidate {
     year: string;
   }[];
   logo?:string
+  friends?:string
   interviewSchedule?: InterviewSchedule;
 }
 export interface SharePostProps {

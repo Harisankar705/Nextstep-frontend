@@ -81,7 +81,7 @@ import Post from "../candidate/Post";
   
           setIsFollowing(followingStatus);
         } catch (error) {
-          console.error("Error fetching posts", error);
+          toast.error("Error fetching posts");
         } finally {
           setLoading(false);
         }
@@ -124,7 +124,6 @@ import Post from "../candidate/Post";
           );
         } catch (error) {
           toast.error("Failed to update follow status");
-          console.error(error);
         }
       }
     };
@@ -138,7 +137,6 @@ import Post from "../candidate/Post";
         toast.success("You have unfollowed the user");
       } catch (error) {
         toast.error("Failed to update follow status");
-        console.error(error);
       }
     };
     const handleMessageClick=()=>{

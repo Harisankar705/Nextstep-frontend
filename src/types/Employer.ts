@@ -84,3 +84,13 @@ export interface Filters {
     platform: string;
     meetingLink?: string;
   }
+  export interface VideoCallUIProps{
+      localStream:MediaStream|null,
+      remoteStream:MediaStream|null,
+      isVideoEnabled:boolean,
+      isMuted:boolean,
+      toggleMute:()=>void,
+      toggleVideo:()=>void,
+      endVideoCall:()=>void,
+      callDuration:number,
+  }
