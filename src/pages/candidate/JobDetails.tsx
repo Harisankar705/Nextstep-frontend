@@ -55,44 +55,49 @@ const JobDetails = () => {
         {
             toast.error("Error applying for this job!")
         }
-    } catch (error:any) {
-        toast.error(error)
-        if(error.includes('You have reached the maximum'))
-        {
+    }catch (error: unknown) {
+      let errorMessage = "An unexpected error occurred"; // Default message
+  
+      if (error instanceof Error) {
+          errorMessage = error.message;
+      } else if (typeof error === "string") {
+          errorMessage = error;
+      }
+  
+      toast.error(errorMessage);
+  
+      if (errorMessage.includes("You have reached the maximum")) {
           toast.custom((t) => (
-            <div
-              className="bg-gray-800 p-4 rounded-lg text-white flex items-center justify-between"
-              style={{ width: "100%", maxWidth: "500px" }}
-            >
-              <div>
-                <p>You have reached the maximum. Try premium to apply for unlimited jobs!</p>
-              </div>
-              <button
-                onClick={() => {
-                  navigate('/payment', {
-                    state: {
-                      redirectReason: 'job_application_limit',
-                      jobId: job?._id
-                    }
-                  });
-                  toast.dismiss(t.id); // This dismisses the toast when the button is clicked
-                }}
-                className="text-teal-500 hover:text-teal-600 ml-2"
+              <div
+                  className="bg-gray-800 p-4 rounded-lg text-white flex items-center justify-between"
+                  style={{ width: "100%", maxWidth: "500px" }}
               >
-                Upgrade to Premium
-              </button>
-            </div>
+                  <div>
+                      <p>You have reached the maximum. Try premium to apply for unlimited jobs!</p>
+                  </div>
+                  <button
+                      onClick={() => {
+                          navigate('/payment', {
+                              state: {
+                                  redirectReason: 'job_application_limit',
+                                  jobId: job?._id
+                              }
+                          });
+                          toast.dismiss(t.id);
+                      }}
+                      className="text-teal-500 hover:text-teal-600 ml-2"
+                  >
+                      Upgrade to Premium
+                  </button>
+              </div>
           ), {
-            duration: 5000,
-            position: 'top-center',
-            icon: "💼",
+              duration: 5000,
+              position: 'top-center',
+              icon: "💼",
           });
-        }
-        else
-        {
-          toast.error(error)
-        }
-    }
+      }
+  }
+  
     finally
     {
         setIsApplying(false)

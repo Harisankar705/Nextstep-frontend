@@ -8,6 +8,7 @@ import { toast } from 'react-hot-toast'
 import Spinner from "../../utils/Spinner";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userSlice";
+import { errorHandler } from "../../utils/ErrorHandler";
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -44,9 +45,10 @@ const Login = () => {
       }
 
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage=errorHandler(error)
+      toast.error(errorMessage)
 
-      const errorMessage = error.response?.data?.message || "Login failed";
       setError(errorMessage);    }
     finally {
       setLoading(false)

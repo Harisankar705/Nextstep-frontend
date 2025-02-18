@@ -12,25 +12,21 @@ export const ProfileIntro:React.FC<ProfileHeaderProps>= ({user,isOwnProfile}) =>
               Edit Bio
           </button>
           <div className="space-y-3 text-gray-300">
-              <div className="flex items-center gap-2">
-                  <GraduationCap className="h-5 w-5 text-gray-400" />
-                  <span>
-                      {education && education.degree
-                      ?`${education.degree} fromm ${education.institution} in ${education.year}`
-                      :"No education details!"
-                      }
-                  </span>
+    {education && education.length > 0 ? (
+        education.map((edu, index) => (
+            <div key={index} className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5 text-gray-400" />
+                <span>{`${edu.degree} from ${edu.institution} in ${edu.year}`}</span>
+            </div>
+        ))
+    ) : (
+        <div className="flex items-center gap-2">
+            <GraduationCap className="h-5 w-5 text-gray-400" />
+            <span>No education details!</span>
+        </div>
+    )}
+</div>
 
-              </div>
-              <div className="flex items-center gap-2">
-                  <Home className="h-5 w-5 text-gray-400" />
-                  <span>{location || 'No location'}</span>
-              </div>
-              {/* <div className="flex items-center gap-2">
-                                        <Users className="h-5 w-5 text-gray-400" />
-                                        <span>{friends ? `${friends.length} friends` : 'No friends'}</span>
-                                    </div> */}
-          </div>
           {isOwnProfile && (
               <button className="w-full py-2 px-3 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-300 mt-4 transition duration-300">
                   Edit details

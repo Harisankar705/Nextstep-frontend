@@ -6,6 +6,7 @@ import { clearEmployer } from "../../redux/employerSlice"
 import { persistor } from "../../redux/store"
 import { useState } from "react"
 import SearchUtil from "../../utils/Search/SearchUtil"
+import { SearchResult } from "../../types/Candidate"
 
 const navItems = [
     { name: "Dashboard", href: '/employerhome', icon: Home, badge: 0 },
@@ -34,7 +35,7 @@ const SideBar = () => {
         navigate('/employerlogin')
 
     }
-    const handleResultSelect = (result: any) => {
+    const handleResultSelect = (result: SearchResult) => {
         switch (result.type) {
             case 'user':
                 navigate(`/search-profile/${result._id}/user`);
@@ -42,7 +43,6 @@ const SideBar = () => {
             case 'company':
                 navigate(`/search-profile/${result._id}/employer`);
                 break;
-            // Add more cases as needed
         }
         setIsSearchModalOpen(false);
     };

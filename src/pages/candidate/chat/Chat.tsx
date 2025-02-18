@@ -23,13 +23,32 @@ import {
   getProfilePictureURL,
 } from "../../../utils/ImageUtils";
 import { VideoCallUI } from "./VideoCall";
+
+interface Caller{
+  senderId:string
+  receiverId: string;
+  offer: RTCSessionDescriptionInit;
+}
+interface FileData{
+  url?:string
+  preview?:string,
+  name?:string,
+  type?:string,
+  size?:number
+}
+
+interface FilePreviewProps
+{
+  file:FileData,
+  message?:Message
+}
 export const Chat = () => {
   const { userId, role } = useParams();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
   const [isReceivingCall, setIsReceivingCall] = useState(false);
-  const [caller, setCaller] = useState<any>(null);
+  const [caller, setCaller] = useState<Caller|null>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const [isStreamSet, setIsStreamSet] = useState(false);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -74,7 +93,7 @@ export const Chat = () => {
           localVideoRef.current.style.backgroundColor = 'transparent';
           localVideoRef.current.srcObject = localStream;
           localVideoRef.current.play().catch(error => {
-            toast.error('Error playing local video:', error);
+            // toast.error('Error playing local video:', error);
           });
         }
       }
@@ -331,22 +350,52 @@ export const Chat = () => {
   }, [socket]);
   const endVideoCall = () => {
     if (peerConnectionRef.current) {
-      peerConnectionRef.current.close();
-      peerConnectionRef.current = null;
+        peerConnectionRef.current.close();
+        peerConnectionRef.current = null;
     }
+
     if (localStream) {
-      localStream.getTracks().forEach((track) => track.stop());
-      setLocalStream(null);
+        localStream.getTracks().forEach((track) => track.stop());
+        setLocalStream(null);
     }
+
     setRemoteStream(null);
     setIsCallInProgress(false);
+
     if (selectedChat?._id) {
-      socket?.emit("videoCallHangUp", {
-        senderId: selectedChat._id,
-        receiverId: userId,
-      });
+        socket?.emit("videoCallHangUp", {
+            senderId: selectedChat._id,
+            receiverId: userId,
+        });
     }
-  };
+};
+
+useEffect(() => {
+    if (!socket) return;
+
+    const handleVideoCallHangUp = () => {
+        if (peerConnectionRef.current) {
+            peerConnectionRef.current.close();
+            peerConnectionRef.current = null;
+        }
+
+        if (localStream) {
+            localStream.getTracks().forEach((track) => track.stop());
+            setLocalStream(null);
+        }
+
+        setRemoteStream(null);
+        setIsCallInProgress(false);
+        setIsReceivingCall(false);
+
+    };
+
+    socket.on("videoCallHangUp", handleVideoCallHangUp);
+
+    return () => {
+        socket.off("videoCallHangUp", handleVideoCallHangUp);
+    };
+}, [socket, localStream]);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -510,7 +559,7 @@ export const Chat = () => {
     socket.on("connect", () => {});
     socket.on("disconnect", (reason:string) => {
     });
-    socket.on("connect_error", (error:any) => {
+    socket.on("connect_error", (error:Error) => {
     });
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
@@ -563,7 +612,7 @@ export const Chat = () => {
       }
     }
   };
-  const FilePreview = ({ file, message }: { file: any; message?: Message }) => {
+  const FilePreview = ({ file, message }: FilePreviewProps) => {
     const [secureURL, setSecureURL] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const isS3File = Boolean(file?.url);
@@ -642,9 +691,9 @@ export const Chat = () => {
             />
           </div>
         )}
-        {file.size && (
+        {file.size!==null && (
           <div className="text-xs text-gray-400 mt-1">
-            {(file.size / 1024).toFixed(2)}KB
+            {((file.size??0) / 1024).toFixed(2)}KB
           </div>
         )}
       </div>

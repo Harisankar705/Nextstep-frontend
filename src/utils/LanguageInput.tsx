@@ -7,6 +7,9 @@ type LanguageInputProps = {
   error: string | null;
   className?: string;
 };
+type Country={
+  languages?:{[key:string]:string}
+}
 
 const LanguageInput: React.FC<LanguageInputProps> = ({ value, onChange, error, className }) => {
   const [languageInput, setLanguageInput] = useState("");
@@ -26,7 +29,7 @@ const LanguageInput: React.FC<LanguageInputProps> = ({ value, onChange, error, c
         try {
           const response = await axios.get("https://restcountries.com/v3.1/all");
           const languages = response.data
-            .flatMap((country: any) => (country.languages ? Object.values(country.languages) : []))
+            .flatMap((country) => (country.languages ? Object.values(country.languages) : []))
             .filter((lang: string) => {
               return typeof lang === "string" && lang.toLowerCase().includes(query.toLowerCase());
             });

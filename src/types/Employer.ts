@@ -1,3 +1,5 @@
+import { Employer, PostType, UserCandidate } from "./Candidate"
+
 export interface IEmployer  {
     email: string
     password: string
@@ -94,3 +96,8 @@ export interface Filters {
       endVideoCall:()=>void,
       callDuration:number,
   }
+  export interface SearchResults {
+    users: UserCandidate[];
+    employers: Employer[];
+    posts: PostType[];
+}

@@ -13,6 +13,7 @@ import { toast } from 'react-hot-toast'
 import { setUser } from "../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../utils/Navbar";
+import { UserCandidate } from "../../types/Candidate";
 
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -77,7 +78,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const EditProfile = () => {
-  const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: UserCandidate) => state.user);
   const navigate = useNavigate()
   const [languageSuggestions, setLanguageSuggestions] = useState<string[]>([]);
   const [locationSuggestions, setLocationSuggestions] = useState<

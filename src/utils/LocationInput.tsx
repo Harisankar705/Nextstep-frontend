@@ -39,7 +39,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ value, onChange, error, c
                 try {
                     const response = await axios.get<Country[]>("https://restcountries.com/v3.1/all");
                     const locations = response.data
-                        .map((country: any) => country.name?.common)
+                        .map((country) => country.name?.common)
                         .filter((name: string) =>
                             typeof name === "string" && name.toLowerCase().includes(query.toLowerCase())
                         );

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getComments } from "../../../services/commonService";
 import { getCompanyLogo, getProfilePictureURL } from "../../../utils/ImageUtils";
-import { Comment } from "../../../types/Candidate";
+import { Comment, Employer, PostType, UserCandidate } from "../../../types/Candidate";
 import { useSocket } from "../../../SocketContext";
 const Comments = ({
   postId,
@@ -12,8 +12,8 @@ const Comments = ({
 }: {
   postId: string;
   onCommentCountChange?: (count: number) => void;
-  currentUser: any;
-  post: any;
+  currentUser: UserCandidate|Employer|null;
+  post: PostType;
 }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [comment, setNewComment] = useState("");
@@ -38,6 +38,8 @@ const Comments = ({
   }, [postId, onCommentCountChange]);
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log(socket,currentUser,postId)
     if (comment.trim()) {
       setLoading(true);
       try {

@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom";
 import { isVerified } from "../../services/employerService";
+import { RootState } from "../../types/Candidate";
 const EmployerDashboard = () => {
-    const employer = useSelector((state:any) => state.employer);
+      const employer = useSelector((state: RootState) => state.employer);
+    
     const navigate=useNavigate()
     const [verified,setVerified]=useState(false)
     const [isLoading, setIsLoading] = useState(true)
@@ -18,6 +20,7 @@ const EmployerDashboard = () => {
             try {
                 setIsLoading(true)
                 const response=await isVerified()
+                console.log('verificationresponse',response)
                 if(response.data.message==='isVerified')
                 {
                     setVerified(true)

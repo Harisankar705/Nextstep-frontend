@@ -29,7 +29,7 @@ export const VideoCallUI: React.FC<VideoCallUIProps> = React.memo(({
                 const playPromise = localVideoRef.current.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
-                        toast.error('Error playing local video:');
+                        // toast.error('Error playing local video:');
                     });
                 }
             } catch (error) {

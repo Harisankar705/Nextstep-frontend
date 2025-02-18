@@ -1,6 +1,7 @@
 import { Socket } from "socket.io-client";
 import { Benefit } from "./Employer";
 export interface BaseUser {
+  _id?:string,
   id: string;
   email: string;
   status: "Active" | "Inactive";
@@ -9,6 +10,23 @@ export interface BaseUser {
 export interface InterviewScheduleProps {
   applicant: UserCandidate | null;
   onScheduleInterview: (scheduleData: InterviewScheduleData) => Promise<void>;
+}
+export type Reason='spam'|'inappropirate'|'offensive'|'misinformation'|'sexual content'|'other'
+
+export interface IReport  {
+  post:string
+  reporter: string
+  reporterModel:"User"|"Employer"   
+  reason:Reason
+  description?:string,
+  createdAt:Date,
+  status:string
+
+}
+export interface ReportProps{
+    postId:string,
+    onClose:()=>void
+    onSubmit:(data:{postId:string,reason:string,description?:string})=>Promise<void>
 }
 export interface Applicant {
   _id: string;
@@ -58,10 +76,12 @@ interface Education {
 }
 export interface PostComponentProps {
   post: PostType;
+  onPostUpdate?:(updatedPost:any)=>void
   profilePicture?: string;
   userName?: string;
   onUnsave?: (postId: string) => void;
   role?: any;
+  onDelete?:(postId:string)=>void
 }
 export interface LogoProps {
   width?: number | string;
@@ -128,8 +148,8 @@ interface InterviewSchedule {
   meetingLink?: string;
 }
 export interface UserCandidate {
-  id: string;
-  _id?:string
+  id?: string;
+  _id:string
   firstName: string;
   secondName: string;
   email: string;
@@ -154,6 +174,7 @@ export interface UserCandidate {
     year: string;
   }[];
   logo?:string
+  companyName?:string,
   friends?:string
   interviewSchedule?: InterviewSchedule;
 }
@@ -163,10 +184,12 @@ export interface SharePostProps {
   post: PostType;
 }
 export interface Employer extends BaseUser {
+  _id:string,
   companyName: string;
   industry: string;
   location: string;
   employees: string;
+  role: "user" | "employer";
   website: string;
   dateFounded: Date;
   isVerified: string;
@@ -174,11 +197,13 @@ export interface Employer extends BaseUser {
   documentNumber: string;
   document: string;
   description: string;
-  logo: string;
+  logo?: string;
 }
 export interface LocationSuggestion {
   name: string;
   id: number;
+  display_name?:string,
+  place_id?:number
 }
 export interface User {
   _id: string;
@@ -192,7 +217,7 @@ export interface PostType {
   background?: string;
   image?: string[];
   createdAt: string;
-  location: string;
+  location: string
   profilePicture: string;
   likes?: [];
   user?: {
@@ -290,7 +315,7 @@ export interface INotification {
 
   };
   senderModel:"User"|"Employer",
-  link?:string,
+  link:string,
   content: string;
 }
 interface GoogleAuthResponse {
@@ -395,4 +420,27 @@ export interface ChatHistoryItem {
   logo: string;
   profilePicture: string;
 }
+export interface User{
+  id:string,
+  firstName:string,
+  lastName:string,
+  email:string,
+  role:'candidate'|'employer'|'admin'
+  profilePicture:string;
+  
+}
+export interface AuthState{
+  user:UserCandidate|Employer|null,
+  isAuthenticated:boolean
+}
+export interface RootState{
+  user:AuthState,
+  employer:AuthState,
+  admin:AuthState
+}
 export type Candidate = UserCandidate | Employer;
+export interface SearchResult
+{
+    _id:string,
+    type:'user'|'job'|'company'
+}

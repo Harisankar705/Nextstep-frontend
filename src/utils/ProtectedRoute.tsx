@@ -1,45 +1,49 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Spinner from './Spinner';
+import { RootState } from '../types/Candidate';
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
   role?: 'candidate' | 'employer' | 'admin';
 }
+
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const navigate = useNavigate();
-  const { user: candidate, isAuthenticated: isCandidateAuthenticated } = useSelector((state: any) => state.user);
-  const { user: employer, isAuthenticated: isEmployerAuthenticated } = useSelector((state: any) => state.employer);
-  const { user: admin, isAuthenticated: isAdminAuthenticated } = useSelector((state: any) => state.admin);
-  // Determine authentication status based on role
+  
+  const candidateState = useSelector((state: RootState) => state.user);
+  const employerState = useSelector((state: RootState) => state.employer);
+  const adminState = useSelector((state: RootState) => state.admin);
+
   const isAuthenticated = role === 'candidate' 
-    ? isCandidateAuthenticated 
+    ? candidateState.isAuthenticated 
     : role === 'employer' 
-    ? isEmployerAuthenticated 
+    ? employerState.isAuthenticated 
     : role === 'admin' 
-    ? isAdminAuthenticated 
+    ? adminState.isAuthenticated 
     : false;
+
   const user = role === 'candidate' 
-    ? candidate 
+    ? candidateState.user 
     : role === 'employer' 
-    ? employer 
+    ? employerState.user 
     : role === 'admin' 
-    ? admin 
+    ? adminState.user 
     : null;
+
   useEffect(() => {
     if (!isAuthenticated) {
-      if (role === 'candidate') {
-        navigate('/login');
-      } else if (role === 'employer') {
-        navigate('/employerlogin');
-      } else if (role === 'admin') {
-        navigate('/admin'); 
-      }
+      const redirectPath = role === 'employer' ? '/employerlogin' : role === 'admin' ? '/admin' : '/login';
+      navigate(redirectPath);
     }
   }, [isAuthenticated, role, navigate]);
+
   if (!isAuthenticated) {
     return <Spinner loading={true} />;
   }
+
   return <>{children}</>;
 };
+
 export default ProtectedRoute;

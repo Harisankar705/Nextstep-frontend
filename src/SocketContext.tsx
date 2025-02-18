@@ -27,7 +27,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         }
       }, 1000);
     };
-    const handleConnectError = (error: any) => {
+    const handleConnectError = (error: Error) => {
       setIsConnected(false);
       setTimeout(() => {
         newSocket.connect();

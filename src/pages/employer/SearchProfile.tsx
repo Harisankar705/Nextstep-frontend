@@ -12,7 +12,7 @@ import {
   import Spinner from "../../utils/Spinner";
   import { useLocation, useNavigate, useParams } from "react-router-dom";
   import Navbar from "../../utils/Navbar";
-  import { PostType } from "../../types/Candidate";
+  import { Candidate, PostType } from "../../types/Candidate";
   import { getUserPosts } from "../../services/authService";
   import {
     getCompanyLogo,
@@ -56,7 +56,7 @@ import Post from "../candidate/Post";
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const [posts, setPosts] = useState<PostType[]>([]);
     const [loading, setLoading] = useState(true);
-    const [profileData, setProfileData] = useState<any>(null);
+    const [profileData, setProfileData] = useState<Candidate|null>(null);
     useEffect(() => {
       const fetchPosts = async () => {
         setLoading(true);

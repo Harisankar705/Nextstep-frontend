@@ -29,7 +29,7 @@ export const Like = ({
         try {
             const newIsLiked=!isLiked
             setIsLiked(newIsLiked)
-            const newLikeCount=newIsLiked?likeCount+1:likeCount-1
+            const newLikeCount = newIsLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
             setLikeCount(newLikeCount)
             onLikeCountChange?.(newLikeCount)
 
@@ -67,4 +67,3 @@ export const Like = ({
         </button>
     )
 }
-

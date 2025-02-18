@@ -1,5 +1,4 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter   as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/candidate/Login.tsx';
 import Signup from './pages/candidate/Signup';
 import EmployerLogin from './pages/employer/EmployerLogin.tsx';

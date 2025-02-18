@@ -44,7 +44,8 @@ const EmployerLogin = () => {
         navigate('/employerdetails',{replace:true})
       }
       
-    } catch (error:any) {
+    } catch (error:unknown) {
+      
       const errorMessage = error.response?.data?.message || "Login failed";
       setError(errorMessage);
 

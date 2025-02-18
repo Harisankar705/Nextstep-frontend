@@ -6,6 +6,10 @@ import {
     Users,
     X,
 } from "lucide-react";
+interface CustomEmoji
+{
+    native:string
+}
 import { sanitizeText, scanFile, useRateLimit, validateImage} from '../../../utils/SecurityMeasures'
 import React, { useEffect, useMemo, useState } from "react";
 import { fetchLocationSuggestions } from "../../../utils/LanguageAndLocation";
@@ -90,7 +94,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
             setShowModal(false);
         }
     };
-    const handleEmojiSelect = (emoji: any) => {
+    const handleEmojiSelect = (emoji: CustomEmoji) => {
         setSelectedEmoji((prev) => prev + emoji.native)
         setPostText((prev) => prev + emoji.native)
         setShowPickter(false)
@@ -136,6 +140,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                 formData.append('postImage', file)
             })
                 const response = await createPost(formData)
+                console.log(response)
                 if (response.status === 201) {
                     toast.success("Posted successfully!")
                     selectedImagePreview.forEach(url => URL.revokeObjectURL(url))
@@ -145,6 +150,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
             }
             catch (error) {
                 toast.error("Error occured while posting")
+                console.log(error)
             }
             finally {
                 setPosting(false)

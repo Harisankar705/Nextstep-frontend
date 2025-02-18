@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Edit, Globe, MapPin } from 'lucide-react';
-import { PostType } from '../../types/Candidate';
+import { PostType, RootState } from '../../types/Candidate';
 import SideBar from './SideBar';
 import { getUserPosts } from '../../services/authService';
 import Post from '../candidate/Post';
@@ -10,7 +9,7 @@ import toast from 'react-hot-toast';
 const EmployerPosts: React.FC = () => {
     const [posts, setPosts] = useState<PostType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const employer = useSelector((state: any) => state.user);
+    const employer = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         const fetchEmployerPosts = async () => {

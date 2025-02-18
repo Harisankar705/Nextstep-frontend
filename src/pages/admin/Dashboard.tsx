@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import SideBar from "./SideBar";
 import SearchBar from "./SearchBar";
 

@@ -1,16 +1,17 @@
-import { Candidate } from "../types/Candidate";
+import { Candidate, Employer } from "../types/Candidate";
 import api from "../utils/api";
 import { axiosError } from "../utils/AxiosError";
 
-export const getUser = async (role: 'user' | 'employer'): Promise<Candidate[]> => {
+export const getUser = async <T extends Candidate | Employer>(role: 'user' | 'employer'): Promise<T[]> => {
     try {
         const response = await api.get(`/userdetails/${role}`);
-        return response.data
+        return response.data as T[];
     } catch (error) {
-        axiosError(error, 'getCandidates')
-        throw error
+        axiosError(error, 'getCandidates');
+        throw error;
     }
-}
+};
+
 export const adminLogout=async()=>{
     try {
         const response=await api.post('/adminlogout')

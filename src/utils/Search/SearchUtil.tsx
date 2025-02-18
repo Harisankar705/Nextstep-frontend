@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { SearchBarProps, Employer, UserCandidate, Candidate } from "../../types/Candidate";
+import { SearchBarProps, Employer, UserCandidate, Candidate, PostType, User } from "../../types/Candidate";
 import { debounce } from "lodash";
 import { SearchIcon, Loader2, UserCircle, Building2 } from "lucide-react";
 import { search } from "../../services/authService";
 import { getCompanyLogo, getProfilePictureURL } from "../ImageUtils";
+import { SearchResults } from "../../types/Employer";
 
-interface SearchResults {
-    users: UserCandidate[];
-    employers: Employer[];
-    posts: any[];
-}
 
 
 
@@ -84,7 +80,7 @@ const SearchUtil: React.FC<SearchBarProps> = ({
         };
     }, [debouncedSearch]);
 
-    const renderUserResult = (user:Candidate|any) => (
+    const renderUserResult = (user:UserCandidate) => (
         <div
             key={user._id}
         
@@ -124,7 +120,7 @@ const SearchUtil: React.FC<SearchBarProps> = ({
         </div>
     );
 
-    const renderEmployerResult = (employer: Employer|any) => (
+    const renderEmployerResult = (employer: Employer) => (
         <div
             key={employer._id}
             className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
@@ -157,7 +153,7 @@ const SearchUtil: React.FC<SearchBarProps> = ({
     );
 
 
-    const renderResultSection = (title: string, items: any[], type: 'users' | 'employers' | 'posts') => {
+    const renderResultSection =<T extends UserCandidate|Employer|PostType> (title: string, items: T[], type: 'users' | 'employers' | 'posts') => {
         if (items.length === 0) return null;
 
         return (

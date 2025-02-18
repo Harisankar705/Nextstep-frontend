@@ -7,6 +7,8 @@ import { clearUser } from '../redux/userSlice';
 import { persistor } from '../redux/store';
 import SearchUtil from './Search/SearchUtil';
 import { Notification } from '../pages/candidate/Notification';
+import { SearchResult } from '../types/Candidate';
+
 export default function Navbar() {
     const navigate = useNavigate();
     const location = useLocation(); 
@@ -49,7 +51,7 @@ export default function Navbar() {
     const handleMessageClick=()=>{
         navigate('/messages')
     }
-    const handleSearchResultSelect = (result: any) => {
+    const handleSearchResultSelect = (result: SearchResult) => {
         switch (result.type) {
             case 'user':
                 navigate(`/candidate-profile/${result._id}/user`);

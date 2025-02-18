@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import Spinner from "../../utils/Spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../utils/Navbar";
-import { PostType } from "../../types/Candidate";
+import { PostType, UserCandidate } from "../../types/Candidate";
 import Post from "./Post";
 import { getUserPosts } from "../../services/authService";
 import {
@@ -29,7 +29,7 @@ const UserProfile = () => {
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [profileData, setProfileData] = useState<any>(null);
+  const [profileData, setProfileData] = useState<UserCandidate|null>(null);
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
@@ -93,6 +93,7 @@ const UserProfile = () => {
       }
     }
   };
+  
   const handleDialogAccept = async () => {
     setDialogVisible(false);
     try {
@@ -111,6 +112,7 @@ const UserProfile = () => {
     setDialogVisible(false);
     toast.success("Unfollow cancelled");
   };
+  console.log("ROLE IN USERPROFILE")
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -249,9 +251,7 @@ const UserProfile = () => {
                 </button>
               </div>
             </div>
-            {/* Main Content */}
             <div className="md:col-span-8 space-y-4">
-              {/* Post Input */}
               {loading ? (
                 <Spinner loading={true} />
               ) : posts.length > 0 ? (

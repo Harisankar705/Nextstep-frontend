@@ -17,7 +17,7 @@ const LeftSideBar = ({
   icon: Icon,
   children,
 }: {
-  icon: any;
+  icon:React.ElementType,
   children: React.ReactNode;
 }) => (
   <a

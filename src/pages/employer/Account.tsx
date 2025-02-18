@@ -8,7 +8,7 @@ import EmployerPosts from './EmployerPosts';
 
 const Account = () => {
     const navigate = useNavigate();
-    const employer = useSelector((state: any) => state.user);
+    const employer = useSelector((state: aRny) => state.user);
 
     const handleEditProfile = () => {
         navigate('/employer/edit-profile');

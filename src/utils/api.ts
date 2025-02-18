@@ -1,9 +1,18 @@
-import axios from 'axios'
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { clearUser } from '../redux/userSlice';
 import { persistor } from '../redux/store';
 import {store} from '../redux/store'
 import toast from 'react-hot-toast';
 
+interface CustomAxiosRequestConfig extends AxiosRequestConfig
+{
+    _retry:boolean
+}
+interface ApiErrorResponse
+{
+    code?:string
+    message?:string
+}
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     withCredentials: true,
@@ -24,17 +33,22 @@ const IGNORE_ERROR_URLS=[
 ]
 api.interceptors.response.use(
     (response) => response,
-    async (error:any) => {
+    async (error:AxiosError) => {
 
-        const originalRequest = error.config;
-        if(IGNORE_ERROR_URLS.some(url=>originalRequest.url.includes(url)))
+        const originalRequest = error.config as CustomAxiosRequestConfig
+        if(!originalRequest?.url||IGNORE_ERROR_URLS.some((url)=>originalRequest.url?.includes(url)))
         {
             return Promise.reject(error)
         }
-        const shouldForceLogout=(
-            error.response?.status===401||LOGOUT_TRIGGER_CODES.includes(error.response?.data?.code)||
-            ['Token not found','Authentication restricted'].some(message=>error.response?.data?.message?.includes(message))
-        )
+       
+        const shouldForceLogout = (
+            error.response?.status === 401 ||
+            LOGOUT_TRIGGER_CODES.includes((error.response?.data as ApiErrorResponse)?.code || "") ||
+            ["Token not found", "Authentication restricted"].some(
+                (msg) => ((error.response?.data as ApiErrorResponse)?.message || "").includes(msg)
+            )
+        );
+        
         if(shouldForceLogout)
         {
             return handleLogout(error)
@@ -55,7 +69,7 @@ api.interceptors.response.use(
 
 export default api
 
-export const handleLogout = async (error?:any) => {
+export const handleLogout = async (error?:ApiErrorResponse) => {
     try {
         store.dispatch(clearUser())
         await persistor.purge()

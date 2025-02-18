@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import api from "../utils/api"
 import { axiosError } from "../utils/AxiosError"
-import { JobType } from "../types/Candidate"
+import { Employer, JobType } from "../types/Candidate"
 export const employerDetails = async (details: Record<string, any>,isEdit:boolean=false): Promise<any> => {
     try {
         const url=isEdit?'/employerDetails?isEdit=true':"/employerDetails"
@@ -14,7 +14,7 @@ export const employerDetails = async (details: Record<string, any>,isEdit:boolea
         throw errorDetails
     }
 }
-export const postjob=async(formData:any)=>{
+export const postjob=async(formData:JobType)=>{
     try {
         const response=await api.post('/createjob',{formData})
         return response
@@ -34,7 +34,7 @@ export const fetchJobs=async()=>{
 }
 export const fetchUserJobs = async (params?: Record<string, any>): Promise<JobType[]> => {
     try {
-        const response:AxiosResponse<JobType[]>=await api.post('/fetch-jobs')
+        const response: AxiosResponse<JobType[]> = await api.post('/fetch-jobs', params || {});
         return response.data;
     } catch (error) {
         const errorDetails = axiosError(error, 'fetchJobs')
@@ -68,7 +68,7 @@ export const fetchJobById=async(jobId:string|undefined)=>{
         throw errorDetails 
     }
 }
-export const updateJob=async(jobId:string,formData:any)=>{
+export const updateJob=async(jobId:string,formData:JobType)=>{
     try {
         const response=await api.put(`/updatejob/${jobId}`,formData)
         return response
@@ -77,7 +77,7 @@ export const updateJob=async(jobId:string,formData:any)=>{
         throw errorDetails 
     }
 }
-export const deleteJob=async(jobId:string,)=>{
+export const deleteJob=async(jobId:string)=>{
     try {
         const response=await api.delete(`/deletejob/${jobId}`)
         return response
@@ -91,7 +91,7 @@ export const fetchApplicantsForJob=async(jobId:string)=>{
         const response=await api.get(`/get-applicants/${jobId}?`)
         return response
     } catch (error) {
-        const errorDetails = axiosError(error, 'delete job')
+        const errorDetails = axiosError(error, 'fetchApplicantsForJob')
         throw errorDetails 
     }
 }

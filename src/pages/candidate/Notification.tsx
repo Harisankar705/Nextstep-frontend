@@ -9,16 +9,11 @@ import { getCompanyLogo, getProfilePictureURL } from "../../utils/ImageUtils";
 import { INotification } from "../../types/Candidate";
 import toast from "react-hot-toast";
 const socket = io("http://localhost:4000");
-export const Notification = ({
-  isOpen,
-  onClose,
-  onOpenPost,
-  notification
-}: {
+export const Notification= ({isOpen,onClose,onOpenPost,notification}: {
   isOpen: boolean;
   onClose: () => void;
   onOpenPost?:(postId:string)=>void
-  notification?:any
+  notification?:INotification
 }) => {
   const [loading,setLoading]=useState(true)
   const [notifications, setNotifications] = useState<INotification[]>([]);

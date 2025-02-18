@@ -36,12 +36,12 @@ const AdminLogin = () => {
     }
     return (
         <div className="min-h-screen w-full bg-[#1e1c29] text-white flex items-center justify-center">
-            <div className="container max-w-[1100px] px-4">
+            <div className="container max-w-[1100px] px-4 sm:px-6 lg:px-6">
                 <div className=" grid grid-cols-1 gap-8 lg:grid-cols-2">
                     <div className="flex flex-col justify-center space-y-4">
                         <Logo width={400} height={107} className="mb-4" />
                         <div className="space-y-2">
-                            <h1 className="text-4xl font-bold tracking-tight lg:text-5xl text-[#FFB800]">
+                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight lg:text-5xl text-[#FFB800]">
                                 Hiring Done <span className="text-[#A68CFF]">right</span>
                             </h1>
                             <p className="text-muted">Your next step</p>
@@ -82,7 +82,6 @@ const AdminLogin = () => {
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         value={password}
-                                        maxLength={8}
                                         placeholder="enter your password"
                                         className="w-full px-3 py-2 bg-[#2a2837] rounded-md text-white placeholder-[#D1D5DB] border border-transparent focus:outline-none focus:ring-2 focus:ring-[#FFB800] focus:border-[#FFB800]"
                                         onChange={(e) => setPassword(e.target.value)}

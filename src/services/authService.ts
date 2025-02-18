@@ -1,6 +1,6 @@
 import { axiosError } from '../utils/AxiosError'
 import api from '../utils/api'
-import { SendOTPResponse, UserData, verifyOTPResponse } from '../types/Candidate'
+import { Candidate, SendOTPResponse, UserData, verifyOTPResponse } from '../types/Candidate'
  export type role = "user" | "employer"|"admin"
 export const sendOTP = async (email: string, role: role): Promise<SendOTPResponse> => {
     try {
@@ -17,6 +17,19 @@ export const getUserPosts=async(userId?:string)=>{
         return response.data 
     } catch (error) {
         axiosError(error,'getUserPosts')
+        throw error
+    }
+}
+export const updatePost=async(postId:string,formData:FormData)=>{
+    try {
+        const response = await api.post(`/updatePost/${postId}`, formData,{
+            headers:{
+                'Content-Type': 'multipart/form-data', 
+            }
+        })
+        return response
+    } catch (error) {
+        axiosError(error,'updatePost')
         throw error
     }
 }
@@ -69,7 +82,7 @@ export const register = async (userData: UserData, otp: string) => {
         throw error
     }
 }
-export const candidateDetails = async (details: Record<string, any>): Promise<any> => {
+export const candidateDetails = async (details: any): Promise<any> => {
     try {
         const response = await api.post('/candidate-details', details, {
             headers: {
@@ -88,7 +101,7 @@ export const login = async (email: string, password: string, role: role) => {
         if (response?.data) {
             return response.data
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         axiosError(error, 'login')
         throw error
 }

@@ -1,14 +1,17 @@
+import { LocationSuggestion } from './../types/Candidate';
 import axios from "axios";
 import { toast } from "react-hot-toast";
-
-
+interface Country
+{
+languages?:Record<string,string>
+}
 export const fetchLanguageSuggestions = async (query: string): Promise<string[]> => {
     if (!query) return [];
 
     try {
-        const response = await axios.get("https://restcountries.com/v3.1/all");
+        const response = await axios.get<Country[]>("https://restcountries.com/v3.1/all");
         const languages = response.data
-            .flatMap((country: any) => country.languages ? Object.values(country.languages) : [])
+            .flatMap((country) => country.languages ? Object.values(country.languages) : [])
             .filter(
                 (lang: string) =>
                     typeof lang === "string" &&
@@ -28,11 +31,11 @@ export const fetchLocationSuggestions = async (query: string): Promise<{ name: s
     if (!query) return [];
 
     try {
-        const response = await axios.get(
+        const response = await axios.get<LocationSuggestion[]>(
             `https://api.locationiq.com/v1/autocomplete.php?key=pk.737e7a51608e0777c2ffe0680fb255b1&q=${query}`
         );
         
-        return response.data.map((location: any) => ({
+        return response.data.map((location) => ({
             name: location.display_name,
             id: location.place_id,
         }));

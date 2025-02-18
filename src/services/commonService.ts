@@ -1,3 +1,4 @@
+import { IReport } from "../types/Candidate"
 import { InterviewScheduleData } from "../types/Employer"
 import api from "../utils/api"
 import { axiosError } from "../utils/AxiosError"
@@ -10,7 +11,7 @@ export const toggleFollow =async(followingId:string):Promise<any>=>{
                 throw error
     }
 }
-export const followBack = async (connectionId:string):Promise<any>=>{
+export const followBack = async (connectionId:string):Promise<boolean>=>{
     try {
         const response = await api.post('/followback', { connectionId })
         return response.data
@@ -119,6 +120,17 @@ export const savePost=async(postId:string)=>{
         throw error
     }
 }
+export const deletePost=async(postId:string)=>{
+    try {
+        const response=await api.delete('/deletepost',{
+            data:{postId}
+        })
+        return response.data
+    } catch (error) {
+        axiosError(error,'deletepost')
+        throw error
+    }
+}
 export const getSavedPost=async()=>{
     try {
         const response=await api.get('/getsavedposts')
@@ -127,6 +139,16 @@ export const getSavedPost=async()=>{
         axiosError(error,'getsavedpost')
         throw error
     }
+}
+export const createReport=async(reportData:{postId:string;reason:string;description?:string}):Promise<any>=>{
+    try {
+        const response=await api.post('/create-report',reportData)
+        return response.data
+    } catch (error) {
+        axiosError(error,'create report')
+        throw error
+    }
+
 }
 export const checkSavedStatus=async(postId:string)=>{
     try {
@@ -173,7 +195,14 @@ export const fetchUserMessages=async(id:string)=>{
         throw error
     }
 }
-export const sendMessage=async(messageData:any)=>{
+interface IMessage
+{
+    senderId: string
+    receiverId: string
+    content:string,
+    file: File|null
+}
+export const sendMessage=async(messageData:IMessage)=>{
     try {
         const response=await api.post(`/send-message/`,{messageData})
         return response.data

@@ -17,10 +17,12 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
     const currentUser = useSelector((state: any) => state.user);
     const [activeTab, setActiveTab] = useState("Posts")
     const [posts, setPosts] = useState<PostType[]>([])
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
     const isOwnProfile = !userId || userId === currentUser?._id
     const displayedUser = isOwnProfile ? currentUser : null
+    const [editingPostId,setEditingPostId]=useState<string|null>(null)
+    const [editingPostContent,setEditingPostContent]=useState('')
     const [showCreatePost, setShowCreatePost] = useState(false)
     useEffect(() => {
         const fetchPosts = async () => {
@@ -44,6 +46,30 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
     if (!currentUser) {
         return <Spinner loading={true} />;
     }
+    const handleDeletePosts=async(postId:string)=>{
+        setPosts(prevPosts=>prevPosts.filter(post=>post._id!==postId))
+      } 
+      const handlePostUpdate = (updatedPost: any) => {
+        setPosts(prevPosts => 
+            prevPosts.map(post => 
+                post._id === updatedPost._id ? {
+                    ...post,
+                    text: updatedPost.text,
+                    background: updatedPost.background,
+                    location: updatedPost.location,
+                    image: updatedPost.image,
+                    userId: updatedPost.userId,
+                    comments: updatedPost.comments,
+                    likes: updatedPost.likes,
+                    createdAt: updatedPost.createdAt
+                } : post
+            )
+        );
+    };
+     
+      
+     
+      
     return (
         <div className="min-h-screen bg-black text-white">
             <Navbar />
@@ -65,7 +91,8 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
                             <Spinner loading={true} />
                         ) : posts.length > 0 ? (
                             posts.map((post: PostType) => (
-                                <Post key={post._id} post={post} />
+                                <Post key={post._id} post={post} onDelete={handleDeletePosts} onPostUpdate={handlePostUpdate} role='user'
+                                />
                             ))
                         ) : (
                             <div className='text-center text-gray-400 py-8'>
