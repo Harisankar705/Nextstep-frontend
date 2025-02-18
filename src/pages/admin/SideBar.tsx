@@ -1,4 +1,4 @@
-import { Building2, LogOut, Menu, Users } from "lucide-react";
+import { Building2, LogOut, Menu, ReceiptPoundSterling, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "../../components/Logo";
 import { useDispatch } from "react-redux";
@@ -30,7 +30,6 @@ const SideBar = () => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
       <div className="fixed top-4 left-4 z-50 md:hidden">
         <button 
           onClick={() => setIsOpen(!isOpen)}
@@ -40,7 +39,6 @@ const SideBar = () => {
         </button>
       </div>
 
-      {/* Overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"
@@ -48,7 +46,6 @@ const SideBar = () => {
         />
       )}
 
-      {/* Sidebar */}
       <div className={`
         sidebar
         fixed top-0 left-0 z-50
@@ -59,12 +56,10 @@ const SideBar = () => {
         md:translate-x-0 md:static
         flex flex-col
       `}>
-        {/* Logo Section */}
         <div className="p-6 border-b border-slate-800">
           <Logo width={200} height={53} className="mx-auto" />
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
           <Link 
             to="/candidates" 
@@ -80,9 +75,15 @@ const SideBar = () => {
             <Building2 className="h-5 w-5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
             <span>Employers</span>
           </Link>
+          <Link 
+            to="/reports" 
+            className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all group"
+          >
+            <ReceiptPoundSterling className="h-5 w-5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+            <span>Reported Posts</span>
+          </Link>
         </nav>
 
-        {/* Logout Section */}
         <div className="p-4 border-t border-slate-800">
           <button 
             onClick={handleLogout}

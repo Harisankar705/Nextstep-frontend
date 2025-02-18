@@ -21,9 +21,9 @@ const Post: React.FC<PostComponentProps> = ({
     onPostUpdate,
     onUnsave,
     role,
-    onDelete
+    onDelete,
+    isAdmin=false
 }) => {
-    const navigate=useNavigate()
     const [timeAgo, setTimeAgo] = useState(getRelativeTime(post.createdAt));
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [commentCount, setCommentCount] = useState(0)
@@ -166,7 +166,6 @@ const Post: React.FC<PostComponentProps> = ({
             setScale(1);
         }
     }
-    console.log("ROLE",role)
     const handleNextImage = () => {
         if (selectedImageIndex !== null && post.image) {
             setSelectedImageIndex((prev) => 
@@ -186,7 +185,6 @@ const Post: React.FC<PostComponentProps> = ({
 
     const currentUser = useSelector((state: any) => state.user);
     const isPostOwner = currentUser?.user?._id === post?.userId?._id;
-    console.log("CURRENTUSER",currentUser)
 
     const finalProfilePicture = profilePicture
     ? role === 'employer'
@@ -301,7 +299,7 @@ const Post: React.FC<PostComponentProps> = ({
 
     return (
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 shadow-md">
-            {isShareModalOpen && (
+            {!isAdmin && isShareModalOpen && (
                 <SharePost isOpen={isShareModalOpen}
                     onClose={handleShareClose}
                     post={post} />
@@ -325,7 +323,13 @@ const Post: React.FC<PostComponentProps> = ({
                         </div>
                     </div>
                 </div>
-                {isPostOwner && (
+                {isAdmin ? (
+                    <button onClick={()=>setIsDeleteModalOpen(true)}
+                    className='p-2 text-red-500 hover:bg-gray-800 rounded-full transition-colors'>
+                        <Trash2 className='w-5 h-5'/>
+                    </button>
+                ):
+                isPostOwner && (
                     <div className="relative" ref={moreMenuRef}>
                         <button
                             onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
@@ -361,9 +365,10 @@ const Post: React.FC<PostComponentProps> = ({
                     </div>
                 )}
             </div>
-            {isReportModalOpen && (
+            {!isAdmin && isReportModalOpen && (
                 <Report postId={post._id}   
-                onClose={()=>setIsReportModalOpen(false)}/>
+                onClose={()=>setIsReportModalOpen(false)}
+                role={role}/>
             )}
             <p className="text-white mb-4">{post.text}</p>
             {renderImageGrid()}
@@ -372,7 +377,8 @@ const Post: React.FC<PostComponentProps> = ({
                     <p className="text-white">{post.text}</p>
                 </div>
             )}
-            <div className="flex items-center justify-between border-t border-gray-800 pt-2">
+            {!isAdmin && (
+                <div className="flex items-center justify-between border-t border-gray-800 pt-2">
                 <div className="flex items-center gap-1">
                     {likeCount}
                     <ThumbsUp className="w-4 h-4" />
@@ -381,36 +387,40 @@ const Post: React.FC<PostComponentProps> = ({
                     <span>{commentCount} comments</span>
                 </div>
             </div>
-           
-            <div className="flex items-center justify-between border-t border-gray-800 pt-2">
+            )}
+            
+           {!isAdmin && (
+  <div className="flex items-center justify-between border-t border-gray-800 pt-2">
                 
-                    <Like
-                        postId={post._id}
-                        initialLikes={likeCount}
-                        initiallyLiked={post.likedByUser}
-                        onLikeCountChange={(newCount) => setLikeCount(newCount)}
-                        currentUser={currentUser}
-                        post={post}
-                    />
-                
-                
-                <button
-                    onClick={() => setIsCommentsOpen(true)}
-                    className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors"
-                >
-                    <MessageSquare className="w-5 h-5" />
-                    <span>Comment</span>
-                </button>
-                <button onClick={() => setIsShareModalOpen(true)} className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors">
-                    <Share2 className="w-5 h-5" />
-                    <span>Share</span>
-                </button>
-                <button onClick={handleSavePost} className={`flex items-center gap-2 ${isSaved ? 'text-gray-400 bg-purple-600' : 'text-gray-400 hover:bg-gray-800'}  px-4 py-2 rounded-lg transition-colors`}>
-                    <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
-                    <span>{isSaved ? "Saved" : "Save"}</span>
-                </button>
-            </div>
-            {isCommentsOpen && (
+  <Like
+      postId={post._id}
+      initialLikes={likeCount}
+      initiallyLiked={post.likedByUser}
+      onLikeCountChange={(newCount) => setLikeCount(newCount)}
+      currentUser={currentUser}
+      post={post}
+  />
+
+
+<button
+  onClick={() => setIsCommentsOpen(true)}
+  className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors"
+>
+  <MessageSquare className="w-5 h-5" />
+  <span>Comment</span>
+</button>
+<button onClick={() => setIsShareModalOpen(true)} className="flex items-center gap-2 text-gray-400 hover:bg-gray-800 px-6 py-2 rounded-lg transition-colors">
+  <Share2 className="w-5 h-5" />
+  <span>Share</span>
+</button>
+<button onClick={handleSavePost} className={`flex items-center gap-2 ${isSaved ? 'text-gray-400 bg-purple-600' : 'text-gray-400 hover:bg-gray-800'}  px-4 py-2 rounded-lg transition-colors`}>
+  <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+  <span>{isSaved ? "Saved" : "Save"}</span>
+</button>
+</div>
+           )}
+          
+            {!isAdmin && isCommentsOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div
                         className="relative w-full max-w-lg max-h-[90vh] bg-gray-900 rounded-lg shadow-xl mx-4"
@@ -493,7 +503,7 @@ const Post: React.FC<PostComponentProps> = ({
                 </div>
             )}
 
-            {isEditModalOpen && (
+            {!isAdmin && isEditModalOpen && (
                 <EditPost
                 post={{
                     id:post._id,

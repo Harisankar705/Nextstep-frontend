@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ReportProps } from "../../types/Candidate";
 import toast from "react-hot-toast";
 import { AlertTriangle, Flag, X } from "lucide-react";
+import { createReport } from "../../services/commonService";
 const REPORT_REASONS=[
     {value:'spam',label:"Spam or misleading"},
     {value:'inappropriate',label:"Inappropriate Content"},  
@@ -10,7 +11,7 @@ const REPORT_REASONS=[
     {value:'sexual content',label:"Sexual Content"},  
     {value:'other',label:"Other"},  
 ] as const
-export const Report: React.FC<ReportProps> = ({ postId, onClose,onSubmit }:ReportProps) => {
+export const Report: React.FC<ReportProps> = ({ postId, onClose,role }:ReportProps) => {
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting,setIsSubmitting]=useState(false)
@@ -19,10 +20,16 @@ export const Report: React.FC<ReportProps> = ({ postId, onClose,onSubmit }:Repor
     if(!reason)return
     try {
         setIsSubmitting(false)
-        await onSubmit({postId,reason,description})
+        const response=await createReport({postId,reason,description,role})
+        if(response.status===200)
+        {
+          toast.success('Report has been submitted!')
+        }
+        console.log('response',response)
         onClose()
     } catch (error) {
         toast.error("Failed to submit report!")
+        console.error(error)
     }
     finally{
         setIsSubmitting(false)

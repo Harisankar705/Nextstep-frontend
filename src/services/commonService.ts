@@ -140,16 +140,17 @@ export const getSavedPost=async()=>{
         throw error
     }
 }
-export const createReport=async(reportData:{postId:string;reason:string;description?:string}):Promise<any>=>{
+export const createReport=async(reportData:{postId:string;reason:string;description?:string,role:string}):Promise<any>=>{
     try {
+        console.log('in createreport',reportData)
         const response=await api.post('/create-report',reportData)
-        return response.data
+        return response
     } catch (error) {
         axiosError(error,'create report')
         throw error
     }
 
-}
+}   
 export const checkSavedStatus=async(postId:string)=>{
     try {
         const response=await api.get(`/saved-posts/check/${postId}`)

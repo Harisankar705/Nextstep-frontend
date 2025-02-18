@@ -112,7 +112,6 @@ const UserProfile = () => {
     setDialogVisible(false);
     toast.success("Unfollow cancelled");
   };
-  console.log("ROLE IN USERPROFILE")
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white">

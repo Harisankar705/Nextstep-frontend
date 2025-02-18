@@ -14,8 +14,9 @@ export interface InterviewScheduleProps {
 export type Reason='spam'|'inappropirate'|'offensive'|'misinformation'|'sexual content'|'other'
 
 export interface IReport  {
-  post:string
-  reporter: string
+  _id?:string
+  post:PostType
+  reporter: UserCandidate
   reporterModel:"User"|"Employer"   
   reason:Reason
   description?:string,
@@ -26,7 +27,7 @@ export interface IReport  {
 export interface ReportProps{
     postId:string,
     onClose:()=>void
-    onSubmit:(data:{postId:string,reason:string,description?:string})=>Promise<void>
+    role:string
 }
 export interface Applicant {
   _id: string;
@@ -81,7 +82,8 @@ export interface PostComponentProps {
   userName?: string;
   onUnsave?: (postId: string) => void;
   role?: any;
-  onDelete?:(postId:string)=>void
+  onDelete?:(postId:string)=>void,
+  isAdmin?:boolean
 }
 export interface LogoProps {
   width?: number | string;
@@ -211,31 +213,31 @@ export interface User {
   secondName: string;
   profilePicture: string;
 }
-export interface PostType {
-  _id: string;
-  text: string;
-  background?: string;
-  image?: string[];
-  createdAt: string;
-  location: string
-  profilePicture: string;
-  likes?: [];
-  user?: {
+  export interface PostType {
+    _id: string;
+    text: string;
+    background?: string;
+    image?: string[];
+    createdAt: string;
+    location: string
     profilePicture: string;
-    firstName: string;
-    secondName: string;
-  };
-  company?: {
-    logo: string;
-    companyName: string;
-  };
-  comments?: Array<Comment>;
-  isLiked?: boolean;
-  likedByUser?: boolean;
-  saved?: boolean;
-  userId: User;
-  userType?: string;
-}
+    likes?: [];
+    user?: {
+      profilePicture: string;
+      firstName: string;
+      secondName: string;
+    };
+    company?: {
+      logo: string;
+      companyName: string;
+    };
+    comments?: Array<Comment>;
+    isLiked?: boolean;
+    likedByUser?: boolean;
+    saved?: boolean;
+    userId: User;
+    userType?: string;
+  }
 export interface LocationState {
   isLoading: boolean;
   error: string | null;

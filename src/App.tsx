@@ -33,6 +33,7 @@ import { Chat } from './pages/candidate/chat/Chat.tsx';
 import SearchProfile from './pages/employer/SearchProfile.tsx';
 import { Payment } from './pages/candidate/Payment.tsx';
 import { PaymentSuccess } from './pages/candidate/PaymentSuccess.tsx';
+import { ReportedPosts } from './pages/admin/ReportedPosts.tsx';
 const App = () => {
   return (
     <div>
@@ -63,6 +64,7 @@ const App = () => {
           <Route path='/employers'element={<ProtectedRoute role='admin'>{<Employers/>}</ProtectedRoute>}/>
           <Route path='/verifyemployer/:id'element={<ProtectedRoute role='admin'>{<Verification/>}</ProtectedRoute>}/>
           <Route path='followrequests'element={<ProtectedRoute role='admin'>{<ConnectionRequest/>}</ProtectedRoute>}/>
+          <Route path='/reports'element={<ProtectedRoute role='admin'>{<ReportedPosts/>}</ProtectedRoute>}/>
          
 
           {/* employer */}

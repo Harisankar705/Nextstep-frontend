@@ -11,7 +11,25 @@ export const getUser = async <T extends Candidate | Employer>(role: 'user' | 'em
         throw error;
     }
 };
-
+export const fetchReports=async()=>{
+    try {
+        const response=await api.get('/getreports')
+        console.log(response.data)
+        return response.data
+    } catch (error) {
+        axiosError(error,'fetchReports')
+        throw error
+    }
+}
+export const changeReportStatus=async(reportId:string,newStatus:string)=>{
+    try {
+        const response=await api.post('/change-report-status',{reportId,newStatus})
+        return response.data
+    } catch (error) {
+        axiosError(error,'fetchReports')
+        throw error
+    }
+}
 export const adminLogout=async()=>{
     try {
         const response=await api.post('/adminlogout')
