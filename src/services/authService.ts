@@ -67,6 +67,7 @@ export const resendOTP = async (email: string, role: role): Promise<SendOTPRespo
 export const verifyOTP = async (email: string, otp: string, role: role): Promise<verifyOTPResponse> => {
     try {
         const response = await api.post('/verify-otp', { email, otp, role }, { withCredentials: false })
+        console.log("RRESPONSE",response)
         return response.data
     } catch (error: unknown) {
         axiosError(error, 'verifyOTP')

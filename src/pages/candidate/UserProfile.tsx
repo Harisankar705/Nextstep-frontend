@@ -141,7 +141,7 @@ const UserProfile = () => {
       <Navbar />
       <div className="relative h-[350px]">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-black opacity-90">
-          <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center mix-blend-overlay"></div>
+          <div className="absolute inset-0  bg-cover bg-center mix-blend-overlay"></div>
         </div>
         <div className="flex flex-col items-center mb-4">
           <div className="h-48 w-48 rounded-full border-4 border-black overflow-hidden -mt-20 mb-4 ml-10"></div>

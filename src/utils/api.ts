@@ -59,6 +59,7 @@ api.interceptors.response.use(
                 await api.post('/refreshtoken', {}, { withCredentials: true });
                 return api(originalRequest);
             } catch (refreshError) {
+                console.log('error',refreshError)
                 return Promise.reject(refreshError);
             }
         }

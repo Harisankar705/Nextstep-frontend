@@ -24,14 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     ? adminState.isAuthenticated 
     : false;
 
-  const user = role === 'candidate' 
-    ? candidateState.user 
-    : role === 'employer' 
-    ? employerState.user 
-    : role === 'admin' 
-    ? adminState.user 
-    : null;
-
+ 
   useEffect(() => {
     if (!isAuthenticated) {
       const redirectPath = role === 'employer' ? '/employerlogin' : role === 'admin' ? '/admin' : '/login';

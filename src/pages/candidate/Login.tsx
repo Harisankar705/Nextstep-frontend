@@ -8,7 +8,6 @@ import Spinner from "../../utils/Spinner";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userSlice";
 import { errorHandler } from "../../utils/ErrorHandler";
-
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -30,24 +29,17 @@ const Login = () => {
     try {
       const response = await login(email, password, 'user')
       toast.success("Login success",response)
-
-
+      console.log("RESPONSE",response)
       dispatch(setUser(response.user))
-
-
-
       if (response.user.isProfileComplete) {
         navigate('/home',{replace:true})
       }
       else {
         navigate('/candidate-details', { replace: true })
       }
-
-
     } catch (error: unknown) {
       const errorMessage=errorHandler(error)
       toast.error(errorMessage)
-
       setError(errorMessage);    }
     finally {
       setLoading(false)
@@ -77,7 +69,6 @@ const Login = () => {
   //     setError("Google authentication")
   //   }
   // })
-
   return (
     <div className="min-h-screen w-full bg-[#1a1625] text-white flex items-center justify-center">
       <div className="container max-w-[1100px] px-4">
@@ -128,7 +119,6 @@ const Login = () => {
                     value={password}
                     placeholder="enter your password"
                     className="w-full px-3 py-2 bg-[#2a2837] rounded-mg text-white placeholder-gray-400 focus:outline-none focus:ring-[#8256e6]"
-
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
@@ -136,7 +126,6 @@ const Login = () => {
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-
               </div>
               {error && <p className="text-red-500 text-sm">{error}</p>}
               <button
@@ -146,7 +135,6 @@ const Login = () => {
               >
                 {loading ? <Spinner loading={true} /> : "Login"}
               </button>
-
             </form>
             {/* <button
               type="button"
@@ -169,5 +157,4 @@ const Login = () => {
     </div>
   );
 };
-
 export default Login;
