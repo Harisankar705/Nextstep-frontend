@@ -1,6 +1,6 @@
 import { axiosError } from '../utils/AxiosError'
 import api from '../utils/api'
-import { Candidate, SendOTPResponse, UserData, verifyOTPResponse } from '../types/Candidate'
+import {  SendOTPResponse, UserData, verifyOTPResponse } from '../types/Candidate'
  export type role = "user" | "employer"|"admin"
 export const sendOTP = async (email: string, role: role): Promise<SendOTPResponse> => {
     try {

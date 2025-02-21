@@ -4,7 +4,7 @@ export const axiosError=(error:unknown,functionName:string)=>{
     if(axios.isAxiosError(error))
     {
         const errorMessage=error.response?.data?.message||error.message
-        return errorMessage
+        return `Error in ${functionName}:${errorMessage}`
     }
     else
     {

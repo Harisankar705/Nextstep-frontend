@@ -10,7 +10,7 @@ import {
 import {useEffect, useRef, useState } from "react";
 import { useSocket } from "../../../SocketContext";
 import { Message, SelectedFileType, VideoCallAnswerData } from "../../../types/Candidate";
-import { SideBar } from "./SideBar";
+// import { SideBar } from "./SideBar";
 import toast from "react-hot-toast";
 import {
   fetchUserMessages,
@@ -23,7 +23,7 @@ import {
   getProfilePictureURL,
 } from "../../../utils/ImageUtils";
 import { VideoCallUI } from "./VideoCall";
-
+import Spinner from "../../../utils/Spinner";
 interface Caller{
   senderId:string
   receiverId: string;
@@ -36,7 +36,6 @@ interface FileData{
   type?:string,
   size?:number
 }
-
 interface FilePreviewProps
 {
   file:FileData,
@@ -54,24 +53,25 @@ export const Chat = () => {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const { socket, isConnected } = useSocket();
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const videoContainerRef = useRef<HTMLDivElement>(null);
   const [isMuted,setIsMuted]=useState(true)
   const [isVideoEnabled,setIsVideoEnabled]=useState(true)
   const [callDuration,setCallDuration]=useState(0)
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [chatHistory, setChatHistory] = useState<Array<any>>([]);
   const [loading, setLoading] = useState(false);
   const [userDetails, setUserDetails] = useState<any>(null);
   const [selectedChat, setSelectedChat] = useState<any>(null);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
+  // const [filePreview, setFilePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX_FILE_SIZE = 10 * 1024 * 1024;
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  // const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [selectedFile, setSelectedFile] = useState<SelectedFileType | null>(
     null
   );
+  if(loading)
+  {
+    return(<Spinner loading={true}/>)
+  }
   const toggleMute=()=>{
     if(localStream)
     {
@@ -93,7 +93,7 @@ export const Chat = () => {
           localVideoRef.current.style.backgroundColor = 'transparent';
           localVideoRef.current.srcObject = localStream;
           localVideoRef.current.play().catch(error => {
-            // toast.error('Error playing local video:', error);
+             console.error('Error playing local video:', error);
           });
         }
       }
@@ -142,17 +142,18 @@ export const Chat = () => {
       setCallDuration(0)
     }
   },[isCallInProgress])
-  useEffect(() => {
-    const handleFullScreenChange = () => {
-      setIsFullScreen(!!document.fullscreenElement);
-    };
-    document.addEventListener("fullscreenchange", handleFullScreenChange);
-  }, []);
+  // useEffect(() => {
+  //   const handleFullScreenChange = () => {
+  //     setIsFullScreen(!!document.fullscreenElement);
+  //   };
+  //   document.addEventListener("fullscreenchange", handleFullScreenChange);
+  // }, []);
   useEffect(() => {
     const videoElement = localVideoRef.current;
     if (videoElement && localStream) {
       videoElement.srcObject = localStream;
       setIsStreamSet(true);
+      console.log(isStreamSet)
     } else {
       setIsStreamSet(false);
     }
@@ -241,13 +242,11 @@ export const Chat = () => {
       if (!caller || !caller.offer) {
         return;
       }
-      // Get local stream
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
       setLocalStream(stream);
-      // Create peer connection
       const peerConnection = new RTCPeerConnection({
         iceServers: [
           { urls: "stun:stun.l.google.com:19302" },
@@ -267,7 +266,7 @@ export const Chat = () => {
           setRemoteStream(event.streams[0]);
           if (remoteVideoRef.current) {
             remoteVideoRef.current.srcObject = event.streams[0];
-            remoteVideoRef.current.play()//remove the .catch
+            remoteVideoRef.current.play()
           }
         } 
       };
@@ -353,15 +352,12 @@ export const Chat = () => {
         peerConnectionRef.current.close();
         peerConnectionRef.current = null;
     }
-
     if (localStream) {
         localStream.getTracks().forEach((track) => track.stop());
         setLocalStream(null);
     }
-
     setRemoteStream(null);
     setIsCallInProgress(false);
-
     if (selectedChat?._id) {
         socket?.emit("videoCallHangUp", {
             senderId: selectedChat._id,
@@ -369,29 +365,22 @@ export const Chat = () => {
         });
     }
 };
-
 useEffect(() => {
     if (!socket) return;
-
     const handleVideoCallHangUp = () => {
         if (peerConnectionRef.current) {
             peerConnectionRef.current.close();
             peerConnectionRef.current = null;
         }
-
         if (localStream) {
             localStream.getTracks().forEach((track) => track.stop());
             setLocalStream(null);
         }
-
         setRemoteStream(null);
         setIsCallInProgress(false);
         setIsReceivingCall(false);
-
     };
-
     socket.on("videoCallHangUp", handleVideoCallHangUp);
-
     return () => {
         socket.off("videoCallHangUp", handleVideoCallHangUp);
     };
@@ -416,36 +405,36 @@ useEffect(() => {
       toast.error("File size should be less than 10MB");
       return;
     }
-    try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          setFilePreview(reader.result as string);
-          resolve(reader.result as string);
-        };
-        reader.onerror = (error) => {
-          reject(error);
-        };
-        reader.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const progress = (event.loaded / event.total) * 100;
-            setUploadProgress(progress);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-      setSelectedFile({
-        file: file,
-        preview: URL.createObjectURL(file),
-        data: base64,
-        name: file.name,
-        type: file.type,
-      });
-    } catch (error) {
-      toast.error("file processing error");
-    } finally {
-      setUploadProgress(0);
-    }
+    // try {
+    //   const base64 = await new Promise<string>((resolve, reject) => {
+    //     const reader = new FileReader();
+    //     reader.onload = () => {
+    //       setFilePreview(reader.result as string);
+    //       resolve(reader.result as string);
+    //     };
+    //     reader.onerror = (error) => {
+    //       reject(error);
+    //     };
+    //     reader.onprogress = (event) => {
+    //       if (event.lengthComputable) {
+    //         const progress = (event.loaded / event.total) * 100;
+    //         setUploadProgress(progress);
+    //       }
+    //     };
+    //     reader.readAsDataURL(file);
+    //   });
+    //   setSelectedFile({
+    //     file: file,
+    //     preview: URL.createObjectURL(file),
+    //     data: base64,
+    //     name: file.name,
+    //     type: file.type,
+    //   });
+    // } catch (error) {
+    //   toast.error("file processing error");
+    // } finally {
+    //   setUploadProgress(0);
+    // }
   };
   useEffect(() => {
     return () => {
@@ -454,13 +443,13 @@ useEffect(() => {
       }
     };
   }, [selectedFile]);
-  const removeSelectedFile = () => {
-    setSelectedFile(null);
-    setFilePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
+  // const removeSelectedFile = () => {
+  //   setSelectedFile(null);
+  //   setFilePreview(null);
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = "";
+  //   }
+  // };
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -546,20 +535,35 @@ useEffect(() => {
       });
     };
     const handleMessageSent = (data: { messageId: string; status: string }) => {
-      // setMessages(prevMessages =>
-      //   prevMessages.map(msg =>
-      //     msg._id?.startsWith('temp-')
-      //       ? { ...msg, _id: data.messageId, status: data.status }
-      //       : msg
-      //   )
-      // );
+    console.log(data)
     };
     socket.on("receiveMessage", handleReceiveMessage);
     socket.on("messageSent", handleMessageSent);
     socket.on("connect", () => {});
-    socket.on("disconnect", (reason:string) => {
-    });
+    socket.on("disconnect", (reason: string) => {
+      switch (reason) {
+          case "io server disconnect":
+              toast.error("Disconnected by server. Attempting to reconnect...");
+              socket?.connect();
+              break;
+          case "io client disconnect":
+              toast.error("Disconnected from chat");
+              break;
+          case "transport close":
+              toast.error("Connection lost. Attempting to reconnect...");
+              break;
+          case "transport error":
+              toast.error("Connection error. Please check your internet connection");
+              break;
+          case "ping timeout":
+              toast.error("Connection timed out. Attempting to reconnect...");
+              break;
+          default:
+              toast.error(`Disconnected: ${reason}`);
+      }
+  });
     socket.on("connect_error", (error:Error) => {
+      toast.error(`Failed to connect: ${error.message}`);
     });
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
@@ -617,7 +621,7 @@ useEffect(() => {
     const [isLoading, setIsLoading] = useState(false);
     const isS3File = Boolean(file?.url);
     const isImage = file?.type?.startsWith("image/");
-    const fileURL = isS3File ? file.url : file.preview;
+    // const fileURL = isS3File ? file.url : file.preview;
     const fileName = file.name || "File";
     useEffect(() => {
       const getSecureURL = async () => {
@@ -666,11 +670,11 @@ useEffect(() => {
             )}
             {!message && !isS3File && (
               <button
-                onClick={() => {
-                  if (typeof removeSelectedFile === "function") {
-                    removeSelectedFile();
-                  }
-                }}
+                // onClick={() => {
+                //   if (typeof removeSelectedFile === "function") {
+                //     removeSelectedFile();
+                //   }
+                // }}
                 className="absolute -top-2 -right-2 p-1 bg-gray-700 rounded-full hover:bg-gray-600"
               >
                 <X className="w-4 h-4" />
@@ -683,14 +687,14 @@ useEffect(() => {
             <span className="text-xs truncate">{fileName}</span>
           </div>
         )}
-        {uploadProgress > 0 && !message && !isS3File && (
+        {/* {uploadProgress > 0 && !message && !isS3File && (
           <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
             <div
               className="bg-blue-500 h-2 rounded-full"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
-        )}
+        )} */}
         {file.size!==null && (
           <div className="text-xs text-gray-400 mt-1">
             {((file.size??0) / 1024).toFixed(2)}KB
@@ -939,7 +943,7 @@ useEffect(() => {
   };
   return (
     <div className="flex h-screen bg-[#1C1C1C] text-white">
-      <SideBar chatHistory={chatHistory} />
+      {/* <SideBar chatHistory={chatHistory} /> */}
       <div className="flex-1 flex flex-col">
         {isCallInProgress &&( <VideoCallUI localStream={localStream}isMuted={isMuted} callDuration={callDuration} remoteStream={remoteStream} isVideoEnabled={isVideoEnabled} toggleMute={toggleMute} toggleVideo={toggleVideo} endVideoCall={endVideoCall}/>)}
           {isReceivingCall && (

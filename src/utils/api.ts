@@ -74,8 +74,10 @@ export const handleLogout = async (error?:ApiErrorResponse) => {
         store.dispatch(clearUser())
         await persistor.purge()
         window.location.href='/location'
-    } catch (error) {
-        toast.error('Failed to handlelogout')
+    } catch (err) {
+        const apiError=error as ApiErrorResponse
+        
+        toast.error(`Failed to logout ||${apiError}`)
     } finally {
         window.location.href = '/login';
     }

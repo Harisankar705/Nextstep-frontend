@@ -14,10 +14,7 @@ import { setUser } from "../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../utils/Navbar";
 import { UserCandidate } from "../../types/Candidate";
-
-
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
 const formSchema = z.object({
   firstName: z
     .string()
@@ -46,50 +43,39 @@ const formSchema = z.object({
         message: "Date must be in the past",
       }
     ),
-
   aboutMe: z.string().min(1, { message: "About Me is required" }).max(500, { message: "Enter the field correctly!" }),
-  skills: z
-    .string()
-    .transform((val) => val.split(",").map((skill) => skill.trim()).filter(Boolean))
-    .refine((skills) => skills.length > 0, {
-      message: "At least one skill is required"
-    })
+  skills: z.array(z.string())  
+    .min(1, { message: "At least one skill is required" })
     .refine((skills) => skills.every(skill => skill.length <= 30), {
       message: "Skills must be 30 characters or less"
     })
-    .refine((skills) => new Set(skills.map(skill => skill.toLowerCase())).size === skills.length, {
+    .refine((skills) => new Set(skills).size === skills.length, {
       message: "No duplicate skills allowed"
     })
     .refine((skills) => skills.length <= 10, {
       message: "Maximum 10 skills allowed"
     }),
-
-
-
   languages: z.string()
     .min(1, { message: "At least one language required" }),
   resume: z.array(z.string()).min(1, { message: "At least one resume is required" }),
-
   experience: z.string()
     .min(1, "Experience is required")
-
-
 });
 type FormData = z.infer<typeof formSchema>;
-
 const EditProfile = () => {
-  const user = useSelector((state: UserCandidate) => state.user);
+  const user=useSelector((state:{user:UserCandidate})=>state.user)
   const navigate = useNavigate()
   const [languageSuggestions, setLanguageSuggestions] = useState<string[]>([]);
   const [locationSuggestions, setLocationSuggestions] = useState<
     { name: string; id: number }[]
   >([]);
-  const [languageInput, setLanguageInput] = useState<string>(user.languages);
-  const [locationInput, setLocationInput] = useState<string>(user.location);
+  const [languageInput, setLanguageInput] = useState<string>(
+    user.languages ? user.languages.join(", ") : ""
+  );
+  const [locationInput, setLocationInput] = useState<string>(user.location||'');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [skills, setSkills] = useState<string[]>(user.skills || []);
-
-  const [resume, setResume] = useState<string[]>(user.resume || []);
+  const [resume, setResume] = useState<string[]>(Array.isArray(user.resume)?user.resume:[]);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<
     string | null
@@ -106,26 +92,18 @@ const EditProfile = () => {
       setExisitingLanguages(user.languages || []);
     }
   }, [setExistingSkills, setExisitingLanguages]);
-
   const handleExperienceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
-
-    // Remove extra spaces and convert to lowercase
     const cleanValue = value.trim().toLowerCase();
-
-    // Regex patterns for valid formats
     const yearPattern = /^(\d+)\s*(year|years|yr|yrs)?$/;
     const monthPattern = /^(\d+)\s*(month|months|mo|mos)?$/;
-
     if (cleanValue === '') {
       setExperience('');
       setError("experience", { message: "" });
       return;
     }
-
     const yearMatch = cleanValue.match(yearPattern);
     const monthMatch = cleanValue.match(monthPattern);
-
     if (yearMatch) {
       const years = parseInt(yearMatch[1], 10);
       if (years < 0 || years > 50) {
@@ -138,7 +116,7 @@ const EditProfile = () => {
       setError("experience", { message: "" });
     } else if (monthMatch) {
       const months = parseInt(monthMatch[1], 10);
-      if (months < 0 || months > 600) { // 600 months = 50 years
+      if (months < 0 || months > 600) { 
         setError("experience", {
           message: "Experience must be between 0 and 600 months",
         });
@@ -152,13 +130,9 @@ const EditProfile = () => {
       });
     }
   };
-
-
-  const profilePictureURL = `http://localhost:4000/uploads/profile-pictures/${user.profilePicture
+  const profilePictureURL = `http:
     .split("\\")
     .pop()}`;
-
-
   useEffect(() => {
     setProfilePicturePreview(profilePictureURL);
   }, [profilePictureURL]);
@@ -221,7 +195,6 @@ const EditProfile = () => {
         acc.push(file.name);
         return acc;
       }, [] as string[]);
-
       if (newResumes.length > 0) {
         setResume((prevResumes) => [...prevResumes, ...newResumes]);
         clearErrors('resume')
@@ -231,11 +204,9 @@ const EditProfile = () => {
       }
     }
   };
-
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
-
   const {
     register,
     handleSubmit,
@@ -255,10 +226,10 @@ const EditProfile = () => {
         ? new Date(user.dateOfBirth).toISOString().split("T")[0]
         : "",
       aboutMe: user.aboutMe || "",
-      skills: user.skills ? user.skills.join(", ") : "",
-      languages: user.languages || [],
+      skills: user.skills || [],  
+      languages: user.languages?user.languages.join(', '):'',
       experience: user.experience || "",
-      resume: user.resume || [],
+      resume: Array.isArray(user.resume)?user.resume:[]
     },
   });
   useEffect(() => {
@@ -266,39 +237,25 @@ const EditProfile = () => {
   }, [locationInput, setValue]);
   useEffect(() => {
     if (user.languages) {
-      setExisitingLanguages([user.languages])
-      setLanguageInput(user.languages)
-      setValue('languages', user.languages)
+      setExisitingLanguages(user.languages)
+      setLanguageInput(user.languages.join(', '))
+      setValue('languages', user.languages.join(', '))
     }
-
   }, [user.languages])
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
-
+    
     const allSkills = [
       ...new Set([
-        ...existingSkills.map(skill => skill.toLowerCase()),
-        ...skills.map(skill => skill.toLowerCase())
-      ])
-    ].map(skill =>
-      existingSkills.find(s => s.toLowerCase() === skill) ||
-      skills.find(s => s.toLowerCase() === skill) ||
-      skill
-    );
-
+        ...existingSkills,
+        ...skills
+      ].map(skill => skill.toLowerCase()))
+    ];
+  
     if (allSkills.length === 0) {
       setError("skills", {
         type: 'manual',
         message: "Please provide at least one skill"
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (allSkills.length > 10) {
-      setError("skills", {
-        type: 'manual',
-        message: "Maximum 10 skills allowed"
       });
       setIsSubmitting(false);
       return;
@@ -309,7 +266,6 @@ const EditProfile = () => {
     }
     const formData = new FormData();
     let profilePictureURL = user.profilePicture
-
     if (profilePicture instanceof File) {
       formData.append("profilePicture", profilePicture);
       profilePictureURL = URL.createObjectURL(profilePicture)
@@ -326,7 +282,7 @@ const EditProfile = () => {
       "data",
       JSON.stringify({
         experience: data.experience,
-        languages: existingLanguages[0],
+        languages: existingLanguages.join(', '),
         location: data.location,
         aboutMe: data.aboutMe,
         dateOfbirth: data.dateOfBirth,
@@ -335,7 +291,6 @@ const EditProfile = () => {
     );
     try {
       const response = await candidateDetails(formData);
-
       if (response.message == "User updated successfully!") {
         const newProfilePicturePath = response.profilePicture || profilePictureURL
         dispatch(setUser({
@@ -355,8 +310,6 @@ const EditProfile = () => {
         }, 3000)
         toast.success(response.message || "Details updated successfully!");
         return () => clearTimeout(timeOutId);
-
-
       }
     } catch (error) {
       setIsSubmitting(false);
@@ -366,17 +319,15 @@ const EditProfile = () => {
   const getProfilePictureURL = () => {
     if (profilePicturePreview) return profilePicturePreview
     if (user.profilePicture) {
-      return `http://localhost:4000/uploads/profile-pictures/${user.profilePicture.split("\\").pop()
+      return `http:
         }`;
     }
   }
-
   const handleLocationInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
     setLocationInput(value);
-    
     if (value.trim()) {
       const suggestions = await fetchLocationSuggestions(value);
       setLocationSuggestions(suggestions);
@@ -384,11 +335,9 @@ const EditProfile = () => {
       setLocationSuggestions([]);
     }
   };
-
   const handleLanguageInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value: string = e.target.value;
     setLanguageInput(value)
-
     if (value.trim()) {
       const suggestions = await fetchLanguageSuggestions(value);
       const filteredSuggestions = suggestions.filter(
@@ -399,7 +348,6 @@ const EditProfile = () => {
       setLanguageSuggestions([]);
     }
   };
-
   const removeResume = (index: number) => {
     const updatedResume = resume.filter((_, i) => i !== index);
     setResume(updatedResume);
@@ -411,21 +359,16 @@ const EditProfile = () => {
       clearErrors('resume')
     }
   };
-
   const selectLanguageSuggestion = (suggestion: string) => {
-
-    setExisitingLanguages([suggestion])
+    if(!existingLanguages.includes(suggestion))
+    {
+      setExisitingLanguages((prev)=>[...prev,suggestion])
+    }
     setLanguageInput(suggestion)
-    setValue('languages', suggestion)
+    setValue('languages', [...existingLanguages,suggestion].join(', '))
     setLanguageSuggestions([]);
     clearErrors("languages");
-
-
-
   };
-
-
-
   const selectLocationSuggestion = (suggestion: {
     name: string;
     id: number;
@@ -470,15 +413,11 @@ const EditProfile = () => {
       ]
       return allCurrentSkill
     }
-
-
     const isDuplicate = getCurrentSkills().includes(trimmedSkill.toLowerCase())
-
     if (isDuplicate) {
       setError('skills', { message: "Skill already exists" });
       return;
     }
-
     if (trimmedSkill.length > 30) {
       setError('skills', { message: "Skill too large" });
       return;
@@ -488,7 +427,6 @@ const EditProfile = () => {
       setError('skills', { type: "manual", message: "Too many skills" });
       return;
     }
-
     if (existingSkills.length <= 10) {
       setExistingSkills(prev => [...prev, trimmedSkill])
     }
@@ -496,26 +434,16 @@ const EditProfile = () => {
       setSkills(prev => [...prev, trimmedSkill])
     }
   };
-
   const removeSkill = (skillToRemove: string, isExisting: boolean) => {
-    // Function to create a case-insensitive comparison
     const matchSkill = (skill: string) =>
       skill.toLowerCase() === skillToRemove.toLowerCase();
-
     if (isExisting) {
-      // Remove from existing skills
       const updatedExistingSkills = existingSkills.filter(
         (skill) => !matchSkill(skill)
       );
-
-      // Remove from all skills array if it exists there too
       const updatedSkills = skills.filter((skill) => !matchSkill(skill));
-
-      // Update state
       setExistingSkills(updatedExistingSkills);
       setSkills(updatedSkills);
-
-      // Validation check
       if (updatedExistingSkills.length === 0 && updatedSkills.length === 0) {
         setError('skills', {
           type: 'manual',
@@ -525,19 +453,12 @@ const EditProfile = () => {
         clearErrors('skills');
       }
     } else {
-      // Remove from current skills
       const updatedSkills = skills.filter((skill) => !matchSkill(skill));
-
-      // Remove from existing skills if it exists there too
       const updatedExistingSkills = existingSkills.filter(
         (skill) => !matchSkill(skill)
       );
-
-      // Update state
       setSkills(updatedSkills);
       setExistingSkills(updatedExistingSkills);
-
-      // Validation check
       if (updatedSkills.length === 0 && updatedExistingSkills.length === 0) {
         setError('skills', {
           type: 'manual',
@@ -551,7 +472,6 @@ const EditProfile = () => {
   const removeLanguage = (languageToRemove: string) => {
     setExisitingLanguages(existingLanguages.filter(lang => lang !== languageToRemove))
   }
-
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
@@ -561,7 +481,6 @@ const EditProfile = () => {
           <div className="h-48 w-48 rounded-full border-4 border-black overflow-hidden -mt-20 mb -4 ml-10"></div>
         </div>
       </div>
-
       <div className="bg-black text-white pt-20 px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
@@ -588,8 +507,7 @@ const EditProfile = () => {
               </button>
             </div>
             <h1 className="text-3xl font-bold">Edit Profile</h1>
-          </div>
-
+          </div> 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -611,7 +529,6 @@ const EditProfile = () => {
                     </p>
                   )}
               </div>
-
               <div>
                 <label
                   htmlFor="secondName"
@@ -632,7 +549,6 @@ const EditProfile = () => {
                   )}
               </div>
             </div>
-
             <div>
               <label
                 htmlFor="email"
@@ -651,7 +567,6 @@ const EditProfile = () => {
                 </p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor="phoneNumber"
@@ -660,7 +575,7 @@ const EditProfile = () => {
                 Phone Number
               </label>
               <input
-                value={user.phoneNumber}
+                value={user.phonenumber}
                 {...register("phoneNumber")}
                 id="phoneNumber"
                 className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-lg px-4 py-3"
@@ -672,7 +587,6 @@ const EditProfile = () => {
                   </p>
                 )}
             </div>
-
             <div>
               <label
                 htmlFor="location"
@@ -707,7 +621,6 @@ const EditProfile = () => {
                   </p>
                 )}
             </div>
-
             <div>
               <label
                 htmlFor="dateOfBirth"
@@ -728,7 +641,6 @@ const EditProfile = () => {
                 </p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor="aboutMe"
@@ -748,7 +660,6 @@ const EditProfile = () => {
                 </p>
               )}
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-300">
                 Skills
@@ -763,15 +674,12 @@ const EditProfile = () => {
                     <button type="button" onClick={() => removeSkill(skill, true)} className="ml-2 text-white hover:text-red-300">
                       &times;
                     </button>
-
-
                   </div>
                 ))}
               </div>
               <input
                 type="text"
                 placeholder="Add a skill"
-
                 className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-lg px-4 py-3"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -825,7 +733,6 @@ const EditProfile = () => {
                 </p>
               )}
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-300">
                 Languages
@@ -877,7 +784,6 @@ const EditProfile = () => {
                   </p>
                 )}
             </div>
-
             <div>
               <label
                 htmlFor="experience"
@@ -888,6 +794,7 @@ const EditProfile = () => {
               <input
                 {...register("experience")}
                 id="experience"
+                value={experience}
                 onChange={handleExperienceChange}
                 className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-lg px-4 py-3"
               />
@@ -898,7 +805,6 @@ const EditProfile = () => {
                   </p>
                 )}
             </div>
-
             <div>
               <button
                 type="submit"
@@ -914,5 +820,4 @@ const EditProfile = () => {
     </div>
   );
 };
-
 export default EditProfile;

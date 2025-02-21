@@ -1,17 +1,18 @@
-import { Employer, PostType, UserCandidate } from "./Candidate"
+import { Employer, EmployerType, PostType, UserCandidate } from "./Candidate"
 
 export interface IEmployer  {
+    _id?:string
     email: string
     password: string
     role: "employer"
-    logo: string,
+    logo?: string,
     website: string,
     location: string,
     employees: string,
     industry: string,
     dateFounded: Date,
     description: string
-    companyName: string
+    companyName?: string
     isProfileComplete: boolean,
     status: "Active" | "Inactive"
 }
@@ -61,6 +62,12 @@ export interface AddProps{
     placeholder?:string
 }
 export interface jobFormData {
+    _id?: string;
+    employerId?:EmployerType|undefined,
+    isActive?: boolean;
+    location?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
     jobTitle: string;
     employmentTypes: string[]; 
     salaryRange: { min: number; max: number };
@@ -72,6 +79,7 @@ export interface jobFormData {
     benefits: Benefit[];
     industry:string[],
     description:string
+    hasApplied?: boolean;
     [key: string]: any;
 }
 export interface Filters {

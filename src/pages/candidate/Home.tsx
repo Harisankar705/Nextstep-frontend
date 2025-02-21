@@ -8,11 +8,7 @@ import { PostType, UserCandidate } from "../../types/Candidate";
 import toast from "react-hot-toast";
 import Post from "./Post";
 import { fetchUserPosts } from "../../services/authService";
-const Skelton = ({ className = "" }: { className?: string }) => (
-  <div
-    className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded ${className}`}
-  />
-);
+
 const LeftSideBar = ({
   icon: Icon,
   children,

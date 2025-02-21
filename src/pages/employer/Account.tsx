@@ -5,19 +5,16 @@ import SideBar from "./SideBar";
 import Spinner from "../../utils/Spinner";
 import { getCompanyLogo } from "../../utils/ImageUtils";
 import EmployerPosts from './EmployerPosts';
-
+import { IEmployer } from "../../types/Employer";
 const Account = () => {
     const navigate = useNavigate();
-    const employer = useSelector((state: aRny) => state.user);
-
+    const employer=useSelector((state:{user:IEmployer})=>state.user)
     const handleEditProfile = () => {
         navigate('/employer/edit-profile');
     };
-
     if (!employer) {
         return <Spinner loading={true} />;
     }
-
     const {
         companyName,
         location,
@@ -29,17 +26,10 @@ const Account = () => {
         employees,
         logo
     } = employer;
-
-    const logoFileName = logo.includes('\\')
-        ? logo.split('\\').pop()
-        : logo;
-    const logoURL = `http://localhost:4000/uploads/company-logo/${logoFileName}?t=${new Date().getTime()}`;
-
     return (
         <div className='flex min-h-screen bg-[#0A0A0A] text-white'>
             <SideBar />
             <div className="flex-1 p-6 lg:p-12 ml-64">
-                {/* Profile Section */}
                 <div className="flex justify-between items-center mb-12">
                     <h1 className='text-3xl font-bold'>Company Profile</h1>
                     <button
@@ -50,7 +40,6 @@ const Account = () => {
                         Edit Profile
                     </button>
                 </div>
-
                 <div className='bg-[#1A1A1A] rounded-2xl overflow-hidden shadow-2xl'>
                     <div className="h-56 bg-gradient-to-r from-[#0DD3B4] to-[#1A1A1A] relative">
                         <div className="absolute bottom-0 left-0 p-8 flex flex-col md:flex-row items-start md:items-end gap-4">
@@ -68,14 +57,12 @@ const Account = () => {
                             </div>
                         </div>
                     </div>
-
                     <div className="p-4 md:p-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                             <div className="md:col-span-2 bg-[#2A2A2A] rounded-xl p-6">
                                 <h3 className="text-xl font-semibold mb-4 text-[#0DD3B4]">About Us</h3>
                                 <p className="text-gray-300">{description}</p>
                             </div>
-
                             <div className="bg-[#2A2A2A] rounded-xl p-6">
                                 <h3 className="text-xl font-semibold mb-4 text-[#0DD3B4]">Company Snapshot</h3>
                                 <ul className="space-y-4">
@@ -89,12 +76,11 @@ const Account = () => {
                                     </li>
                                     <li className="flex items-center gap-4">
                                         <Calendar size={18} className="text-[#0DD3B4] shrink-0" />
-                                        <span className="text-gray-300">Founded {dateFounded}</span>
+                                        <span className="text-gray-300">Founded {dateFounded.toLocaleDateString()}</span>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-
                         <div className="mt-4 md:mt-8">
                             <div className="bg-[#2A2A2A] rounded-xl p-6">
                                 <h3 className="text-xl font-semibold mb-4 text-[#0DD3B4]">Contact Information</h3>
@@ -124,12 +110,9 @@ const Account = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Employer Posts Section */}
                 <EmployerPosts />
             </div>
         </div>
     );
 };
-
 export default Account;

@@ -69,12 +69,7 @@ export interface SideBarProps {
   onSelectedChat?: (chat: ChatHistoryItem) => void;
   role?: "user" | "employer";
 }
-interface Education {
-  degree: string;
-  institution: string;
-  year: number;
-  description?: string;
-}
+
 export interface PostComponentProps {
   post: PostType;
   onPostUpdate?:(updatedPost:any)=>void
@@ -123,8 +118,8 @@ export interface CompanyFormProps {
     employees: string;
     industry: string;
     description: string;
-    logo: string | null;
-    dateFounded: string | null;
+    logo?: string ;
+    dateFounded: Date;
     documentType: string;
     documentNumber: string;
     companyDocuments: {
@@ -199,6 +194,9 @@ export interface Employer extends BaseUser {
   documentNumber: string;
   document: string;
   description: string;
+  companyDocuments: {
+    fileUrl: string;
+  } | null;
   logo?: string;
 }
 export interface LocationSuggestion {
@@ -320,11 +318,11 @@ export interface INotification {
   link:string,
   content: string;
 }
-interface GoogleAuthResponse {
-  success: string;
-  token?: string;
-  message?: string;
-}
+// interface GoogleAuthResponse {
+//   success: string;
+//   token?: string;
+//   message?: string;
+// }
 export interface ProfileTabsProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -375,24 +373,24 @@ export interface EmployerType {
   website?: string;
 }
 export interface JobType {
-  _id: string;
-  isActive: boolean;
+  _id?: string;
+  isActive?: boolean;
   description: string;
   jobTitle: string;
   skills?: string[];
   niceToHave?: string;
   responsibilities?: string;
   employmentTypes: string[];
-  location: string;
+  location?: string;
   salaryRange: {
     min: number;
     max: number;
   };
   applicationDeadline?: string;
   benefits: Benefit[];
-  createdAt: string;
-  employerId: EmployerType;
-  hasApplied: boolean;
+  createdAt?: Date;
+  employerId?:EmployerType|undefined,
+  hasApplied?: boolean;
 }
 export interface Message {
   _id?: string;

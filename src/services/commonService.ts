@@ -1,4 +1,3 @@
-import { IReport } from "../types/Candidate"
 import { InterviewScheduleData } from "../types/Employer"
 import api from "../utils/api"
 import { axiosError } from "../utils/AxiosError"
@@ -232,7 +231,7 @@ export const getPostById=async(postId:string)=>{
 }
 export const markNotificationAsRead=async(notificationId:string)=>{
     try {
-        const response=await api.post('/mark-as-read')
+        const response=await api.post('/mark-as-read',{notificationId})
         return response
     } catch (error) {
         axiosError(error,'markNotificationAsRead')

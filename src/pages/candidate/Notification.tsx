@@ -9,7 +9,7 @@ import { getCompanyLogo, getProfilePictureURL } from "../../utils/ImageUtils";
 import { INotification } from "../../types/Candidate";
 import toast from "react-hot-toast";
 const socket = io("http://localhost:4000");
-export const Notification= ({isOpen,onClose,onOpenPost,notification}: {
+export const Notification= ({isOpen,onClose}: {
   isOpen: boolean;
   onClose: () => void;
   onOpenPost?:(postId:string)=>void
@@ -43,7 +43,7 @@ export const Notification= ({isOpen,onClose,onOpenPost,notification}: {
       socket.off("newNotification");
     };
   }, [isOpen]);
-  const handleNotificationClick = async (notificationId: string,link?:string) => {
+  const handleNotificationClick = async (notificationId: string) => {
     try {
       await markNotificationAsRead(notificationId);
       setNotifications(
@@ -52,8 +52,6 @@ export const Notification= ({isOpen,onClose,onOpenPost,notification}: {
         )
       );
       setUnReadCount((prevCount) => prevCount - 1);
-      const postId=notification.link.split('/').pop()
-      onOpenPost(postId)
     } catch (error) {
       toast.error("Error marking notification as read");
     }
@@ -63,7 +61,8 @@ export const Notification= ({isOpen,onClose,onOpenPost,notification}: {
     <div className="fixed top-16 right-4 z-50">
       <div className="bg-black p-6  rounded-lg shadow-lg w-96 max-h-[400px] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Notifications</h2>
+
+          <h2 className="text-lg font-semibold">Notifications ({unreadCount})</h2>
           <button
             onClick={onClose}
             className="p-1 rounded-full hover:bg-gray-100"

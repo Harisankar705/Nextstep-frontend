@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { SearchBarProps, Employer, UserCandidate, Candidate, PostType, User } from "../../types/Candidate";
+import { SearchBarProps, Employer, UserCandidate, PostType,  } from "../../types/Candidate";
 import { debounce } from "lodash";
 import { SearchIcon, Loader2, UserCircle, Building2 } from "lucide-react";
 import { search } from "../../services/authService";

@@ -40,10 +40,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [selectedBackground, setSelectedBackground] = useState("");
     const [searchLocation, setSearchLocation] = useState("");
-    const [locationResults, setLocationResults] = useState<LocationSuggestion[]>([]);
     const [showPicker, setShowPickter] = useState(false)
     const [posting, setPosting] = useState(false);
-    const [selectedEmoji, setSelectedEmoji] = useState('')
     const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
     const [showLocationModal, setShowLocationModal] = useState(false);
     const [imageLoadingStates, setImageLoadingStates] = useState<{ [key: number]: boolean }>({})
@@ -95,7 +93,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
         }
     };
     const handleEmojiSelect = (emoji: CustomEmoji) => {
-        setSelectedEmoji((prev) => prev + emoji.native)
         setPostText((prev) => prev + emoji.native)
         setShowPickter(false)
     }
@@ -161,9 +158,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
             setSelectedImages([])
             setSelectedBackground('')
             setSearchLocation('')
-            setLocationResults([])
             setShowPickter(false)
-            setSelectedEmoji('')
             setShowLocationModal(false)
             setImageLoadingStates({})
             setImageErrorStates({})
@@ -348,7 +343,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                         </button>
                     </div>
                 </div>
-                {/* Modals */}
                 {showModal && (
                     <ImageUploadModal
                         isOpen={showModal}
@@ -365,7 +359,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                         onLocationSelect={(location) => {
                             setSelectedLocation(location)
                             setSearchLocation(location)
-                            setLocationResults([])
                             setShowLocationModal(false)
                         }}
                         onSearchChange={handleLocationChange}

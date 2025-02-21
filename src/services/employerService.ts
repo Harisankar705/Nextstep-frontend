@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import api from "../utils/api"
 import { axiosError } from "../utils/AxiosError"
-import { Employer, JobType } from "../types/Candidate"
+import { JobType } from "../types/Candidate"
 export const employerDetails = async (details: Record<string, any>,isEdit:boolean=false): Promise<any> => {
     try {
         const url=isEdit?'/employerDetails?isEdit=true':"/employerDetails"

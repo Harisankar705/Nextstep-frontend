@@ -5,9 +5,9 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom";
 import { isVerified } from "../../services/employerService";
-import { RootState } from "../../types/Candidate";
+import { IEmployer } from "../../types/Employer";
 const EmployerDashboard = () => {
-      const employer = useSelector((state: RootState) => state.employer);
+      const employer=useSelector((state:{user:IEmployer})=>state.user)
     
     const navigate=useNavigate()
     const [verified,setVerified]=useState(false)

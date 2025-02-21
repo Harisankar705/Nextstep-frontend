@@ -3,7 +3,6 @@ import { ArrowRight, EyeOff, Eye } from "lucide-react";
 import { Logo } from "../../components/Logo";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authService";
-import { useGoogleLogin } from "@react-oauth/google";
 import { toast } from 'react-hot-toast'
 import Spinner from "../../utils/Spinner";
 import { useDispatch } from "react-redux";

@@ -1,4 +1,3 @@
-import { jwtDecode} from 'jwt-decode';
 
 export const isTokenExpired = (token: string): boolean => {
     try

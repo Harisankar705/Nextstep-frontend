@@ -10,7 +10,6 @@ import Comments from "./CreatePost/Comments";
 import { checkSavedStatus, deletePost, interactionCount, savePost } from "../../services/commonService";
 import toast from "react-hot-toast";
 import { SharePost } from "./CreatePost/SharePost";
-import { useNavigate } from 'react-router-dom';
 import { EditPost } from './CreatePost/Editpost';
 import { Report } from './Report';
 
@@ -28,7 +27,6 @@ const Post: React.FC<PostComponentProps> = ({
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [commentCount, setCommentCount] = useState(0)
     const [likeCount, setLikeCount] = useState(0)
-    const [likedByUser, setLikedByUser] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
     const [isShareModalOpen, setIsShareModalOpen] = useState(false)
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -75,9 +73,7 @@ const Post: React.FC<PostComponentProps> = ({
         isPostSaved()
     }, [post._id])
 
-    useEffect(() => {
-        setLikedByUser(post.likedByUser ?? false);
-    }, [post])
+   
 
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {

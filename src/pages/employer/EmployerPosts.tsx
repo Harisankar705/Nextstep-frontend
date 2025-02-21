@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PostType, RootState } from '../../types/Candidate';
+import { PostType } from '../../types/Candidate';
 import SideBar from './SideBar';
 import { getUserPosts } from '../../services/authService';
 import Post from '../candidate/Post';
 import toast from 'react-hot-toast';
+import { IEmployer } from '../../types/Employer';
 
 const EmployerPosts: React.FC = () => {
     const [posts, setPosts] = useState<PostType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const employer = useSelector((state: RootState) => state.user);
+      const employer=useSelector((state:{user:IEmployer})=>state.user)
+    
 
     useEffect(() => {
         const fetchEmployerPosts = async () => {
@@ -28,10 +30,7 @@ const EmployerPosts: React.FC = () => {
         fetchEmployerPosts();
     }, [employer._id]);
 
-    const logoFileName = employer.logo.includes('\\')
-        ? employer.logo.split('\\').pop()
-        : employer.logo;
-    const logoURL = `http://localhost:4000/uploads/company-logo/${logoFileName}?t=${new Date().getTime()}`;
+    
 
     return (
         <div className='flex min-h-screen bg-[#0A0A0A] text-white'>

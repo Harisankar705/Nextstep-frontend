@@ -23,9 +23,7 @@ const SideBar = () => {
     const handleSearchClick=()=>{
         setIsSearchModalOpen(true)
     }
-    const handleCloseSearch=()=>{
-        setIsSearchModalOpen(false)
-    }
+    
     const dispatch=useDispatch()
     const navigate=useNavigate()
     const location = useLocation()

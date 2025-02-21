@@ -6,7 +6,6 @@ import { CompanyFormProps, LocationSuggestion } from "../../types/Candidate";
 import { toast } from "react-hot-toast";
 const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   const [logo, setLogo] = useState<string | null>("");
-  const [locationInput, setLocationInput] = useState('')
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([])
   const [documentName,setDocumentName]=useState('')
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,8 +107,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       formData.append('industry', value.industry);
       formData.append('dateFounded', value.dateFounded);
       formData.append('description', value.description);
-      for (let pair of formData.entries()) {
-      }
+     
       try {
         const response = await onSubmit(formData)
         toast.success("Company details submitted!")
@@ -132,7 +130,8 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   }, [initialData?.logo])
   const handleLocationChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.trim()
-    setLocationInput(query)
+    formik.setFieldValue('location', query)
+
     if (debounceRef.current) {
       clearTimeout(debounceRef.current)
     }
@@ -152,7 +151,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   }
   const handleLocationSelect = (location: string) => {
     formik.setFieldValue('location', location)
-    setLocationInput(location)
     setLocationSuggestions([])
   }
   return (
@@ -260,6 +258,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                 <input
                   type="text"
                   id='location'
+                  
                   required
                   {...formik.getFieldProps('location')}
                   onChange={(e) => {

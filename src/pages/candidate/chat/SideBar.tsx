@@ -20,7 +20,9 @@ setFilteredChats(filtered)
     }
   },300)
 useEffect(()=>{
+  setLoading(true)
     debouncedFilterChats(searchQuery)
+    setLoading(false)
 },[searchQuery,chatHistory])
 const sortedChats=filteredChats.sort((a,b)=>new Date(b.timeStamp).getTime()-new Date(a.timeStamp).getTime())
 const getImageUrl=(chat:ChatHistoryItem)=>{

@@ -30,10 +30,12 @@ import JobDetails from './pages/candidate/JobDetails.tsx';
 import JobApplicants from './pages/employer/job/JobApplicants.tsx';
 import Applicant from './pages/employer/job/Applicant.tsx';
 import { Chat } from './pages/candidate/chat/Chat.tsx';
-import SearchProfile from './pages/employer/SearchProfile.tsx';
 import { Payment } from './pages/candidate/Payment.tsx';
 import { PaymentSuccess } from './pages/candidate/PaymentSuccess.tsx';
 import { ReportedPosts } from './pages/admin/ReportedPosts.tsx';
+import { useSelector } from 'react-redux';
+const user = useSelector((state: any) => state.user);
+
 const App = () => {
   return (
     <div>
@@ -49,7 +51,14 @@ const App = () => {
           <Route path='/jobs' element={<ProtectedRoute role='candidate'>{<UserJobListing />}</ProtectedRoute>} />
           <Route path='/job-details/:id' element={<ProtectedRoute role='candidate'>{<JobDetails />}</ProtectedRoute>} />
           <Route path='/candidate-details' element={<ProtectedRoute role='candidate'>{<CandidateDetails />}</ProtectedRoute>} />
-            <Route path='/candidate-profile' element={<ProtectedRoute role='candidate'>{<Profile />}</ProtectedRoute>} />
+          <Route 
+  path='/candidate-profile' 
+  element={
+    <ProtectedRoute role='candidate'>
+      <Profile user={user} isOwnProfile={true} />
+    </ProtectedRoute>
+  } 
+/>
           <Route path='/candidate-profile/:id/:role' element={<ProtectedRoute role='candidate'>{<UserProfile />}</ProtectedRoute>} />
           <Route path='/edit-profile' element={<ProtectedRoute role='candidate'>{<EditProfilee />}</ProtectedRoute>}/>
           <Route path='/saved' element={<ProtectedRoute role='candidate'>{<SavedPosts />}</ProtectedRoute>}/>
@@ -69,7 +78,6 @@ const App = () => {
 
           {/* employer */}
           <Route path='/employersignup' element={<EmployerSignup />} />
-          <Route path='/search-profile/:id/:role' element={<SearchProfile/>} />
           <Route path='/messages/:userId/:role' element={<Chat />}/>
           <Route path='/employerlogin' element={<EmployerLogin />} />
           <Route path='/employerhome' element={<ProtectedRoute role='employer'><EmployerDashboard /></ProtectedRoute> }/>

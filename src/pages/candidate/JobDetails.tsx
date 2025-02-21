@@ -56,7 +56,7 @@ const JobDetails = () => {
             toast.error("Error applying for this job!")
         }
     }catch (error: unknown) {
-      let errorMessage = "An unexpected error occurred"; // Default message
+      let errorMessage = "An unexpected error occurred"; 
   
       if (error instanceof Error) {
           errorMessage = error.message;
@@ -197,7 +197,7 @@ const JobDetails = () => {
                   <Calendar className="w-5 h-5 text-teal-500" />
                   <div>
                     <p className="text-sm text-gray-400">Posted date:</p>
-                    <p>{new Date(job.createdAt).toLocaleDateString()}</p>
+                    <p>{job.createdAt?.toDateString()}</p>
                   </div>
                 </div>
                 {job.applicationDeadline && (
@@ -226,14 +226,22 @@ const JobDetails = () => {
               </div>
               <button
   className={`w-full ${
-    job.isActive && !job.hasApplied
+    job.isActive && !job.hasApplied && !isApplying
       ? "bg-teal-500 hover:bg-teal-600"
       : "bg-gray-500 cursor-not-allowed"
   } text-white font-semibold py-3 px-6 rounded-lg mt-6 transition-colors`}
-  disabled={!job.isActive || job.hasApplied}
+  disabled={!job.isActive || job.hasApplied || isApplying} // Disable if applying
   onClick={handleApplyClick}
 >
-  {job.hasApplied ? " Applied" : job.isActive ? "Apply Now" : "Job Closed"}
+  {isApplying ? (
+    <Spinner loading={true} /> 
+  ) : job.hasApplied ? (
+    "Applied"
+  ) : job.isActive ? (
+    "Apply Now"
+  ) : (
+    "Job Closed"
+  )}
 </button>
             </div>
             <div className="bg-gray-800 rounded-xl p-6">

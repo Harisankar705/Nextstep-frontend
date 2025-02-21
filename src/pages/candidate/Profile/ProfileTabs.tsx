@@ -2,7 +2,7 @@ import React from 'react'
 import { ProfileTabsProps } from '../../../types/Candidate'
 import { useNavigate } from 'react-router-dom'
 
-export const ProfileTabs: React.FC<ProfileTabsProps>=({activeTab,onTabChange}) => {
+export const ProfileTabs: React.FC<ProfileTabsProps>=({onTabChange}) => {
     const navigate=useNavigate()
 
     const tabs = ['Friends', 'Saved', 'Videos']

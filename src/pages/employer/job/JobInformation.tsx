@@ -4,7 +4,6 @@ import { X } from "lucide-react";
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from 'zod';
-import { useParams } from "react-router-dom";
 
 const employmentTypes = [
     "Full-Time",
@@ -71,7 +70,6 @@ export const JobInformation = ({
     updateFormData,
     onNext,
 }: JobInformationProps) => {
-    const { jobId } = useParams<{ jobId: string }>();
     const [newSkill, setNewSkill] = useState("");
     
     const { control, handleSubmit, formState: { errors }, watch, setValue ,reset} = useForm<JobFormData>({

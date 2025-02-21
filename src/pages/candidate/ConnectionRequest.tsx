@@ -13,7 +13,6 @@ export const ConnectionRequest = () => {
     const [isFollowedBack, setIsFollowedBack] = useState(false)
     const [activeTab, setActiveTab] = useState<'requests' | 'connections'>('requests')
     const [connections, setConnections] = useState<Requests[]>([])
-    const [error, setError] = useState('')
     const currentUser = useSelector((state: { user: UserCandidate }) => state.user)
     const handleViewProfile = (id: string) => {
         navigate(`/candidate-profile/${id}`); 
@@ -31,8 +30,7 @@ export const ConnectionRequest = () => {
                 setConnections(connection.data.data)
             } catch (error) {
                 const errorMessage = (error as Error).message || "Error occurred while fetching requests";
-                setError(errorMessage)
-                toast.error("Error occured while fetching requests")
+                toast.error(`${errorMessage}`)
             }
         }
         fetchRequests()

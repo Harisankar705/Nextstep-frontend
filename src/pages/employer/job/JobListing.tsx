@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";  // Make sure this is imported
+import { useNavigate } from "react-router-dom";  
 import { ChevronDown, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 import { jobFormData } from "../../../types/Employer";
@@ -30,7 +30,7 @@ export const JobListing = () => {
   const handleEditClick = (jobId: string) => {
     navigate(`/editjob/${jobId}`);
   };
-  const handleDeleteJob = async (jobId: string) => {
+const handleDeleteJob = async () => {
     if (jobToDelete) {
       try {
         const response = await deleteJob(jobToDelete);
@@ -96,7 +96,7 @@ export const JobListing = () => {
                   <td className="p-4">
                     <span
                       className={`px-3 py-1 rounded-full text-sm ${
-                        job.isActive === "true"
+                        job.isActive
                           ? "bg-blue-900 text-blue-300"
                           : "bg-teal-400 text-black"
                       }`}
@@ -105,11 +105,15 @@ export const JobListing = () => {
                     </span>
                   </td>
                   <td className="p-4">
-                    {new Intl.DateTimeFormat("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }).format(new Date(job.createdAt))}
+                    {job.createdAt ? (new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+}).format(new Date(job.createdAt))
+                    ):(
+                      <span className="text-gray-500">N/A</span>
+                    )}
+                    
                   </td>
                   <td className="p-4">
                     {new Intl.DateTimeFormat("en-US", {
@@ -124,7 +128,7 @@ export const JobListing = () => {
                   <td className="p-4">
                     <button
                       className="flex justify-between items-center bg-teal-300 px-4 rounded-lg text-black"
-                      onClick={() => handleEditClick(job._id)}
+                      onClick={() => handleEditClick(job._id as string)}
                     >
                       Edit
                     </button>
@@ -133,7 +137,7 @@ export const JobListing = () => {
                     <button
                       className="flex justify-between items-center bg-teal-300 px-4 rounded-lg text-black"
                       onClick={() => {
-                        setJobToDelete(job._id);
+                        setJobToDelete(job._id as string);
                         setDialogVisible(true);
                       }}
                     >
@@ -157,7 +161,7 @@ export const JobListing = () => {
             onHide={() => setDialogVisible(false)}
             message="Are you sure to delete the job?"
             header="Delete confirmation!"
-            onAccept={() => handleDeleteJob(jobToDelete!)}
+            onAccept={() => handleDeleteJob()}
             onReject={handleDialogReject}
           />
           <div className="flex justify-between items-center p-4 border-t border-gray-700">

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { Logo } from "../../components/Logo";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authService";
@@ -7,7 +6,7 @@ import { EyeOff, Eye } from "lucide-react";
 import {toast} from 'react-hot-toast'
 import { setEmployer } from "../../redux/employerSlice";
 import { useDispatch } from "react-redux";
-
+import { AxiosError } from "axios";
 const EmployerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,23 +15,19 @@ const EmployerLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch=useDispatch()
-
   const handleSignup = () => {
     navigate("/employersignup");
   };
-
   const handleLoginClick = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       toast.error("Please fill in both fields!");
       return;
     }
-
     setLoading(true);
     setError('')
     try {
       const response = await login(email, password, "employer");
-      
       toast.success("Login success")
       dispatch(setEmployer(response.user))
       if(response.user.isProfileComplete)
@@ -43,18 +38,16 @@ const EmployerLogin = () => {
       {
         navigate('/employerdetails',{replace:true})
       }
-      
     } catch (error:unknown) {
-      
+      if (error instanceof AxiosError) {
+
       const errorMessage = error.response?.data?.message || "Login failed";
       setError(errorMessage);
-
-      
+      }
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen w-full bg-[#111827] text-white flex items-center justify-center">
       <div className="container max-w-[1100px] px-4">
@@ -84,7 +77,6 @@ const EmployerLogin = () => {
                   value={email}
                 />
               </div>
-
               <div className="space-y-2 relative">
                 <label className="text-sm" htmlFor="password">
                   Password
@@ -105,9 +97,7 @@ const EmployerLogin = () => {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-
               {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display error message */}
-
               <button
                 type="submit"
                 className="w-full bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0DD3B4]/90 transition-colors"
@@ -115,7 +105,6 @@ const EmployerLogin = () => {
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
-
               {/* <button
                 type="button"
                 className="w-full flex items-center justify-center space-x-2 bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0dd3b4]/90 transition-colors"
@@ -124,7 +113,6 @@ const EmployerLogin = () => {
                 <span className="text-sm">Login with Google!</span>
               </button> */}
             </form>
-
             <div className="text-center text-sm">
               <span className="text-gray-400">Don't have an Account? </span>
               <button onClick={handleSignup} className="text-[#0dd3b4] hover:underline">
@@ -137,5 +125,4 @@ const EmployerLogin = () => {
     </div>
   );
 };
-
 export default EmployerLogin;

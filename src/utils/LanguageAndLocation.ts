@@ -36,8 +36,8 @@ export const fetchLocationSuggestions = async (query: string): Promise<{ name: s
         );
         
         return response.data.map((location) => ({
-            name: location.display_name,
-            id: location.place_id,
+            name: location.display_name??"Unknown location",
+            id: location.place_id??0,
         }));
     } catch (error) {
         toast.error("Failed to fetch location suggestions!");

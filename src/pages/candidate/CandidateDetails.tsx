@@ -412,7 +412,7 @@ import { setUser } from "../../redux/userSlice";
             )}
             {locationSuggestions.length > 0 && (
               <ul className="bg-zinc-900 border border-zinc-800 rounded mt-2">
-                {locationSuggestions.map((loc, index) => (
+                {locationSuggestions.map((loc) => (
                   <li
                     key={loc.id}
                     className="p-2 hover:bg-zinc-700 cursor-pointer"

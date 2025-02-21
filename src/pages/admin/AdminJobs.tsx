@@ -19,13 +19,7 @@ export const AdminJobs: React.FC<AdminJobProps> = ({ jobs, onDelete }) => {
       setJobDeletingJobId(null);
     }
   };
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  
   return (
     <div className="space-y-4">
       {jobs?.map((job) => (
@@ -67,7 +61,7 @@ export const AdminJobs: React.FC<AdminJobProps> = ({ jobs, onDelete }) => {
                 </div>
               </div>
             </div>
-            <button onClick={()=>handleDelete(job._id)}
+            <button onClick={()=>handleDelete(job._id as string)}
             disabled={deletingJobId===job._id}
             className="ml-4 p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete job">
                 {deletingJobId===job._id ? (

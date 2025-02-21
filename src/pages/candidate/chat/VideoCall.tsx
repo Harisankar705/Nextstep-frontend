@@ -28,9 +28,7 @@ export const VideoCallUI: React.FC<VideoCallUIProps> = React.memo(({
                 localVideoRef.current.playsInline = true;
                 const playPromise = localVideoRef.current.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        // toast.error('Error playing local video:');
-                    });
+                    playPromise.catch(() => {});
                 }
             } catch (error) {
                 toast.error('Error setting local video stream:');
@@ -46,9 +44,7 @@ export const VideoCallUI: React.FC<VideoCallUIProps> = React.memo(({
                 remoteVideoRef.current.playsInline = true;
                 const playPromise = remoteVideoRef.current.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        toast.error('Error playing remote video:');
-                    });
+                    playPromise.catch(() => {});
                 }
             } catch (error) {
                 toast.error('Error setting remote video stream:');

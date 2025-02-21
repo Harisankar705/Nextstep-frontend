@@ -1,5 +1,4 @@
 import { AddProps } from '../../../types/Employer'
-import { Bold, Italic, Link } from 'lucide-react'
 
 export const RichTextEditor = ({value='',onChange,label,placeholder}:AddProps) => {
   return (

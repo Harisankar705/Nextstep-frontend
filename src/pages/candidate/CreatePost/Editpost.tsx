@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import { sanitizeText, useRateLimit } from '../../../utils/SecurityMeasures'
 import React, { useState } from "react";
-import { LocationState, LocationSuggestion } from "../../../types/Candidate";
+import { LocationState } from "../../../types/Candidate";
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 import Spinner from "../../../utils/Spinner";
@@ -46,12 +46,11 @@ export const EditPost: React.FC<EditPostProps> = ({ post, onClose, isOpen,role,o
     const [postText, setPostText] = useState(post.text);
     const [selectedBackground, setSelectedBackground] = useState(post.background || "");
     const [searchLocation, setSearchLocation] = useState(post.location || "");
-    const [locationResults, setLocationResults] = useState<LocationSuggestion[]>([]);
     const [showPicker, setShowPicker] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<string | null>(post.location || null);
     const [showLocationModal, setShowLocationModal] = useState(false);
-    const [locationState, setLocationState] = useState<LocationState>({
+    const [locationState] = useState<LocationState>({
         isLoading: false,
         error: null,
         results: []
@@ -143,7 +142,6 @@ export const EditPost: React.FC<EditPostProps> = ({ post, onClose, isOpen,role,o
                             }`}
                     />
 
-                    {/* Display existing images (read-only) */}
                     {post.images && post.images.length > 0 && (
                         <div className="grid grid-cols-2 gap-2 mb-4">
                             {post.images.map((imageUrl, index) => (
@@ -158,7 +156,6 @@ export const EditPost: React.FC<EditPostProps> = ({ post, onClose, isOpen,role,o
                         </div>
                     )}
 
-                    {/* Background Selection */}
                     <div className="mb-4 overflow-x-auto">
                         <div className="flex gap-2 pb-2">
                             {backGrounds.map((bg, index) => (
@@ -172,7 +169,6 @@ export const EditPost: React.FC<EditPostProps> = ({ post, onClose, isOpen,role,o
                         </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="border rounded-lg p-3 mb-4">
                         <h4 className="text-sm font-medium text-gray-600 mb-2">
                             Edit options
@@ -205,7 +201,6 @@ export const EditPost: React.FC<EditPostProps> = ({ post, onClose, isOpen,role,o
                     </button>
                 </div>
 
-                {/* Modals */}
                 {showLocationModal && (
                     <LocationModal
                         isOpen={showLocationModal}
@@ -215,11 +210,10 @@ export const EditPost: React.FC<EditPostProps> = ({ post, onClose, isOpen,role,o
                         onLocationSelect={(location) => {
                             setSelectedLocation(location);
                             setSearchLocation(location);
-                            setLocationResults([]);
                             setShowLocationModal(false);
                         }}
                         onSearchChange={(e) => setSearchLocation(e.target.value)}
-                        onRetry={() => {/* implement retry logic */ }}
+                        onRetry={() => {}}
                     />
                 )}
 

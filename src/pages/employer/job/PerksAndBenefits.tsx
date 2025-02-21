@@ -26,7 +26,7 @@ const IconMap: Record<IconType, React.ComponentType<LucideProps>> = {
     waves: Waves,
     laptop: Laptop
 }
-export const PerksAndBenefits = ({ formData, updateFormData, onNext,onSubmit }: PerksAndBenefitsProps) => {
+export const PerksAndBenefits = ({ formData, updateFormData,onSubmit }: PerksAndBenefitsProps) => {
     const addBenefit = (benefit: Benefit) => {
         updateFormData({
             benefits: [...formData.benefits, benefit]

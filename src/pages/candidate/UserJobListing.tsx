@@ -126,7 +126,7 @@ const UserJobListing = () => {
         >
           <div className="flex items-start gap-4">
             <img
-  src={getCompanyLogo(job.employerId?.logo)} // Use logo or fallback to default
+  src={getCompanyLogo(job.employerId?.logo)} 
               alt={job.employerId?.companyName || 'Company'} 
               className="w-12 h-12 rounded-lg object-cover"
             />
@@ -148,14 +148,14 @@ const UserJobListing = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <DollarSign className="w-4 h-4" />
-                  <span>{`${job.salaryRange.min} - ${job.salaryRange.max}`}</span> {/* Use salaryRange */}
+                  <span>{`${job.salaryRange.min} - ${job.salaryRange.max}`}</span> 
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  <span>{new Date(job.createdAt).toLocaleDateString()}</span> {/* Format posted time */}
+                  <span>{job.createdAt ? new Date(job.createdAt).toLocaleDateString():"N/A"}</span>
                 </div>
               </div>
-              <button className="text-teal-400 hover:text-teal-300 font-medium" onClick={()=>handleViewDetails(job._id)}>
+              <button className="text-teal-400 hover:text-teal-300 font-medium" onClick={()=>handleViewDetails(job._id as string)}>
                 View Details →
               </button>
             </div>

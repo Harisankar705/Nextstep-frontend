@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+import React, { useRef, useState } from "react";
 import { Logo } from "../../components/Logo";
 import { useNavigate } from "react-router-dom";
 import {toast} from 'react-hot-toast'
@@ -20,10 +19,8 @@ const EmployerSignup = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [otpVerified, setOtpVerified] = useState(false);
   const [isResending, setIsResenting] = useState(false);
   const [companyName, setCompanyName] = useState("");
-  const [isRegistered, setIsRegistered] = useState(false);
   const [passwordErrors,setPasswordErrors]=useState({noMatch:false,passwordError:''})
   
   const navigate = useNavigate();
@@ -92,7 +89,7 @@ const EmployerSignup = () => {
       }
 
       if (otpSent) return;
-      const response = await sendOTP(email, "employer");
+       await sendOTP(email, "employer");
       setOtpSend(true);
       toast.success('OTP has been sended!Check your mail!')
       setLoading(false)
@@ -170,7 +167,6 @@ const EmployerSignup = () => {
       setLoading(true)
       const verified = await verifyOTP(email, otpString, "employer");
     if (verified.message === "OTP verification successfull!") {
-      setOtpVerified(true);
       handleRegister();
       toast.success("OTP verified successfully!");
      
@@ -199,9 +195,8 @@ const EmployerSignup = () => {
     };
     try {
       setLoading(true);
-      const response = await register(employerData, otp.join(""));
+      await register(employerData, otp.join(""));
       toast.success("Registration completed");
-      setIsRegistered(true);
       navigate("/employerlogin");
     } catch (error) {
       setLoading(false);

@@ -18,11 +18,8 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
     const [activeTab, setActiveTab] = useState("Posts")
     const [posts, setPosts] = useState<PostType[]>([])
     const [loading, setLoading] = useState(false)
-    const [isEditing, setIsEditing] = useState(false)
     const isOwnProfile = !userId || userId === currentUser?._id
     const displayedUser = isOwnProfile ? currentUser : null
-    const [editingPostId,setEditingPostId]=useState<string|null>(null)
-    const [editingPostContent,setEditingPostContent]=useState('')
     const [showCreatePost, setShowCreatePost] = useState(false)
     useEffect(() => {
         const fetchPosts = async () => {
@@ -41,7 +38,6 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
     }, [displayedUser])
     const handleEditProfile = () => {
         navigate('/edit-profile')
-        setIsEditing(true)
     }
     if (!currentUser) {
         return <Spinner loading={true} />;
@@ -66,10 +62,6 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
             )
         );
     };
-     
-      
-     
-      
     return (
         <div className="min-h-screen bg-black text-white">
             <Navbar />

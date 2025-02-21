@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, EyeOff, Eye } from "lucide-react";
 import { Logo } from "../../components/Logo";
-import { checkEmailOrPhone, register, resendOTP, sendOTP, verifyOTP } from "../../services/authService"; // Assuming these are your OTP functions
+import { checkEmailOrPhone, register, resendOTP, sendOTP, verifyOTP } from "../../services/authService"; 
 import { validateConfirmPassword, validateMail, validateName, validatePassword, validatePhoneNumber } from "../../utils/ValidationUtils";
 import InputField from "../../utils/InputField";
 import { toast } from 'react-hot-toast'
@@ -26,8 +26,6 @@ const Signup: React.FC = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [countdown, setCountdown] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
   const [isResending, setIsResenting] = useState(false)
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -126,7 +124,6 @@ const Signup: React.FC = () => {
     if (verified.message === "OTP verification successfull!") {
 setLoading(true)
       toast.success("OTP verified successfull!")
-      setOtpVerified(true);
       await handleRegister()
       navigate('/login',{replace:true});
     } 
@@ -156,10 +153,9 @@ setLoading(true)
     };
     try {
       setLoading(true);
-      const response = await register(userData, otp.join(''));
+      await register(userData, otp.join(''));
       toast.success("Registeration successfull!")
       setLoading(true);
-      setIsRegistered(true);
     } catch (error) {
       setLoading(false);
       setError("Registration failed");

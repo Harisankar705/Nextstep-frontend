@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react"
 import { employerDetails } from "../../services/employerService"
 import EmployerForm from "./EmployerForm"
 import { useDispatch, useSelector } from "react-redux"
 import SideBar from "./SideBar"
 import { setEmployer } from "../../redux/employerSlice"
-import { RootState } from "../../redux/store"
+import { Employer } from "../../types/Candidate"
 
 export const EmployerDetails = () => {
     const dispatch=useDispatch()
@@ -30,7 +29,7 @@ export const EmployerDetails = () => {
 export const EditProfile = () => {
     const dispatch = useDispatch()
 
-    const employerData = useSelector((state: RootState) => state.employer)
+    const employer=useSelector((state:{user:Employer})=>state.user)
 
     const handleSubmit = async (formData: FormData) => {
         try {
@@ -56,7 +55,7 @@ export const EditProfile = () => {
             <SideBar />
             <div className="container mx-auto px-4 py-12 ml-[300px]">
                 <EmployerForm
-                    initialData={employerData}
+                    initialData={employer}
                     onSubmit={handleSubmit}
                     buttonText="Update profile"
                 />

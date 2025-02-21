@@ -1,33 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { CheckCircle, Briefcase, Star, Trophy, Loader } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { changeToPremium } from '../../services/commonService';
-
 export const PaymentSuccess = () => {
   const [showContent, setShowContent] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(true);
-
   const location = useLocation();
   const navigate = useNavigate();
-
   useEffect(() => {
     const upgradeUserToPremium = async () => {
       try {
         const searchParams = new URLSearchParams(location.search);
         const userId = searchParams.get('userId');
-        
         if (!userId) {
           toast.error("User ID not found");
           navigate('/jobs');
           return;
         }
-
         const response = await changeToPremium(userId);
         if (response.status === 200) {
-          
           setShowContent(true);
           setTimeout(() => setShowCheck(true), 500);
           setTimeout(() => setShowBenefits(true), 800);
@@ -42,10 +36,8 @@ export const PaymentSuccess = () => {
         setIsUpgrading(false);
       }
     };
-
     upgradeUserToPremium();
   }, [location, navigate]);
-
   const benefits = [
     {
       icon: <Briefcase className="w-6 h-6" />,
@@ -63,7 +55,6 @@ export const PaymentSuccess = () => {
       description: "Track your application performance"
     }
   ];
-
   if (isUpgrading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
@@ -74,7 +65,6 @@ export const PaymentSuccess = () => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-4">
       <div className={`max-w-2xl w-full bg-white rounded-2xl shadow-2xl transform transition-all duration-700 ease-out ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>
@@ -113,17 +103,17 @@ export const PaymentSuccess = () => {
                   />
                 </svg>
               </div>
+              {showCheck && (
               <CheckCircle className="w-16 h-16 text-transparent" />
+
+              )}
             </div>
           </div>
-
           <div className="text-center mt-6">
             <h1 className="text-3xl font-bold text-gray-900">Payment Successful!</h1>
             <p className="text-gray-600 mt-2">Welcome to Nextstep Premium</p>
           </div>
-
           <div className="my-8 border-t border-gray-200" />
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {benefits.map((benefit, index) => (
               <div
@@ -141,7 +131,6 @@ export const PaymentSuccess = () => {
               </div>
             ))}
           </div>
-
           <div className="mt-8 text-center">
             <button
               onClick={() => navigate('/dashboard')}
@@ -155,5 +144,4 @@ export const PaymentSuccess = () => {
     </div>
   );
 };
-
 export default PaymentSuccess;
