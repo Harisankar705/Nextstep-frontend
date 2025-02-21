@@ -239,7 +239,7 @@ const Applicant = () => {
               {(() => {
                 const resumePath = applicant?.resume?.[0];
                 const resumeUrl = resumePath
-                  ? `http://localhost:4000/uploads/profile-pictures/${resumePath.split("\\").pop()}`
+                  ? `${import.meta.env.VITE_API_BASE_URL}/uploads/profile-pictures/${resumePath.split("\\").pop()}`
                   : null;
                 return (
                   <div className="space-y-6">

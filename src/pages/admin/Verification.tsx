@@ -148,7 +148,7 @@ const Verification = () => {
             <div className="w-32 h-32 bg-slate-50 rounded-lg overflow-hidden flex items-center justify-center border border-slate-200">
               {employer?.logo ? (
                 <img
-                  src={`http://localhost:4000/uploads/company-logos/${employer.logo
+                  src={`${import.meta.env.VITE_API_BASE_URL}/uploads/company-logos/${employer.logo
                     .split("\\")
                     .pop()}`}
                   alt={`${employer.companyName} logo`}
@@ -326,7 +326,7 @@ const Verification = () => {
                 </div>
                 {employer?.document ? (
                   <a
-                    href={`http://localhost:4000/uploads/company-documents/${employer.document
+                    href={`${import.meta.env.VITE_API_BASE_URL}/uploads/company-documents/${employer.document
                       .split("\\")
                       .pop()}`}
                     target="_blank"

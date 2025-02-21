@@ -8,7 +8,7 @@ import { LoaderIcon, X } from "lucide-react";
 import { getCompanyLogo, getProfilePictureURL } from "../../utils/ImageUtils";
 import { INotification } from "../../types/Candidate";
 import toast from "react-hot-toast";
-const socket = io("http://localhost:4000");
+const socket = io(import.meta.env.VITE_API_BASE_URL);
 export const Notification= ({isOpen,onClose}: {
   isOpen: boolean;
   onClose: () => void;

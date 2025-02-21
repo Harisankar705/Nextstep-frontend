@@ -6,7 +6,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   useEffect(() => {
-    const newSocket = io('http://localhost:4000', {
+    const newSocket = io(import.meta.env.VITE_API_BASE_URL, {
       withCredentials: true,
       transports: ['websocket', 'polling'],
       reconnection: true,

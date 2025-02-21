@@ -123,7 +123,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       const logoFileName = initialData?.logo.includes('\\')
         ? initialData?.logo.split('\\').pop()
         : initialData?.logo;
-      const logoURL = `http://localhost:4000/uploads/company-logo/${logoFileName}?t=${new Date().getTime()}`;
+      const logoURL = `${import.meta.env.VITE_API_BASE_URL}/uploads/company-logo/${logoFileName}?t=${new Date().getTime()}`;
       setLogo(logoURL)
       formik.setFieldValue('logo', logoURL)
     }
