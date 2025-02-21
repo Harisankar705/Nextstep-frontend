@@ -34,9 +34,11 @@ import { Payment } from './pages/candidate/Payment.tsx';
 import { PaymentSuccess } from './pages/candidate/PaymentSuccess.tsx';
 import { ReportedPosts } from './pages/admin/ReportedPosts.tsx';
 import { useSelector } from 'react-redux';
-const user = useSelector((state: any) => state.user);
+import { UserCandidate } from './types/Candidate.ts';
 
 const App = () => {
+  const user = useSelector((state: { user: UserCandidate }) => state.user)??null
+
   return (
     <div>
       <Toaster />
@@ -51,12 +53,7 @@ const App = () => {
           <Route path='/jobs' element={<ProtectedRoute role='candidate'>{<UserJobListing />}</ProtectedRoute>} />
           <Route path='/job-details/:id' element={<ProtectedRoute role='candidate'>{<JobDetails />}</ProtectedRoute>} />
           <Route path='/candidate-details' element={<ProtectedRoute role='candidate'>{<CandidateDetails />}</ProtectedRoute>} />
-          <Route 
-  path='/candidate-profile' 
-  element={
-    <ProtectedRoute role='candidate'>
-      <Profile user={user} isOwnProfile={true} />
-    </ProtectedRoute>
+          <Route path='/candidate-profile' element={<ProtectedRoute role='candidate'><Profile user={user} isOwnProfile={true} /></ProtectedRoute>
   } 
 />
           <Route path='/candidate-profile/:id/:role' element={<ProtectedRoute role='candidate'>{<UserProfile />}</ProtectedRoute>} />
