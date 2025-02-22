@@ -36,7 +36,7 @@ const Home = () => {
         setPosts(response.posts)
       } catch (error) {
         toast.error("Failed to get posts")
-        console.log('error')
+        console.log('error',error)
       }
     }
     fetchPosts()

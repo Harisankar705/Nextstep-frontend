@@ -25,16 +25,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     : false;
 
  
-  useEffect(() => {
-    if (!isAuthenticated) {
-      const redirectPath = role === 'employer' ? '/employerlogin' : role === 'admin' ? '/admin' : '/login';
-      navigate(redirectPath);
-    }
-  }, [isAuthenticated, role, navigate]);
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     const redirectPath = role === 'employer' ? '/employerlogin' : role === 'admin' ? '/admin' : '/login';
+  //     navigate(redirectPath);
+  //   }
+  // }, [isAuthenticated, role, navigate]);
 
-  if (!isAuthenticated) {
-    return <Spinner loading={true} />;
-  }
+  // if (!isAuthenticated) {
+  //   return <Spinner loading={true} />;
+  // }
 
   return <>{children}</>;
 };

@@ -40,6 +40,7 @@ api.interceptors.response.use(
         {
             return Promise.reject(error)
         }
+        console.log("ORIGNAL REQUREST",originalRequest)
        
         const shouldForceLogout = (
             error.response?.status === 401 ||
@@ -49,10 +50,10 @@ api.interceptors.response.use(
             )
         );
         
-        if(shouldForceLogout)
-        {
-            return handleLogout(error)
-        }
+        // if(shouldForceLogout)
+        // {
+        //     return handleLogout(error)
+        // }
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
@@ -70,16 +71,16 @@ api.interceptors.response.use(
 
 export default api
 
-export const handleLogout = async (error?:ApiErrorResponse) => {
-    try {
-        store.dispatch(clearUser())
-        await persistor.purge()
-        window.location.href='/location'
-    } catch (err) {
-        const apiError=error as ApiErrorResponse
+// export const handleLogout = async (error?:ApiErrorResponse) => {
+//     try {
+//         store.dispatch(clearUser())
+//         await persistor.purge()
+//         window.location.href='/location'
+//     } catch (err) {
+//         const apiError=error as ApiErrorResponse
         
-        toast.error(`Failed to logout ||${apiError}`)
-    } finally {
-        window.location.href = '/login';
-    }
-}
+//         toast.error(`Failed to logout ||${apiError}`)
+//     } finally {
+//         window.location.href = '/login';
+//     }
+// }
