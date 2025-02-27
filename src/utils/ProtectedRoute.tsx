@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import Spinner from './Spinner';
 import { RootState } from '../types/Candidate';
 import { persistStore } from 'redux-persist';
@@ -12,7 +11,6 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
   const candidateState = useSelector((state: RootState) => state.user);
@@ -46,27 +44,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     console.log("Employer State:", employerState);
     console.log("Admin State:", adminState);
     console.log("Is Authenticated:", isAuthenticated);
-
-    if (!isLoading && !isAuthenticated) {
-      const redirectPath = role === 'employer' 
-        ? '/employerlogin' 
-        : role === 'admin' 
-        ? '/admin' 
-        : '/login';
-        
-      console.log("Redirecting to:", redirectPath);
-      navigate(redirectPath);
-    }
-  }, [isAuthenticated, isLoading, role, navigate]);
+  }, [isAuthenticated, role]);
 
   if (isLoading) {
     return <Spinner loading={true} />;
   }
 
-  if (!isAuthenticated) {
-    return <Spinner loading={true} />;
-  }
-
+  // Don't redirect, just show the children
   return <>{children}</>;
 };
 
