@@ -8,20 +8,8 @@ export const getImageURL = (
 ): string => {
     try {
         if (!imagePath) return defaultImage;
-        let fileName;
-        if(imagePath.includes('\\')||imagePath.includes('/'))
-        {
-            fileName= imagePath.replace(/\\/g, '/').split('/').pop();
-        }
-        else
-        {
-            fileName=imagePath
-        }
-       
+        const fileName = imagePath.replace(/\\/g, '/').split('/').pop();
         const imageURL = `${BASE_URL}/uploads/${type}/${fileName}?t=${Date.now()}`;
-        console.log('Generated image URL:', imageURL);
-
-        
         return imageURL
     } catch (error) {
         return defaultImage;
