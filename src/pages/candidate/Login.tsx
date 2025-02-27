@@ -8,7 +8,6 @@ import Spinner from "../../utils/Spinner";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userSlice";
 import { errorHandler } from "../../utils/ErrorHandler";
-import e from "express";
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

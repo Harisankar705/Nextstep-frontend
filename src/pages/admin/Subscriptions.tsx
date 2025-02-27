@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { SubscriptionPlan } from "../../types/Employer"
 import toast from "react-hot-toast"
 import Spinner from "../../utils/Spinner"
-import { AlertTriangle, CheckCircle, Edit, Eye, Tag, Trash2 } from "lucide-react"
+import { AlertTriangle, CheckCircle, Edit, Eye, Tag } from "lucide-react"
 import SideBar from "./SideBar"
 import { getSubscription, updateSubscription } from "../../services/adminService"
 
