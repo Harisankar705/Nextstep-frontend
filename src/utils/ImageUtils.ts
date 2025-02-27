@@ -3,18 +3,28 @@ console.log('Base URL:', BASE_URL);
 
 export const getImageURL = (
     imagePath: string | undefined,
-    type: 'profile-pictures' | 'posts' | 'company-documents'|'company-logos',
+    type: 'profile-pictures' | 'posts' | 'company-documents' | 'company-logos',
     defaultImage: string = '/default-profile.png'
 ): string => {
     try {
         if (!imagePath) return defaultImage;
-        const fileName = imagePath.replace(/\\/g, '/').split('/').pop();
-        const imageURL = `${BASE_URL}/uploads/${type}/${fileName}?t=${Date.now()}`;
-        return imageURL
+
+        // Extract the relevant path
+        const uploadIndex = imagePath.indexOf('uploads');
+        if (uploadIndex !== -1) {
+            const relativePath = imagePath.substring(uploadIndex).replace(/\\/g, '/');
+            // Use the 'type' parameter in the URL
+            const path= `${BASE_URL}/uploads/${type}/${relativePath.split('/').pop()}?t=${Date.now()}`;
+            console.log(path)
+            return path
+        }
+
+        return defaultImage;
     } catch (error) {
         return defaultImage;
     }
 };
+
 export const getProfilePictureURL = (profilePicture: string | undefined): string => {
     console.log('profilePicture',profilePicture)
     return getImageURL(profilePicture, 'profile-pictures', '/default-profile.png');
