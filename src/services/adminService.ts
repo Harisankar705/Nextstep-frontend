@@ -1,4 +1,5 @@
 import { Candidate, Employer } from "../types/Candidate";
+import { SubscriptionPlan } from "../types/Employer";
 import api from "../utils/api";
 import { axiosError } from "../utils/AxiosError";
 
@@ -18,6 +19,47 @@ export const fetchReports=async()=>{
         return response.data
     } catch (error) {
         axiosError(error,'fetchReports')
+        throw error
+    }
+}
+export const createSubscription=async(plan:SubscriptionPlan)=>{
+    try {
+        const response=await api.post('/add-subscription',plan)
+        console.log(response.data)
+        return response.data
+    } catch (error) {
+        axiosError(error,'createSubscription')
+        throw error
+    }
+}
+export const getSubscription=async()=>{
+    try {
+        const response=await api.get('/subscriptions')
+        console.log(response.data)
+        return response.data
+    } catch (error) {
+        axiosError(error,'createSubscription')
+        throw error
+    }
+}
+export const getSubscriptionById=async(id:string)=>{
+    try {
+        const response=await api.get(`/subscriptions/${id}`)
+        console.log(response.data)
+        return response.data
+    } catch (error) {
+        axiosError(error,'createSubscription')
+        throw error
+    }
+}
+export const updateSubscription = async (id: string, data?: Partial<SubscriptionPlan> & { toggleStatus?: boolean }) => {
+    try {
+        const response=await api.patch(`/edit-subscription/${id}`,data)
+        console.log(response)
+        return response.data
+    } catch (error) {
+        axiosError(error,'changeSubscriptionStatus')
+        console.log(error)
         throw error
     }
 }

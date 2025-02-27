@@ -142,6 +142,7 @@ import { setUser } from "../../redux/userSlice";
           toast.success("Details submitted successfully!");
           navigate('/home')
         } catch (error) {
+          console.log('error',error)
           toast.error("error occured in candidateDetails");
           return 
         }

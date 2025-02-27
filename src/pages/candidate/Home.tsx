@@ -33,6 +33,7 @@ const Home = () => {
     const fetchPosts=async()=>{
       try {
         const response=await fetchUserPosts()
+        console.log("RESPONSE",response)
         setPosts(response.posts)
       } catch (error) {
         toast.error("Failed to get posts")

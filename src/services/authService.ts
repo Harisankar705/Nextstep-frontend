@@ -99,11 +99,13 @@ export const candidateDetails = async (details: any): Promise<any> => {
 export const login = async (email: string, password: string, role: role) => {
     try {
         const response = await api.post('/login', { email, password, role }, { withCredentials: true })
+        
         if (response?.data) {
             return response.data
         }
     } catch (error: unknown) {
         axiosError(error, 'login')
+        console.log(error)
         throw error
 }
 }

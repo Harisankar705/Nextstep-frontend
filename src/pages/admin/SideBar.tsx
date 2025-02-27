@@ -1,4 +1,4 @@
-import { Building2, LogOut, Menu, ReceiptPoundSterling, Users } from "lucide-react";
+import { Building2, LogOut, Menu, ReceiptPoundSterling, SubscriptIcon, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "../../components/Logo";
 import { useDispatch } from "react-redux";
@@ -81,6 +81,13 @@ const SideBar = () => {
           >
             <ReceiptPoundSterling className="h-5 w-5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
             <span>Reported Posts</span>
+          </Link>
+          <Link 
+            to="/subscription" 
+            className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all group"
+          >
+            <SubscriptIcon className="h-5 w-5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+            <span>Subscriptions</span>
           </Link>
         </nav>
 

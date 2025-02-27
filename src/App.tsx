@@ -35,6 +35,8 @@ import { PaymentSuccess } from './pages/candidate/PaymentSuccess.tsx';
 import { ReportedPosts } from './pages/admin/ReportedPosts.tsx';
 import { useSelector } from 'react-redux';
 import { UserCandidate } from './types/Candidate.ts';
+import { Subscriptions } from './pages/admin/Subscriptions.tsx';
+import SubscriptionForm from './pages/admin/SubscriptionForm.tsx';
 
 const App = () => {
   const user = useSelector((state: { user: UserCandidate }) => state.user)??null
@@ -71,6 +73,9 @@ const App = () => {
           <Route path='/verifyemployer/:id'element={<ProtectedRoute role='admin'>{<Verification/>}</ProtectedRoute>}/>
           <Route path='followrequests'element={<ProtectedRoute role='admin'>{<ConnectionRequest/>}</ProtectedRoute>}/>
           <Route path='/reports'element={<ProtectedRoute role='admin'>{<ReportedPosts/>}</ProtectedRoute>}/>
+          <Route path='/subscription'element={<ProtectedRoute role='admin'>{<Subscriptions/>}</ProtectedRoute>}/>
+          <Route path='/add-subscription'element={<ProtectedRoute role='admin'>{<SubscriptionForm/>}</ProtectedRoute>}/>
+          <Route path='/edit-subscription/:id'element={<ProtectedRoute role='admin'>{<SubscriptionForm/>}</ProtectedRoute>}/>
          
 
           {/* employer */}

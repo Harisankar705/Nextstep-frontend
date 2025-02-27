@@ -197,8 +197,8 @@ const JobDetails = () => {
                   <Calendar className="w-5 h-5 text-teal-500" />
                   <div>
                     <p className="text-sm text-gray-400">Posted date:</p>
-                    <p>{job.createdAt?.toDateString()}</p>
-                  </div>
+                    <p>{job.createdAt ? new Date(job.createdAt).toDateString() : "Date not available"}</p>
+                    </div>
                 </div>
                 {job.applicationDeadline && (
                   <div className="flex items-center gap-3 text-gray-300">

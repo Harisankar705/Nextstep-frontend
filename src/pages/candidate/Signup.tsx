@@ -25,11 +25,21 @@ const Signup: React.FC = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [countdown, setCountdown] = useState(0);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [isResending, setIsResenting] = useState(false)
+  interface InputRefs{
+    [key:string]:HTMLInputElement|null
+  }
+  const inputRefs=useRef<InputRefs>({
+    otp1:null,
+    otp2:null,
+    otp3:null,
+    otp4:null,
+    otp5:null,
+    otp6:null 
+  })
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setError('');
+    setError(null);
     const nameError = validateName(firstName) || validateName(secondName);
     const emailError = validateMail(email);
     const phonenumberError = validatePhoneNumber(phonenumber);
@@ -40,6 +50,7 @@ const Signup: React.FC = () => {
       return;
     }
     try {
+      setLoading(true)
       const isTaken = await checkEmailOrPhone(email, phonenumber, 'user', '')
       if (isTaken) {
         setError("email or phone number is already registered!")
@@ -102,14 +113,14 @@ const Signup: React.FC = () => {
     newOtp[index] = value;
     setOtp(newOtp);
     if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
+      inputRefs.current[`otp${index+2}`]?.focus()
     } else if (!value && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+      inputRefs.current[`otp${index}`]?.focus()
     }
   };
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+      inputRefs.current[`otp${index}`]?.focus();
     }
   };
   const handleVerify = async () => {
@@ -120,10 +131,10 @@ const Signup: React.FC = () => {
       return 
     }
     try {
+      setLoading(true)
       const verified = await verifyOTP(email, otpString, 'user');
-    if (verified.message === "OTP verification successfull!") {
-setLoading(true)
-      toast.success("OTP verified successfull!")
+    if (verified.message === "OTP verification successful!") {
+      toast.success("OTP verified successfully!")
       await handleRegister()
       navigate('/login',{replace:true});
     } 
@@ -135,6 +146,7 @@ setLoading(true)
   catch (error) {
     setError('error occured while otp verification')
     toast.error("An error occured during otp verification")
+    console.log('error',error)
     } 
     finally
     {
@@ -154,7 +166,7 @@ setLoading(true)
     try {
       setLoading(true);
       await register(userData, otp.join(''));
-      toast.success("Registeration successfull!")
+      toast.success("Registeration successful!")
       setLoading(true);
     } catch (error) {
       setLoading(false);
@@ -170,9 +182,9 @@ setLoading(true)
     <div className="min-h-screen w-full bg-[#1a1625] text-white flex items-center justify-center">
       <div className="container max-w-[1100px] px-4">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="flex flex-col justify-center space-y-4">
+          <div className="flex flex-col justify-center space-y-4 text-center lg:text-left">
             <div className="space-y-2">
-              <Logo width={400} height={107} className="mb-4" />
+              <Logo width={400} height={107} className="mx-auto lg:mx-0 mb-4" />
               <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
                 Your next step{" "}
                 <span className="text-[#8257e7]">towards success!</span>
@@ -184,24 +196,24 @@ setLoading(true)
           {otpSent ? (
             <div className="bg-black/30 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto mt-6">
               <h2 className="text-white text-xl font-semibold mb-8">One-Time Password</h2>
-              <div className="flex justify-center mb-8 space-x-4">
+              <div className="flex justify-center mb-8 space-x-4 sm:space-x-2 flex-wrap">
                 {otp.map((digit, index) => (
                   <input
                     key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
+                    ref={(el) => (inputRefs.current[`otp${index+1}`] = el)}
                     type="text"
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-12 h-12 border border-gray-600 rounded-lg bg-transparent text-white text-center text-2xl focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+                    className="w-12 h-12 sm:w-10 border border-gray-600 rounded-lg bg-transparent text-white text-center text-2xl focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
                   />
                 ))}
               </div>
               <button
                 onClick={handleVerify}
                 disabled={loading}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-lg py-3 mb-4 transition-colors"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-lg py-3 mb-4 transition-colors disabled:opacity-50 "
               >
                 {loading ? (<Spinner loading={true}/>):(
                     "Verify otp"
@@ -314,8 +326,8 @@ setLoading(true)
               </form>
               <div className="flex items-center gap-2 rounded-lg bg-[#2a2837] p-4">
                 <div className="h-8 w-8 rounded-lg bg-[#1e129]" />
-                <div className="flex-1">
-                  <p className="text-sm cursor-pointer" onClick={handleLoginClick}>Already have an account</p>
+                <div className="flex-1 cursor-pointer" onClick={handleLoginClick}>
+                  <p className="text-sm">Already have an account</p>
                   <p className="text-xs text-gray-400">Login</p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-gray-400" />

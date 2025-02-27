@@ -16,6 +16,10 @@ export interface IEmployer  {
     isProfileComplete: boolean,
     status: "Active" | "Inactive"
 }
+export interface AdminJobProps {
+  jobs: jobFormData[]|null;
+  onDelete: (id: string) => void;
+}
 export interface Step{
     number:number,
     title:string
@@ -108,4 +112,15 @@ export interface Filters {
     users: UserCandidate[];
     employers: Employer[];
     posts: PostType[];
+}
+export interface SubscriptionPlan {
+  _id?:string
+  name: string;
+  price: number;
+  validity: string;
+  features: string[];
+  isPopular: boolean;
+  createdAt:Date,
+  targetRole: "user" | "employer";
+  status: "active" | "inactive";
 }

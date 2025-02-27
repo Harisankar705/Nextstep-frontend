@@ -1,20 +1,18 @@
 import { useState } from "react";
-import { jobFormData } from "../../types/Employer";
+import { AdminJobProps } from "../../types/Employer";
 import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 
-interface AdminJobProps {
-  jobs: jobFormData[]|null;
-  onDelete: (id: string) => void;
-}
+
 export const AdminJobs: React.FC<AdminJobProps> = ({ jobs, onDelete }) => {
   const [deletingJobId, setJobDeletingJobId] = useState<string | null>(null);
   const handleDelete = async (jobId: string) => {
     setJobDeletingJobId(jobId);
     try {
       await onDelete(jobId)
+      toast.success("Job deleted successfully!")
     } catch (error) {
-      toast.error("Failed to delete!");
+      toast.error("Failed to delete job!");
     } finally {
       setJobDeletingJobId(null);
     }
@@ -23,9 +21,9 @@ export const AdminJobs: React.FC<AdminJobProps> = ({ jobs, onDelete }) => {
   return (
     <div className="space-y-4">
       {jobs?.map((job) => (
-        <div key={job._id} className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
+        <div key={job._id} className="bg-white rounded-xl shadow-sm p-6 md:p-8">
+          <div className="flex items-start justify-between flex-col md:flex-row">
+            <div className="flex-1 mb-4 md:mb-0">
               <h3 className="text-xl font-semibold text-slate-900">
                 {job.jobTitle}
               </h3>
