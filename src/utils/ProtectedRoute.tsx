@@ -15,6 +15,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const candidateState = useSelector((state: RootState) => state.user);
   const employerState = useSelector((state: RootState) => state.employer);
   const adminState = useSelector((state: RootState) => state.admin);
+  const persistorState = useSelector((state: any) => state._persist);
 
   const isAuthenticated = role === 'candidate' 
     ? candidateState.isAuthenticated 
@@ -24,15 +25,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     ? adminState.isAuthenticated 
     : false;
 
- 
+  const isRehydrated = persistorState?.rehydrated;
+
   useEffect(() => {
-    if (!isAuthenticated) {
-      const redirectPath = role === 'employer' ? '/employerlogin' : role === 'admin' ? '/admin' : '/login';
+    if (isRehydrated && !isAuthenticated) {
+      const redirectPath = role === 'employer' 
+        ? '/employerlogin' 
+        : role === 'admin' 
+        ? '/admin' 
+        : '/login';
       navigate(redirectPath);
     }
-  }, [isAuthenticated, role, navigate]);
+  }, [isAuthenticated, isRehydrated, role, navigate]);
 
-  if (!isAuthenticated) {
+  if (!isRehydrated || !isAuthenticated) {
     return <Spinner loading={true} />;
   }
 
