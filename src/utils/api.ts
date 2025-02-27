@@ -74,7 +74,6 @@ export const handleLogout = async (error?:ApiErrorResponse) => {
     try {
         store.dispatch(clearUser())
         await persistor.purge()
-        window.location.href='/location'
     } catch (err) {
         const apiError=error as ApiErrorResponse
         
