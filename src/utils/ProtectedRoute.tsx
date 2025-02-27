@@ -31,16 +31,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     console.log("Admin State:", adminState);
     console.log("Is Authenticated:", isAuthenticated);
 
-    if (!isAuthenticated) {
-      const redirectPath = role === 'employer' 
-        ? '/employerlogin' 
-        : role === 'admin' 
-        ? '/admin' 
-        : '/login';
+    // if (!isAuthenticated) {
+    //   const redirectPath = role === 'employer' 
+    //     ? '/employerlogin' 
+    //     : role === 'admin' 
+    //     ? '/admin' 
+    //     : '/login';
         
-      console.log("Redirecting to:", redirectPath);
-      navigate(redirectPath);
-    }
+    //   console.log("Redirecting to:", redirectPath);
+    //   navigate(redirectPath);
+    // }
   }, [isAuthenticated, role, navigate]);
 
   if (!isAuthenticated) {
