@@ -12,7 +12,6 @@ import Spinner from "../../../utils/Spinner";
 import toast from "react-hot-toast";
 import { updatePost } from "../../../services/authService";
 import { LocationModal } from "./LocationModal";
-import { getPostImageURL } from "../../../utils/ImageUtils";
 
 const backGrounds = [
     "bg-white",
@@ -147,7 +146,7 @@ export const EditPost: React.FC<EditPostProps> = ({ post, onClose, isOpen,role,o
                             {post.images.map((imageUrl, index) => (
                                 <div key={index} className="relative">
                                     <img
-                                        src={getPostImageURL(imageUrl)}
+                                        src={imageUrl}
                                         alt={`Image ${index + 1}`}
                                         className="w-full h-48 object-cover rounded-lg"
                                     />

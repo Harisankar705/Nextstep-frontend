@@ -204,7 +204,7 @@ const Post: React.FC<PostComponentProps> = ({
                     onClick={() => handleImageClick(0)}
                 >
                     <img
-                        src={getPostImageURL(post.image[0])}
+                        src={post.image[0]}
                         alt="Post image"
                         className="absolute inset-0 w-full h-full object-cover"
                     />
@@ -225,7 +225,7 @@ const Post: React.FC<PostComponentProps> = ({
                                 onClick={() => handleImageClick(index)}
                             >
                                 <img
-                                    src={getPostImageURL(image)}
+                                    src={image}
                                     alt={`Post image ${index + 1}`}
                                     className="absolute inset-0 w-full h-full object-cover"
                                 />
@@ -241,7 +241,7 @@ const Post: React.FC<PostComponentProps> = ({
                                 onClick={() => handleImageClick(index)}
                             >
                                 <img
-                                    src={getPostImageURL(image)}
+                                    src={image}
                                     alt={`Post image ${index + 1}`}
                                     className="absolute inset-0 w-full h-full object-cover"
                                 />
@@ -257,7 +257,7 @@ const Post: React.FC<PostComponentProps> = ({
                                 onClick={() => handleImageClick(index)}
                             >
                                 <img
-                                    src={getPostImageURL(image)}
+                                    src={image}
                                     alt={`Post image ${index + 1}`}
                                     className="absolute inset-0 w-full h-full object-cover"
                                 />
@@ -274,7 +274,7 @@ const Post: React.FC<PostComponentProps> = ({
                                 onClick={() => handleImageClick(index)}
                             >
                                 <img
-                                    src={getPostImageURL(image)}
+                                    src={image}
                                     alt={`Post image ${index + 1}`}
                                     className="absolute inset-0 w-full h-full object-cover"
                                 />
@@ -486,7 +486,7 @@ const Post: React.FC<PostComponentProps> = ({
                             }}
                         >
                             <img
-                                src={getPostImageURL(post.image[selectedImageIndex])}
+                                src={post.image[selectedImageIndex]}
                                 alt={`Post image ${selectedImageIndex + 1}`}
                                 className="transition-transform duration-200"
                                 style={{
