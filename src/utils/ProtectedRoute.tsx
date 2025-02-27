@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Spinner from './Spinner';
 import { RootState } from '../types/Candidate';
+import { persistStore } from 'redux-persist';
+import { store } from '../redux/store'; // Make sure to import your store correctly
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,7 +13,8 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const navigate = useNavigate();
-  
+  const [isLoading, setIsLoading] = useState(true);
+
   const candidateState = useSelector((state: RootState) => state.user);
   const employerState = useSelector((state: RootState) => state.employer);
   const adminState = useSelector((state: RootState) => state.admin);
@@ -25,23 +28,40 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     : false;
 
   useEffect(() => {
+    const persistor = persistStore(store);
+    
+    // Wait until redux-persist has rehydrated the state
+    persistor.persist();
+    persistor.subscribe(() => {
+      if (persistor.getState().bootstrapped) {
+        console.log("Redux Persist State Rehydrated");
+        setIsLoading(false); // State is loaded, stop showing spinner
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     console.log("Role:", role);
     console.log("Candidate State:", candidateState);
     console.log("Employer State:", employerState);
     console.log("Admin State:", adminState);
     console.log("Is Authenticated:", isAuthenticated);
 
-    // if (!isAuthenticated) {
-    //   const redirectPath = role === 'employer' 
-    //     ? '/employerlogin' 
-    //     : role === 'admin' 
-    //     ? '/admin' 
-    //     : '/login';
+    if (!isLoading && !isAuthenticated) {
+      const redirectPath = role === 'employer' 
+        ? '/employerlogin' 
+        : role === 'admin' 
+        ? '/admin' 
+        : '/login';
         
-    //   console.log("Redirecting to:", redirectPath);
-    //   navigate(redirectPath);
-    // }
-  }, [isAuthenticated, role, navigate]);
+      console.log("Redirecting to:", redirectPath);
+      navigate(redirectPath);
+    }
+  }, [isAuthenticated, isLoading, role, navigate]);
+
+  if (isLoading) {
+    return <Spinner loading={true} />;
+  }
 
   if (!isAuthenticated) {
     return <Spinner loading={true} />;
