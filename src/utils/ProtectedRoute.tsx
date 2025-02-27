@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Spinner from './Spinner';
-import { RootState } from '../types/Candidate';
+import { RootState, UserCandidate } from '../types/Candidate';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,7 +12,8 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const navigate = useNavigate();
   
-  const candidateState = useSelector((state: RootState) => state.user);
+      const candidateState = useSelector((state: { user: UserCandidate }) => state.user)
+  
   const employerState = useSelector((state: RootState) => state.employer);
   const adminState = useSelector((state: RootState) => state.admin);
 

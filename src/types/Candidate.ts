@@ -174,6 +174,7 @@ export interface UserCandidate {
   companyName?:string,
   friends?:string
   interviewSchedule?: InterviewSchedule;
+  isAuthenticated?:boolean
 }
 export interface SharePostProps {
   isOpen: boolean;
