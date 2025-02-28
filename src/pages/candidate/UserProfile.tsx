@@ -12,6 +12,7 @@ import Navbar from "../../utils/Navbar";
 import { PostType, UserCandidate } from "../../types/Candidate";
 import Post from "./Post";
 import { getUserPosts } from "../../services/authService";
+
 import { individualDetails } from "../../services/adminService";
 import toast from "react-hot-toast";
 import { checkFollowStatus, toggleFollow } from "../../services/commonService";
@@ -242,9 +243,7 @@ const UserProfile = () => {
                                         <span>{friends ? `${friends.length} friends` : 'No friends'}</span>
                                     </div> */}
                 </div>
-                <button className="w-full py-2 px-3 bg-gray-800 hover:bg-gray-700 rounded-md text-gray-300 mt-4 transition duration-300">
-                  Edit details
-                </button>
+                
               </div>
             </div>
             <div className="md:col-span-8 space-y-4">

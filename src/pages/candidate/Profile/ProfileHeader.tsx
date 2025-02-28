@@ -27,6 +27,7 @@ export const ProfileHeader:React.FC<ProfileHeaderProps>=({user,isOwnProfile,onEd
                           <div className="flex justify-center mt-4">
                               <button onClick={onEditProfile} className="flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition duration-300">
                                   <Edit className="mr-2 h-4 w-4" />
+                                  Edit Profile
                               </button>
                           </div>
                       )}

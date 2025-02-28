@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 export const ProfileTabs: React.FC<ProfileTabsProps>=({onTabChange}) => {
     const navigate=useNavigate()
 
-    const tabs = ['Friends', 'Saved', 'Videos']
+    const tabs = ['Saved', ]
     const handleTabClick=(tab:string)=>{
         onTabChange?.(tab)
         if(tab==='Friends')
@@ -16,10 +16,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps>=({onTabChange}) => {
         {
             navigate('/saved')
         }
-        if(tab==='Videos')
-        {
-            navigate('/')
-        }
+        
     }
   return (
       <div className="flex border-b border-gray-800 mt-8">

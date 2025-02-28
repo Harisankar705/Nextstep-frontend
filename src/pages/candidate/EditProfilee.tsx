@@ -130,12 +130,7 @@ const EditProfile = () => {
       });
     }
   };
-  const profilePictureURL = `http:
-    .split("\\")
-    .pop()}`;
-  useEffect(() => {
-    setProfilePicturePreview(profilePictureURL);
-  }, [profilePictureURL]);
+  
   type FormFieldKeys = keyof FormData;
   const handleProfilePictureChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -287,16 +282,16 @@ const EditProfile = () => {
         aboutMe: data.aboutMe,
         dateOfbirth: data.dateOfBirth,
         skills: allSkills,
+        profilePicture:profilePictureURL
       })
     );
     try {
       const response = await candidateDetails(formData);
       if (response.message == "User updated successfully!") {
-        const newProfilePicturePath = response.profilePicture || profilePictureURL
         dispatch(setUser({
           userName: data.firstName + '' + data.secondName,
           email: data.email,
-          profilePicture: newProfilePicturePath,
+          profilePicture: profilePictureURL,
           location: data.location,
           experience: data.experience,
           aboutMe: data.aboutMe,
@@ -316,13 +311,20 @@ const EditProfile = () => {
       toast.error('error occured')
     }
   };
-  const getProfilePictureURL = () => {
-    if (profilePicturePreview) return profilePicturePreview
-    if (user.profilePicture) {
-      return `http:
-        }`;
+  useEffect(()=>{
+    if(profilePicture)
+    {
+      const reader=new FileReader()
+      reader.onloadend=()=>{
+        setProfilePicturePreview(reader.result as string)
+      }
+      reader.readAsDataURL(profilePicture)
     }
-  }
+    else
+    {
+      setProfilePicturePreview(user.profilePicture||null)
+    }
+  },[profilePicture,user.profilePicture])
   const handleLocationInputChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -486,9 +488,7 @@ const EditProfile = () => {
           <div className="text-center mb-8">
             <div className="relative inline-block h-48 w-48 rounded-full overflow-hidden border-4 border-black bg-gray-900 -mt-48 l-auto">
               <img
-                src={
-                  getProfilePictureURL()
-                }
+                src={profilePicturePreview || user.profilePicture}
                 alt="Profile"
                 className="h-full w-full object-cover"
               />
