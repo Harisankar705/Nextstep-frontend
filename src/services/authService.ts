@@ -1,6 +1,7 @@
 import { axiosError } from '../utils/AxiosError'
 import api from '../utils/api'
 import { SendOTPResponse, UserData, verifyOTPResponse } from '../types/Candidate'
+import axios from 'axios'
 export type role = "user" | "employer" | "admin"
 export const sendOTP = async (email: string, role: role): Promise<SendOTPResponse> => {
     try {
@@ -103,9 +104,16 @@ export const login = async (email: string, password: string, role: role) => {
             return response.data
         }
     } catch (error: unknown) {
-        axiosError(error, 'login')
-        console.log(error)
-        throw error
+       if(axios.isAxiosError(error))
+       {
+        const errorMessage=error.response?.data?.message
+        console.log(errorMessage)
+        throw new Error(errorMessage)
+       }
+       else
+       {
+        console.log("AN UNEXPECTED ERROR OCURS",error)
+       }
     }
 }
 export const checkEmailOrPhone = async (email: string, phoneNumber: string, role: role, name: string) => {
