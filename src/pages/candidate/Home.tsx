@@ -25,52 +25,64 @@ const LeftSideBar = ({
   </a>
 );
 const Home = () => {
-  const [showCreatePost, setShowCreatePost] = useState(false)
-  const currentUser=useSelector((state:{user:UserCandidate})=>state.user)
-  const [posts,setPosts]=useState<PostType[]>([])
-  const profilePicture=currentUser.profilePicture
-  useEffect(()=>{
-    const fetchPosts=async()=>{
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const currentUser = useSelector((state: { user: UserCandidate }) => state.user);
+  const [posts, setPosts] = useState<PostType[]>([]);
+  const profilePicture = currentUser.profilePicture;
+
+  useEffect(() => {
+    const fetchPosts = async () => {
       try {
-        const response=await fetchUserPosts()
-        console.log("RESPONSE",response)
-        setPosts(response.posts)
+        const response = await fetchUserPosts();
+        setPosts(response.posts);
       } catch (error) {
-        toast.error("Failed to get posts")
-        console.log('error',error)
+        toast.error("Failed to get posts");
       }
-    }
-    fetchPosts()
-  },[])
+    };
+    fetchPosts();
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
+      <button 
+        className="sm:hidden p-4" 
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+      </button>
       <div className="flex">
-        <div className="w-full sm:w-[360px] fixed left-0  top-16  h-[calc(100vh-64px)] p-4 overflow-y-auto bg-black z-0">
+        <div className={`w-full sm:w-[360px] fixed top-16 h-[calc(100vh-64px)] p-4 overflow-y-auto bg-black z-10 transition-transform duration-300 
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0`}>
           <div className="space-y-2">
-            <div className="items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full overflow-hidden"></div>
-            </div>
             <LeftSideBar icon={Users}>Friends</LeftSideBar>
-            <LeftSideBar  icon={Bookmark}>Saved</LeftSideBar>
+            <LeftSideBar icon={Bookmark}>Saved</LeftSideBar>
           </div>
         </div>
+
         <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
-          <PostInput onClick={() => setShowCreatePost(true)} profilePicture={profilePicture}/>
-          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role="user"/>
-            {posts.length>0 ?posts.map((post)=>(
-              <Post key={post._id}
-            post={post}
-            profilePicture={post.userId.profilePicture}
-            userName={`${post?.userId.firstName} ${post.userId.secondName}`}
-            role={post.userType}
-            />
-            )):(
-              <div className="text-center text-gray-500">No posts available!</div>
-            )}
+          <PostInput onClick={() => setShowCreatePost(true)} profilePicture={profilePicture} />
+          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role="user" />
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <Post
+                key={post._id}
+                post={post}
+                profilePicture={post.userId.profilePicture}
+                userName={`${post?.userId.firstName} ${post.userId.secondName}`}
+                role={post.userType}
+              />
+            ))
+          ) : (
+            <div className="text-center text-gray-500">No posts available!</div>
+          )}
         </main>
       </div>
     </div>
   );
 };
+
 export default Home;

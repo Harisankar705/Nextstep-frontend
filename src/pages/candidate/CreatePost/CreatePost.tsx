@@ -230,7 +230,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
     };
         return (
             <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
-                <div className="bg-gray-900 max-w-2xl p-6 rounded-lg shadow-lg border border-gray-800 text-white">
+                <div className="bg-gray-900 w-full max-w-2xl p-6 rounded-lg shadow-lg border border-gray-800 text-white sm:w-[90%]  md:w-[80%]  lg:w-[60%]">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-semibold text-white">Create Post</h2>
                         <button
@@ -253,11 +253,11 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                             placeholder="What's on your mind?"
                             value={postText}
                             onChange={(e) => setPostText(e.target.value)}
-                            className={`w-full min-h-[120px] bg-transparent resize-none outline-none placeholder-gray-500 ${selectedBackground ? "text-white" : "text-gray-200"
+                            className={`w-full min-h-[120px] bg-transparent resize-none outline-none placeholder-gray-500 sm:text-base ${selectedBackground ? "text-white" : "text-gray-200"
                                 }`}
                         />
                         {selectedImagePreview.length > 0 && (
-                            <div className="grid grid-cols-2 gap-2 mb-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
                                 {selectedImagePreview.map((image, index) => (
                                     <div key={index} className="relative group">
                                         {imageLoadingStates[index] && (
@@ -366,7 +366,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                     />
                 )}
                 {showPicker && (
-                    <div className="absolute z-50">
+                    <div className="absolute z-50 bottom-0 left-0 w-full sm:w-auto">
                         <Picker
                             data={data}
                             onEmojiSelect={handleEmojiSelect}
