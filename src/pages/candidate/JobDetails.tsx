@@ -15,7 +15,6 @@ import { applyJob, fetchJobById } from "../../services/employerService";
 import toast from "react-hot-toast";
 import Spinner from "../../utils/Spinner";
 import { JobType } from "../../types/Candidate";
-import { getCompanyLogo } from "../../utils/ImageUtils";
 import Navbar from "../../utils/Navbar";
 const JobDetails = () => {
   const { id } = useParams<{ id: string | undefined }>();
@@ -120,7 +119,7 @@ const JobDetails = () => {
             <div className="flex items-start gap-6">
               <div className="w-16 h-16 bg-teal-500 rounded-lg flex items-center justify-center">
                 <span className="text-2xl font-bold text-white">
-                  <img src={getCompanyLogo(job.employerId?.logo)} alt="Company Logo" />
+                  <img src={job.employerId?.logo} alt="Company Logo" />
                 </span>
               </div>
               <div>

@@ -1,5 +1,4 @@
 import { Edit } from "lucide-react"
-import { getProfilePictureURL } from "../../../utils/ImageUtils"
 import { ProfileHeaderProps } from "../../../types/Candidate"
 export const ProfileHeader:React.FC<ProfileHeaderProps>=({user,isOwnProfile,onEditProfile}) => {
     const {firstName,secondName,profilePicture,friends}=user
@@ -13,7 +12,7 @@ export const ProfileHeader:React.FC<ProfileHeaderProps>=({user,isOwnProfile,onEd
     <div className="bg-black text-white pt-20 px-8">
         <div className="max-w-6xl mx-auto">
             <div className="relative inline-block h-48 w-48 rounded-full overflow-hidden border-4 border-black bg-gray-900 -mt-48 l-auto">
-                <img src={getProfilePictureURL(profilePicture)} alt='profile' className="h-full w-full object-cover"/>
+                <img src={profilePicture} alt='profile' className="h-full w-full object-cover"/>
             </div>
                   <div className="flex justify-between items-start">
                       <div className="text-center">

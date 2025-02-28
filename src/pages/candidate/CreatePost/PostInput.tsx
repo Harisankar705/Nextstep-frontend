@@ -1,5 +1,4 @@
 import React from 'react'
-import { getImageURL, getProfilePictureURL } from '../../../utils/ImageUtils'
 import { Image } from 'lucide-react'
 import { PostInputProps } from '../../../types/Candidate'
 
@@ -10,11 +9,11 @@ export const PostInput:React.FC<PostInputProps>=({onClick,profilePicture,company
             <div className='flex gap-4 cursor-pointer'onClick={onClick}>
               <div className="w-10 h-10 rounded-full overflow-hidden">
               {profilePicture ? (
-                <img src={getProfilePictureURL(profilePicture)}
+                <img src={profilePicture}
                 alt='profile'
                 className='w-full h-full object-cover'/>
               ):companyLogo ? (
-                <img src={getImageURL(companyLogo,'company-logos')}
+                <img src={companyLogo}
                 alt='company logo'
                 className='w-full h-full object-cover'/>
               ):(

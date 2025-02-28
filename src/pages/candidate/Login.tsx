@@ -7,7 +7,6 @@ import { toast } from 'react-hot-toast'
 import Spinner from "../../utils/Spinner";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userSlice";
-import { errorHandler } from "../../utils/ErrorHandler";
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -38,7 +37,7 @@ const Login = () => {
         navigate('/candidate-details', { replace: true })
       }
     } catch (error: unknown) {
-      const errorMessage=errorHandler(error)
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       toast.error(errorMessage)
       setError(errorMessage);    }
     finally {

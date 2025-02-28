@@ -145,7 +145,7 @@ const Signup: React.FC = () => {
 }
   catch (error) {
     setError('error occured while otp verification')
-    toast.error("An error occured during otp verification")
+    toast.error("OTP is wrong")
     console.log('error',error)
     } 
     finally

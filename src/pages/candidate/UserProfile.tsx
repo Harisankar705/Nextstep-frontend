@@ -12,9 +12,6 @@ import Navbar from "../../utils/Navbar";
 import { PostType, UserCandidate } from "../../types/Candidate";
 import Post from "./Post";
 import { getUserPosts } from "../../services/authService";
-import {
-  getImageURL,
-} from "../../utils/ImageUtils";
 import { individualDetails } from "../../services/adminService";
 import toast from "react-hot-toast";
 import { checkFollowStatus, toggleFollow } from "../../services/commonService";
@@ -134,8 +131,8 @@ const UserProfile = () => {
   }
   const profilePictureURL =
     role === "user"
-      ? getImageURL(profileData.profilePicture, "profile-pictures")
-      : getImageURL(profileData.logo, "company-logos");
+      ? profileData.profilePicture
+      : profileData.logo
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />

@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector } from "react-redux";
 import { PostComponentProps } from "../../types/Candidate";
 import { Bookmark, MapPin, MessageSquare, Share2, ThumbsUp, X, ChevronLeft, ChevronRight, MoreHorizontal, Trash2, Pencil, ReceiptPoundSterling } from 'lucide-react';
-import { getCompanyLogo, getProfilePictureURL } from "../../utils/ImageUtils";
 import { useEffect, useState, useRef } from "react";
 import { getRelativeTime } from "../../utils/relativeTime";
 import { Like } from "./CreatePost/Like";
@@ -185,9 +184,9 @@ const Post: React.FC<PostComponentProps> = ({
 
     const finalProfilePicture = profilePicture
     ? role === 'employer'
-        ? getCompanyLogo(profilePicture)  
-        : getProfilePictureURL(profilePicture) 
-    : getProfilePictureURL(currentUser?.profilePicture);  
+        ? profilePicture
+        : profilePicture
+    : currentUser?.profilePicture 
     const finalUserName = userName
     ? userName
     : currentUser 

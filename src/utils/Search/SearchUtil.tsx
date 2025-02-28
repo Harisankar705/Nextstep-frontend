@@ -8,7 +8,6 @@ import {
 import { debounce } from "lodash";
 import { SearchIcon, Loader2, UserCircle, Building2 } from "lucide-react";
 import { search } from "../../services/authService";
-import { getCompanyLogo, getProfilePictureURL } from "../ImageUtils";
 import { SearchResults } from "../../types/Employer";
 const INITIAL_RESULTS: SearchResults = {
   users: [],
@@ -86,7 +85,7 @@ const SearchUtil: React.FC<SearchBarProps> = ({
       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
         {user.profilePicture ? (
           <img
-            src={getProfilePictureURL(user.profilePicture)}
+            src={user.profilePicture}
             alt={`${user.firstName} ${user.secondName}`}
             className="w-full h-full object-cover"
             onError={(e) => {
@@ -123,7 +122,7 @@ const SearchUtil: React.FC<SearchBarProps> = ({
       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
         {employer.logo ? (
           <img
-            src={getCompanyLogo(employer.logo)}
+            src={employer.logo}
             alt={employer.companyName}
             className="w-full h-full object-cover"
             onError={(e) => {

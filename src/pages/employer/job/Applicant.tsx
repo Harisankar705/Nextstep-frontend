@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Mail, Phone, Instagram, Twitter, Globe, MoreHorizontal, ChevronDown } from 'lucide-react';
 import { applicantDetails, individualDetails } from '../../../services/adminService';
 import { UserCandidate } from '../../../types/Candidate';
-import { getProfilePictureURL } from '../../../utils/ImageUtils';
 import InterviewScheduler from './InterviewSchedulter';
 import { InterviewScheduleData } from '../../../types/Employer';
 import { scheduleInterview } from '../../../services/commonService';
@@ -370,7 +369,7 @@ const Applicant = () => {
         <div className="space-y-6">
           <div className="flex items-center gap-4">
             <img
-              src={getProfilePictureURL(applicant.profilePicture)}
+              src={applicant.profilePicture}
               alt={`${applicant.firstName}'s profile`}
               className="w-16 h-16 rounded-full object-cover border-2 border-[#2DD4BF]"
             />

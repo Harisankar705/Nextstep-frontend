@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getComments } from "../../../services/commonService";
-import { getCompanyLogo, getProfilePictureURL } from "../../../utils/ImageUtils";
 import { Comment, Employer, PostType, UserCandidate } from "../../../types/Candidate";
 import { useSocket } from "../../../SocketContext";
 const Comments = ({
@@ -90,13 +89,13 @@ const Comments = ({
               {comment.commentor ? (
                 comment.commentor.profilePicture ? (
                 <img
-                  src={getProfilePictureURL(comment.commentor.profilePicture)}
+                  src={comment.commentor.profilePicture}
                   alt={comment.commentor.firstName}
                   className="w-8 h-8 rounded-full"
                 />
               ):(
                 comment.commentor.logo && (
-                    <img src={getCompanyLogo(comment.commentor.logo)}
+                    <img src={comment.commentor.logo}
                     className="w-8 h-8 rounded-full"/>
                 )
             )

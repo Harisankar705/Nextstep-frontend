@@ -3,7 +3,6 @@ import { Search, MapPin, Clock, DollarSign, Briefcase, Filter } from 'lucide-rea
 import { fetchUserJobs } from '../../services/employerService';
 import { JobType } from '../../types/Candidate';
 import { Filters } from '../../types/Employer';
-import { getCompanyLogo } from '../../utils/ImageUtils';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../utils/Navbar';
 import toast from 'react-hot-toast';
@@ -126,7 +125,7 @@ const UserJobListing = () => {
         >
           <div className="flex items-start gap-4">
             <img
-  src={getCompanyLogo(job.employerId?.logo)} 
+  src={job.employerId?.logo} 
               alt={job.employerId?.companyName || 'Company'} 
               className="w-12 h-12 rounded-lg object-cover"
             />

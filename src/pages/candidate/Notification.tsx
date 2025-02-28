@@ -5,7 +5,6 @@ import {
   markNotificationAsRead,
 } from "../../services/commonService";
 import { LoaderIcon, X } from "lucide-react";
-import { getCompanyLogo, getProfilePictureURL } from "../../utils/ImageUtils";
 import { INotification } from "../../types/Candidate";
 import toast from "react-hot-toast";
 const socket = io(import.meta.env.VITE_API_BASE_URL);
@@ -86,10 +85,10 @@ export const Notification= ({isOpen,onClose}: {
               >
               <div className="flex items-center">
                 {notification.senderModel==='Employer'? (
-                  <img src={getCompanyLogo(notification.sender.logo)}
+                  <img src={notification.sender.logo}
                   className="w-8 h-8 rounded-full mr-2"/>
                 ):(
-                  <img src={getProfilePictureURL(notification.sender.profilePicture)}
+                  <img src={notification.sender.profilePicture}
                   className="w-8 h-8 rounded-full mr-2"/>
                 )}
                 <div>

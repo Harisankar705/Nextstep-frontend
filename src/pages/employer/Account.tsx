@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Briefcase, Calendar, Edit, Globe, Mail, MapPin, Users } from "lucide-react";
 import SideBar from "./SideBar";
 import Spinner from "../../utils/Spinner";
-import { getCompanyLogo } from "../../utils/ImageUtils";
 import EmployerPosts from './EmployerPosts';
 import { IEmployer } from "../../types/Employer";
 const Account = () => {
@@ -47,7 +46,7 @@ const Account = () => {
                     <div className="h-56 bg-gradient-to-r from-[#0DD3B4] to-[#1A1A1A] relative">
                         <div className="absolute bottom-0 left-0 p-4 md:p-8  flex flex-col md:flex-row items-start md:items-end gap-4">
                             <img
-                                src={getCompanyLogo(logo)}
+                                src={logo}
                                 alt='Company Logo'
                                 className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-xl border-4 border-[#1A1A1A] object-cover"
                             />

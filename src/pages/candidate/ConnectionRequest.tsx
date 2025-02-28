@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux"
 import { Requests, UserCandidate } from "../../types/Candidate"
 import Navbar from "../../utils/Navbar"
-import { getProfilePictureURL } from "../../utils/ImageUtils"
 import { UserCheck, UserPlus } from "lucide-react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
@@ -47,7 +46,7 @@ export const ConnectionRequest = () => {
                     <div className="space-y-2">
                         <div className="items-center gap-2 mb-4">
                             <div className="w-10 h-10 rounded-full overflow-hidden">
-                                <img src={getProfilePictureURL(currentUser.profilePicture)} alt={currentUser.firstName} className="w-full h-full object-cover" />
+                                <img src={currentUser.profilePicture} alt={currentUser.firstName} className="w-full h-full object-cover" />
                             </div>
                         </div>
                         <button onClick={() => setActiveTab('connections')}
@@ -83,7 +82,7 @@ export const ConnectionRequest = () => {
                                         <div className="flex items-center space-x-4">
                                             <div className="w-10 h-10 rounded-full overflow-hidden">
                                                 <img
-                                                    src={getProfilePictureURL(request.followerId.profilePicture)}
+                                                    src={request.followerId.profilePicture}
                                                     alt={request.followerId.firstName}
                                                     className="w-full h-full object-cover"
                                                 />
@@ -124,7 +123,7 @@ export const ConnectionRequest = () => {
                                     <div className="flex items-center space-x-4">
                                         <div className="w-10 h-10 rounded-full overflow-hidden">
                                             <img
-                                                src={getProfilePictureURL(connection.followerId.profilePicture)}
+                                                src={connection.followerId.profilePicture}
                                                 alt={connection.followerId.firstName}
                                                 className="w-full h-full object-cover"
                                             />

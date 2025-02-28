@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { PlusCircle, Search, X } from "lucide-react";
 import { ChatHistoryItem, SideBarProps } from "../../../types/Candidate";
 import { debounce } from "lodash";
-import { getCompanyLogo, getProfilePictureURL } from "../../../utils/ImageUtils";
 export const SideBar: React.FC<SideBarProps> = ({ chatHistory = [],onSelectedChat,role }) => {
   const [loading, setLoading] = useState(false);
   const [searchQuery,setSearchQuery]=useState<string>('')
@@ -28,11 +27,11 @@ const sortedChats=filteredChats.sort((a,b)=>new Date(b.timeStamp).getTime()-new 
 const getImageUrl=(chat:ChatHistoryItem)=>{
   if(role==='user' && chat.profilePicture)
   {
-    return getProfilePictureURL(chat.profilePicture)
+    return chat.profilePicture
   }
   else if(role==='employer' && chat.logo)
   {
-    return getCompanyLogo(chat.logo)
+    return chat.logo
   }
   else
   {
@@ -103,7 +102,7 @@ const getImageUrl=(chat:ChatHistoryItem)=>{
                 onClick={()=>onSelectedChat && onSelectedChat(chat)}
                 >
                   <div className="w-10 h-10 rounded-full" >
-                    <img src={getProfilePictureURL(chat.profilePicture)}
+                    <img src={chat.profilePicture}
                     alt={chat.profilePicture}
                     className="w-full h-full rounded-full object-conver"/>
                     </div>

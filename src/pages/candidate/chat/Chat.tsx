@@ -18,10 +18,6 @@ import {
 } from "../../../services/commonService";
 import { individualDetails } from "../../../services/adminService";
 import { useParams } from "react-router-dom";
-import {
-  getCompanyLogo,
-  getProfilePictureURL,
-} from "../../../utils/ImageUtils";
 import { VideoCallUI } from "./VideoCall";
 import Spinner from "../../../utils/Spinner";
 interface Caller{
@@ -953,8 +949,8 @@ useEffect(() => {
               <img
                 src={
                   role === "employer"
-                    ? getCompanyLogo(userDetails?.logo)
-                    : getProfilePictureURL(userDetails?.profilePicture) ||
+                    ? userDetails?.logo
+                    : userDetails?.profilePicture ||
                       "default-profile.png"
                 }
                 alt="Profile"
@@ -987,8 +983,8 @@ useEffect(() => {
               <img
                 src={
                   role === "employer"
-                    ? getCompanyLogo(userDetails?.logo)
-                    : getProfilePictureURL(userDetails?.profilePicture) ||
+                    ? userDetails?.logo
+                    : userDetails?.profilePicture ||
                       "default-profile.png"
                 }
                 alt="Profile"

@@ -1,9 +1,8 @@
 import  { useEffect, useState } from 'react';
 import { ArrowLeft, MoreHorizontal, Search, ChevronDown } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchApplicantsForJob } from '../../../services/employerService'; // Assume this function exists
+import { fetchApplicantsForJob } from '../../../services/employerService'; 
 import Spinner from '../../../utils/Spinner';
-import { getProfilePictureURL } from '../../../utils/ImageUtils';
 import { Applicant } from '../../../types/Candidate';
 const JobApplicants = () => {
   const { jobId } = useParams();
@@ -95,7 +94,7 @@ const JobApplicants = () => {
                 <tr key={applicant._id} className="border-b border-gray-800 hover:bg-[#242931]">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <img src={getProfilePictureURL(applicant.userId.profilePicture)} alt="" className="w-8 h-8 rounded-full" />
+                      <img src={applicant.userId.profilePicture} alt="" className="w-8 h-8 rounded-full" />
                       {applicant.userId.firstName} {applicant.userId.secondName}
                     </div>
                   </td>

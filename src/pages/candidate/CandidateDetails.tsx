@@ -9,6 +9,7 @@
   import { LocationSuggestion } from "../../types/Candidate"; 
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userSlice";
+import Spinner from "../../utils/Spinner";
   const CandidateDetails = () => {
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [profilePicture, setProfilePicture] = useState<File | null>(null);
@@ -19,6 +20,7 @@ import { setUser } from "../../redux/userSlice";
     const navigate = useNavigate()
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [languageSuggestions, setLanguagesSuggestion] = useState<string[]>([]);
+    const [loading,setLoading]=useState(false)
     const [languageInput, setLanguageInput] = useState("");
     const [locationInput, setLocationInput] = useState("");
     const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
@@ -125,6 +127,7 @@ import { setUser } from "../../redux/userSlice";
           .min(1, "At least one skill is required"),
       }),
       onSubmit: async (values) => {
+        setLoading(true)
         const formData = new FormData();
         if (profilePicture instanceof File) {
           formData.append("profilePicture", profilePicture);
@@ -145,6 +148,9 @@ import { setUser } from "../../redux/userSlice";
           console.log('error',error)
           toast.error("error occured in candidateDetails");
           return 
+        }
+        finally{
+          setLoading(false)
         }
       },
     });
@@ -230,6 +236,10 @@ import { setUser } from "../../redux/userSlice";
       const updatedSkills = formik.values.skills.filter((_, i) => i !== index);
       formik.setFieldValue("skills", updatedSkills);
     };
+    if(loading)
+    {
+      return (<Spinner loading={true}/>)
+    }
     return (
       <form
         className="min-h-screen bg-black text-white p-4"
@@ -261,27 +271,7 @@ import { setUser } from "../../redux/userSlice";
               </div>
             )}
           </div>
-          <div>
-            <label className="block text-sm text-zinc-400 mb-1">Experience</label>
-            <input
-              type="text"
-              name="experience"
-              placeholder="e.g., 5 years, 6 months"
-              value={formik.values.experience}
-              onChange={(e) => {
-                const value = e.target.value.toLowerCase();
-                formik.setFieldValue('experience', value);
-              }}
-              onBlur={formik.handleBlur}
-              className={`w-full bg-zinc-900 border ${formik.touched.experience && formik.errors.experience
-                  ? "border-red-500"
-                  : "border-zinc-800"
-                } rounded px-3 py-2 text-white`}
-            />
-            {formik.touched.experience && formik.errors.experience && (
-              <p className="text-red-500 text-sm">{formik.errors.experience}</p>
-            )}
-          </div>
+         
           <div>
             <label className="block text-sm text-zinc-400 mb-1">Resume</label>
             <input
@@ -535,6 +525,27 @@ import { setUser } from "../../redux/userSlice";
             )}
           </div>
           <div>
+            <label className="block text-sm text-zinc-400 mb-1">Experience</label>
+            <input
+              type="text"
+              name="experience"
+              placeholder="e.g., 5 years, 6 months"
+              value={formik.values.experience}
+              onChange={(e) => {
+                const value = e.target.value.toLowerCase();
+                formik.setFieldValue('experience', value);
+              }}
+              onBlur={formik.handleBlur}
+              className={`w-full bg-zinc-900 border ${formik.touched.experience && formik.errors.experience
+                  ? "border-red-500"
+                  : "border-zinc-800"
+                } rounded px-3 py-2 text-white`}
+            />
+            {formik.touched.experience && formik.errors.experience && (
+              <p className="text-red-500 text-sm">{formik.errors.experience}</p>
+            )}
+          </div>
+          <div>
             <label className="block text-sm text-zinc-400 mb-1">
               Institution
             </label>
@@ -560,8 +571,10 @@ import { setUser } from "../../redux/userSlice";
           <button
             type="submit"
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+            disabled={loading}
           >
             Submit
+            
           </button>
         </div>
       </form>
