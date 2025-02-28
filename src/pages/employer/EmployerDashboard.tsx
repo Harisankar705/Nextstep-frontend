@@ -7,35 +7,32 @@ import { useNavigate } from "react-router-dom";
 import { isVerified } from "../../services/employerService";
 import { IEmployer } from "../../types/Employer";
 const EmployerDashboard = () => {
-      const employer=useSelector((state:{user:IEmployer})=>state.user)
-    
-    const navigate=useNavigate()
-    const [verified,setVerified]=useState(false)
+    const employer = useSelector((state: { user: IEmployer }) => state.user)
+    const navigate = useNavigate()
+    const [verified, setVerified] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const handlePostJob=()=>{
-            navigate('/addjob')
+    const handlePostJob = () => {
+        navigate('/addjob')
     }
-    useEffect(()=>{
-        const checkEmployerVerified=async()=>{
+    useEffect(() => {
+        const checkEmployerVerified = async () => {
             try {
                 setIsLoading(true)
-                const response=await isVerified()
-                console.log('verificationresponse',response)
-                if(response.data.message==='isVerified')
-                {
+                const response = await isVerified()
+                console.log('verificationresponse', response)
+                if (response.data.message === 'isVerified') {
                     setVerified(true)
                 }
             } catch (error) {
                 toast.error('Verification check failed')
                 setVerified(false)
             }
-            finally
-            {
+            finally {
                 setIsLoading(false)
             }
         }
         checkEmployerVerified()
-    },[])
+    }, [])
     const SkeltonCard: React.FC = () => {
         return (
             <div className='bg-[#2D3247] rounded-lg p-6 mb-4 animate-pulse'>
@@ -53,9 +50,9 @@ const EmployerDashboard = () => {
                     <div>
                         <h2 className='text-2xl font-bold mb-1'>Good morning {employer.companyName}</h2>
                     </div>
-                    <button className={`px-4 py-2 bg-[#6366F1] text-white rounded-lg flex items-center gap-2 ${verified 
-                        ?'bg-[#6366F1] text-white':'bg-gray-500 text-gray-600 cursor-not-allowed'
-                    }`} onClick={handlePostJob} disabled={!verified}>
+                    <button className={`px-4 py-2 bg-[#6366F1] text-white rounded-lg flex items-center gap-2 ${verified
+                        ? 'bg-[#6366F1] text-white' : 'bg-gray-500 text-gray-600 cursor-not-allowed'
+                        }`} onClick={handlePostJob} disabled={!verified}>
                         <Plus size={20} />
                         Post a job
                     </button>

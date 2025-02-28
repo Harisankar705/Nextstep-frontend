@@ -37,10 +37,8 @@ import { useSelector } from 'react-redux';
 import { UserCandidate } from './types/Candidate.ts';
 import { Subscriptions } from './pages/admin/Subscriptions.tsx';
 import SubscriptionForm from './pages/admin/SubscriptionForm.tsx';
-
 const App = () => {
   const user = useSelector((state: { user: UserCandidate }) => state.user)??null
-
   return (
     <div>
       <Toaster />
@@ -63,7 +61,6 @@ const App = () => {
           <Route path='/saved' element={<ProtectedRoute role='candidate'>{<SavedPosts />}</ProtectedRoute>}/>
           <Route path='/payment' element={<ProtectedRoute role='candidate'>{<Payment />}</ProtectedRoute>}/>
           <Route path='/payment-success' element={<ProtectedRoute role='candidate'>{<PaymentSuccess />}</ProtectedRoute>}/>
-          
           {/* //admin */}
           <Route path='/admin' element={<AdminLogin/>}/>
           <Route path='/sidebar' element={<Employers/>}/>
@@ -76,8 +73,6 @@ const App = () => {
           <Route path='/subscription'element={<ProtectedRoute role='admin'>{<Subscriptions/>}</ProtectedRoute>}/>
           <Route path='/add-subscription'element={<ProtectedRoute role='admin'>{<SubscriptionForm/>}</ProtectedRoute>}/>
           <Route path='/edit-subscription/:id'element={<ProtectedRoute role='admin'>{<SubscriptionForm/>}</ProtectedRoute>}/>
-         
-
           {/* employer */}
           <Route path='/employersignup' element={<EmployerSignup />} />
           <Route path='/messages/:userId/:role' element={<Chat />}/>
@@ -89,16 +84,12 @@ const App = () => {
           <Route path='/editjob/:jobId' element={<ProtectedRoute role='employer'><JobPostingForm /></ProtectedRoute>} />
           <Route path='/job-applicants/:jobId' element={<ProtectedRoute role='employer'><JobApplicants /></ProtectedRoute>} />
           <Route path='/applicant/:userId/:jobId' element={<ProtectedRoute role='employer'><Applicant /></ProtectedRoute>} />
-
           <Route path='/joblistings' element={<ProtectedRoute role='employer'><JobListing /></ProtectedRoute>}/>
           <Route path='/employerdetails' element={<ProtectedRoute role='employer'>{<EmployerDetails />}</ProtectedRoute>}/>
           <Route path='/employer/edit-profile' element={<ProtectedRoute role='employer'>{<EditProfile />}</ProtectedRoute>}/>
-
         </Routes>
-
       </Router>
     </div>
   );
 }
-
 export default App;

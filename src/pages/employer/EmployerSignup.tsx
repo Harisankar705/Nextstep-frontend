@@ -6,7 +6,6 @@ import { validateConfirmPassword, validateMail, validateName, validatePassword }
 import { checkEmailOrPhone, register, sendOTP, verifyOTP, resendOTP } from "../../services/authService";
 import { EyeOff, Eye } from "lucide-react";
 import Spinner from "../../utils/Spinner";
-
 const EmployerSignup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,9 +21,7 @@ const EmployerSignup = () => {
   const [isResending, setIsResenting] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [passwordErrors,setPasswordErrors]=useState({noMatch:false,passwordError:''})
-  
   const navigate = useNavigate();
-
   const handleLogin = () => {
     navigate("/employerlogin");
   };
@@ -38,7 +35,6 @@ const EmployerSignup = () => {
     setPasswordErrors(prev=>({
       ...prev,
       noMatch:false
-     
     }))
     setError('')
   }
@@ -66,18 +62,14 @@ const EmployerSignup = () => {
     if (e) e.preventDefault();
     setLoading(false)
     setError("");
-
     const nameError = validateName(companyName);
     const emailError = validateMail(email);
     const passwordValid = validatePasswords();
     const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
-  
-
     if (nameError || emailError || !passwordValid || confirmPasswordError) {
       setError(nameError || emailError  || confirmPasswordError || "");
       return;
         }
-
     try {
       setLoading(true)
       const isTaken = await checkEmailOrPhone(email,"",  'employer',companyName);
@@ -87,7 +79,6 @@ const EmployerSignup = () => {
         setLoading(false)
         return;
       }
-
       if (otpSent) return;
        await sendOTP(email, "employer");
       setOtpSend(true);
@@ -99,7 +90,6 @@ const EmployerSignup = () => {
       setError("Error occurred while checking for OTP");
     }
   };
-
   const startCountDown = () => {
     setCountdown(60);
     const interval = setInterval(() => {
@@ -112,12 +102,10 @@ const EmployerSignup = () => {
       });
     }, 1000);
   };
-
   const handleResendOTP = async () => {
     try {
       if (isResending || countdown > 0) return;
       setIsResenting(true);
-
       setError("");
       setOtp(["", "", "", "", "", ""]);
       const response = await resendOTP(email, "employer");
@@ -134,26 +122,22 @@ const EmployerSignup = () => {
     }
     setOtp(["", "", "", "", "", ""]);
   };
-
   const handleOtpChange = (index: number, value: string) => {
     if (/[^0-9]/.test(value)) return;
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     } else if (!value && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
-
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
-
   const handleVerify = async () => {
     const isOTPComplete=otp.every(digit=>digit!=='')
     if(!isOTPComplete)
@@ -161,7 +145,6 @@ const EmployerSignup = () => {
       toast.error("Please enter complete OTP")
       return
     }
-    
     const otpString = otp.join("");
     try {
       setLoading(true)
@@ -169,21 +152,16 @@ const EmployerSignup = () => {
     if (verified.message === "OTP verification successfull!") {
       handleRegister();
       toast.success("OTP verified successfully!");
-     
     } else {
       setLoading(false)
       toast.error("OTP verification failed! Try again!");
     }
     } catch (error) {
       setLoading(false)
-
       toast.error("OTP verification failed! Try again!");
     }
-    
   };
-
   const handleRegister = async () => {
-
     const employerData = {
       companyName,
       email,
@@ -202,16 +180,14 @@ const EmployerSignup = () => {
       setLoading(false);
       setError("Registration failed");
     }
-
   };
-
   return (
     <div className="min-h-screen w-full bg-[#111827] text-white flex items-center justify-center">
       <div className="container max-w-[1100px] px-4">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2  gap-8 lg:gap-26">
           <div className="flex flex-col justify-center space-y-4">
             <Logo width={400} height={107} className="mb-4" />
-            <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
               Let's Find your perfect{" "}
               <span className="text-[#0DD3B4]">Candidate</span>
             </h1>
@@ -320,7 +296,6 @@ const EmployerSignup = () => {
                     {showConfirmPassword ? <EyeOff /> : <Eye />}
                   </span>
                 </div>
-        
                 {error && <p className="text-red-500">{error}</p>}
                   <button
                     type="submit"
@@ -329,7 +304,6 @@ const EmployerSignup = () => {
                   >
                     {loading ? <Spinner loading={true} /> : "Sign Up"}
                   </button>
-
               </form>
             )}
             <button
@@ -350,5 +324,4 @@ const EmployerSignup = () => {
     </div>
   );
 };
-
 export default EmployerSignup;

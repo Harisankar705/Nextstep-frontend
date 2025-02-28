@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useRef, useState } from "react";
-
 type LanguageInputProps = {
   value: string[];
   onChange: (value: string[]) => void;
@@ -10,20 +9,16 @@ type LanguageInputProps = {
 type Country={
   languages?:{[key:string]:string}
 }
-
 const LanguageInput: React.FC<LanguageInputProps> = ({ value, onChange, error, className }) => {
   const [languageInput, setLanguageInput] = useState("");
   const [languageSuggestions, setLanguageSuggestions] = useState<string[]>([]);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
   const handleLanguageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.trim();
     setLanguageInput(query);
-
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
-
     if (query) {
       debounceRef.current = setTimeout(async () => {
         try {
@@ -33,7 +28,6 @@ const LanguageInput: React.FC<LanguageInputProps> = ({ value, onChange, error, c
             .filter((lang: string) => {
               return typeof lang === "string" && lang.toLowerCase().includes(query.toLowerCase());
             });
-
           const uniqueLanguages: string[] = Array.from(new Set(languages));
           setLanguageSuggestions(uniqueLanguages);
         } catch (error) {
@@ -44,7 +38,6 @@ const LanguageInput: React.FC<LanguageInputProps> = ({ value, onChange, error, c
       setLanguageSuggestions([]);
     }
   };
-
   return (
     <div className={`language-input ${className}`}>
       <input
@@ -72,5 +65,4 @@ const LanguageInput: React.FC<LanguageInputProps> = ({ value, onChange, error, c
     </div>
   );
 };
-
 export default LanguageInput;

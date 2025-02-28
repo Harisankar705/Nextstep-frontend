@@ -8,7 +8,6 @@ import { persistor } from '../redux/store';
 import SearchUtil from './Search/SearchUtil';
 import { Notification } from '../pages/candidate/Notification';
 import { SearchResult } from '../types/Candidate';
-
 export default function Navbar() {
     const navigate = useNavigate();
     const location = useLocation(); 

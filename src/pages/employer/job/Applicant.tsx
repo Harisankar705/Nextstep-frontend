@@ -9,6 +9,7 @@ import { InterviewScheduleData } from '../../../types/Employer';
 import { scheduleInterview } from '../../../services/commonService';
 import toast from 'react-hot-toast';
 import { changeApplicationStatus } from '../../../services/employerService';
+import Spinner from '../../../utils/Spinner';
 type ApplicationStatus =  'Pending' | 'Accepted' |'In-review'|'Shortlisted'| 'Rejected' |'Interview'| 'Interview Scheduled' | 'Interview Completed';
 const statusOrder = ['pending' ,'accepted' ,'in-review','shortlisted', 'rejected' ,'interview', 'Interview Scheduled' , 'interviewCompleted'];
 const getStatusIndex = (status: ApplicationStatus) => {
@@ -27,8 +28,11 @@ const Applicant = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [applicationStatus, setApplicationStatus] = useState<ApplicationStatus>('Pending');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [isScheduling,setIsScheduling]=useState(false)
+  const [isChangingStatus,setIsChangingStatus]=useState(false)
   const handleScheduleInterview = async (scheduleData: InterviewScheduleData) => {
     try {
+      setIsScheduling(true)
       if (!userId || !jobId) {
         throw new Error('User  ID or Job ID is missing');
       }
@@ -41,15 +45,18 @@ const Applicant = () => {
     } catch (error) {
       toast.error("An error occurred while scheduling the interview.");
     }
+    finally{
+      setIsScheduling(false)
+    }
   };
   useEffect(() => {
     const fetchApplicant = async () => {
         try {
             const userResponse = await individualDetails(userId, 'user');
             const user = userResponse[0];
-            const applicationStatus = await applicantDetails(userId, jobId); // Fetch application status
+            const applicationStatus = await applicantDetails(userId, jobId); 
             setApplicant(user);
-            setApplicationStatus(applicationStatus as ApplicationStatus); // Set the application status
+            setApplicationStatus(applicationStatus as ApplicationStatus); 
         } catch (err) {
             setError('Failed to load applicant details');
         } finally {
@@ -59,6 +66,7 @@ const Applicant = () => {
     fetchApplicant();
 }, [userId, jobId]); 
   const handleStatusChange = async (newStatus: ApplicationStatus) => {
+    setIsChangingStatus(true)
     try {
       await changeApplicationStatus(newStatus,userId as string)
       setApplicationStatus(newStatus);
@@ -66,6 +74,9 @@ const Applicant = () => {
       toast.success("Status updated successfully!");
     } catch (err) {
       toast.error("Failed to update status.");
+    }
+    finally{
+      setIsChangingStatus(false)
     }
   };
   const StatusDropdown = () => (
@@ -321,11 +332,9 @@ const Applicant = () => {
         return <div className="text-gray-400">Content not available</div>;
     }
   };
-  if (loading) {
+  if (loading || isChangingStatus||isScheduling) {
     return (
-      <div className="min-h-screen bg-[#0B0E14] flex items-center justify-center">
-        <div className="text-[#2DD4BF]">Loading...</div>
-      </div>
+      <Spinner loading={true}/>
     );
   }
   if (error) {

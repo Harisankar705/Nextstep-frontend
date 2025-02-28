@@ -4,9 +4,11 @@ import * as Yup from 'yup'
 import { fetchLocationSuggestions } from "../../utils/LanguageAndLocation";
 import { CompanyFormProps, LocationSuggestion } from "../../types/Candidate";
 import { toast } from "react-hot-toast";
+import Spinner from "../../utils/Spinner";
 const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   const [logo, setLogo] = useState<string | null>("");
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([])
+  const [loading,setLoading]=useState(false)
   const [documentName,setDocumentName]=useState('')
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -91,6 +93,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
         .required("Description is required"),
     }),
     onSubmit: async (value) => {
+      setLoading(true)
       const formData = new FormData()
       if (logo) {
         formData.append('logo', logo)
@@ -107,14 +110,15 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
       formData.append('industry', value.industry);
       formData.append('dateFounded', value.dateFounded);
       formData.append('description', value.description);
-     
       try {
         const response = await onSubmit(formData)
         toast.success("Company details submitted!")
         formik.resetForm()
+        setLoading(false)
         return response
       } catch (error) {
         toast.error("error occured while submitting employerDetails")
+        setLoading(false)
       }
     }
   })
@@ -131,7 +135,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   const handleLocationChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.trim()
     formik.setFieldValue('location', query)
-
     if (debounceRef.current) {
       clearTimeout(debounceRef.current)
     }
@@ -154,7 +157,9 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
     setLocationSuggestions([])
   }
   return (
+    
     <form className="min-h-screen bg-[#0A0A0A] text-white p-6" onSubmit={formik.handleSubmit}>
+      {loading && <Spinner loading={true}/>}
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold">About company</h1>
@@ -172,7 +177,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
               This image will be shown publicly as company logo
             </p>
             <div className="flex items-start gap-6">
-              <div className="w-16 h-16 bg-[#1A1A1A]  rounded-lg overflow-hidden">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-[#1A1A1A]  rounded-lg overflow-hidden">
                 {logo ? (
                   <img
                     src={logo}
@@ -258,7 +263,6 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                 <input
                   type="text"
                   id='location'
-                  
                   required
                   {...formik.getFieldProps('location')}
                   onChange={(e) => {
@@ -284,7 +288,7 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
                   </ul>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-400">
                     Employees

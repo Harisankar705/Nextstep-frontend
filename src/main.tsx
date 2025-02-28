@@ -24,5 +24,5 @@ createRoot(document.getElementById('root')!).render(
         </PersistGate>
       </Provider>
     </GoogleOAuthProvider>
-  </StrictMode>,
+  </StrictMode>
 )

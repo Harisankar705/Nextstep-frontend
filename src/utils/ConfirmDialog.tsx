@@ -3,7 +3,6 @@ import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { ConfirmDialogProps } from '../types/Candidate';
-
 const dialogStyles = `
 .p-dialog .p-dialog-footer {
     gap: 1rem;
@@ -21,10 +20,25 @@ const dialogStyles = `
 .p-dialog .p-dialog-header {
     padding: 1.25rem 1.5rem;
 }
+    @media(max-width:767px)
+    {
+    .p dialog{
+    width:90%
+    max-width:95%} 
+    }
+    .p-dialog .p-dialog-header {
+    font-size:1rem
+}
+    .p-dialog .p-dialog-footer {
+    gap:0.5rem
+}
+        @media(max-width:500px)
+        {
+        .p-dialog .p-dialog-footer button {
+padding:0.5rem 1rem
+        }
+        }
 `;
-
-
-
 export const ReusableConfirmDialog: React.FC<ConfirmDialogProps> = ({
     visible,
     onHide,
@@ -32,14 +46,14 @@ export const ReusableConfirmDialog: React.FC<ConfirmDialogProps> = ({
     header,
     acceptLabel = 'Yes',
     rejectLabel = 'No',
-    acceptClassName = 'p-button-danger', 
+    acceptClassName = 'p-button-danger',
     rejectClassName = 'p-button-secondary',
     onAccept,
     onReject,
 }) => {
     return (
         <div>
-            <style>{dialogStyles}</style> 
+            <style>{dialogStyles}</style>
             <ConfirmDialog
                 visible={visible}
                 onHide={onHide}

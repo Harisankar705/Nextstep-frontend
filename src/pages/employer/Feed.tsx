@@ -20,7 +20,7 @@ const Feed = () => {
     <div className=" min-h-screen bg-[#1A1D2B] text-white">
                   <SideBar />
       <div className="flex">
-        <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
+        <main className="flex-1 ml-0 sm:ml-[320px] mr-0 sm:mr-[320px] p-4">
           <PostInput
             onClick={() => setShowCreatePost(true)}
             companyLogo={logo}          />
