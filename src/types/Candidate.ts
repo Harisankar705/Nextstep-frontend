@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { Benefit } from "./Employer";
+import { Benefit, IEmployer } from "./Employer";
 export interface BaseUser {
   _id?:string,
   id: string;
@@ -65,13 +65,14 @@ export interface VideoCallAnswerData {
   receiverId: string;
 }
 export interface SideBarProps {
-  chatHistory: ChatHistoryItem[];
+  chatHistory?: ChatHistoryItem[];
   onSelectedChat?: (chat: ChatHistoryItem) => void;
   role?: "user" | "employer";
 }
 
 export interface PostComponentProps {
   post: PostType;
+  isOwnProfile?:boolean,
   onPostUpdate?:(updatedPost:any)=>void
   profilePicture?: string;
   userName?: string;
@@ -246,6 +247,7 @@ export interface CreatePostProps {
   onClose: () => void;
   isOpen: boolean;
   role: "user" | "employer";
+  onPostCreated?:(newPost:PostType)=>void
 }
 export interface LocationModalProps {
   isOpen: boolean;
@@ -387,6 +389,7 @@ export interface JobType {
     min: number;
     max: number;
   };
+  applicantsCount?:number,
   applicationDeadline?: string;
   benefits: Benefit[];
   createdAt?: Date;
@@ -420,6 +423,8 @@ export interface ChatHistoryItem {
   companyName: string;
   logo: string;
   profilePicture: string;
+  sender:IEmployer|User
+  receiver:IEmployer|User
 }
 export interface User{
   id:string,

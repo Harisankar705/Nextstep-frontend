@@ -10,7 +10,6 @@ export const AdminJobs: React.FC<AdminJobProps> = ({ jobs, onDelete }) => {
     setJobDeletingJobId(jobId);
     try {
       await onDelete(jobId)
-      toast.success("Job deleted successfully!")
     } catch (error) {
       toast.error("Failed to delete job!");
     } finally {

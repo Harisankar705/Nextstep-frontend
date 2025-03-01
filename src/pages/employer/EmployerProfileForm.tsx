@@ -33,6 +33,7 @@ export const EmployerDetails = () => {
     return <EmployerForm onSubmit={handleSubmit} buttonText="Update profile" isEdit={true} />
 }
 export const EditProfile = () => {
+    console.log("IN EDIT PROFILE")
     const dispatch = useDispatch()
     const [loading,setLoading]=useState(false)
     const employer = useSelector((state: { user: Employer }) => state.user)

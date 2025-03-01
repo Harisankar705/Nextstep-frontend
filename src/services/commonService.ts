@@ -77,18 +77,18 @@ export const getComments = async (postId: string) => {
     throw error;
   }
 };
-export const stripePayment = async (amount: number) => {
+export const stripePayment = async (amount: number,planId:string) => {
   try {
-    const response = await api.post("/create-payment", { amount });
+    const response = await api.post("/create-payment", { amount,planId });
     return response.data;
   } catch (error) {
     axiosError(error, "stripepayment");
     throw error;
   }
 };
-export const changeToPremium = async (userId: string) => {
+export const changeToPremium = async (userId: string,planId:string) => {
   try {
-    const respnse = await api.put("/changetopremium", { userId });
+    const respnse = await api.put("/changetopremium", { userId,planId });
     return respnse;
   } catch (error) {
     axiosError(error, "changeToPremium");
@@ -210,6 +210,16 @@ export const fetchUserMessages = async (id: string) => {
     return response.data;
   } catch (error) {
     axiosError(error, "fetchMessages");
+    throw error;
+  }
+};
+export const getAllChats = async () => {
+  try {
+    const response = await api.get('/messages');
+    console.log(response)
+    return response
+  } catch (error) {
+    axiosError(error, "getAllChats");
     throw error;
   }
 };

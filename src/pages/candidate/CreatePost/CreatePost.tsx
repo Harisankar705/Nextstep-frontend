@@ -33,7 +33,7 @@ const backGrounds = [
     "bg-gradient-to-r from-gray-500 to-pink-900",
     "bg-gradient-to-r from-blue-500 to-purple-900",
 ];
-export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) => {
+export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role,onPostCreated }) => {
     if(!isOpen)return null
     const [postText, setPostText] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -141,6 +141,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onClose, isOpen,role }) 
                 if (response.status === 201) {
                     toast.success("Posted successfully!")
                     selectedImagePreview.forEach(url => URL.revokeObjectURL(url))
+                    onPostCreated?.(response.data)
                     resetStates()
                     onClose()
                 }

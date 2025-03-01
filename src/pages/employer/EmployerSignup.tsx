@@ -120,7 +120,11 @@ const EmployerSignup = () => {
       setError("Error occurred while resending OTP");
       toast.error("Failed to resend OTP");
     }
-    setOtp(["", "", "", "", "", ""]);
+    finally{
+      setIsResenting(false)
+      setOtp(["", "", "", "", "", ""]);
+    }
+   
   };
   const handleOtpChange = (index: number, value: string) => {
     if (/[^0-9]/.test(value)) return;
@@ -149,7 +153,7 @@ const EmployerSignup = () => {
     try {
       setLoading(true)
       const verified = await verifyOTP(email, otpString, "employer");
-    if (verified.message === "OTP verification successfull!") {
+    if (verified.message === "OTP verification successful!") {
       handleRegister();
       toast.success("OTP verified successfully!");
     } else {
@@ -158,6 +162,7 @@ const EmployerSignup = () => {
     }
     } catch (error) {
       setLoading(false)
+      console.log(error)
       toast.error("OTP verification failed! Try again!");
     }
   };
@@ -221,11 +226,11 @@ const EmployerSignup = () => {
                   <span className="text-gray-400">Didn’t receive OTP?</span>
                   <button
                     onClick={handleResendOTP}
-                    disabled={countdown > 0}
+                    disabled={countdown > 0||isResending}
                     className={`text-[#0DD3B4] hover:underline ${countdown > 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
-                    Resend OTP {countdown > 0 && `(${countdown}s)`}
-                  </button>
+    {isResending ? <Spinner loading={true} /> : `Resend OTP ${countdown > 0 ? `(${countdown}s)` : ""}`}
+    </button>
                 </div>
               </div>
             ) : (

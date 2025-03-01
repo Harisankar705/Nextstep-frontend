@@ -15,6 +15,7 @@ export const sendOTP = async (email: string, role: role): Promise<SendOTPRespons
 export const getUserPosts = async (userId?: string) => {
     try {
         const response = await api.get('/userposts', { params: { userId } })
+        console.log("GETUSERPOSTS",response)
         return response.data
     } catch (error) {
         axiosError(error, 'getUserPosts')
@@ -40,6 +41,7 @@ export const fetchUserPosts = async () => {
         return response.data
     } catch (error) {
         axiosError(error, 'getUserPosts')
+        console.log(error)
         throw error
     }
 }
@@ -72,6 +74,7 @@ export const verifyOTP = async (email: string, otp: string, role: role): Promise
         return response.data
     } catch (error: unknown) {
         axiosError(error, 'verifyOTP')
+        console.log(error)
         throw error
     }
 }
@@ -132,6 +135,7 @@ export const checkEmailOrPhone = async (email: string, phoneNumber: string, role
     }
     catch (error) {
         axiosError(error, 'checkEmailorPhone')
+        console.log(error)
         throw error
     }
 }

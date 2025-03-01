@@ -19,7 +19,7 @@ export const Report: React.FC<ReportProps> = ({ postId, onClose,role }:ReportPro
     e.preventDefault()
     if(!reason)return
     try {
-        setIsSubmitting(false)
+        setIsSubmitting(true)
         const response=await createReport({postId,reason,description,role})
         if(response.status===200)
         {

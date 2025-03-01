@@ -15,12 +15,14 @@ export const PaymentSuccess = () => {
       try {
         const searchParams = new URLSearchParams(location.search);
         const userId = searchParams.get('userId');
-        if (!userId) {
-          toast.error("User ID not found");
+        const planId=searchParams.get('planId')
+        if (!userId|| !planId) {
+          toast.error("IDs not found");
           navigate('/jobs');
           return;
         }
-        const response = await changeToPremium(userId);
+       
+        const response = await changeToPremium(userId,planId);
         if (response.status === 200) {
           setShowContent(true);
           setTimeout(() => setShowCheck(true), 500);
@@ -31,6 +33,7 @@ export const PaymentSuccess = () => {
         }
       } catch (error) {
         toast.error('An error occurred during upgrade');
+        console.log(error)
         navigate('/jobs');
       } finally {
         setIsUpgrading(false);

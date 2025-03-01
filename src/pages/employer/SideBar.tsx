@@ -8,7 +8,7 @@ import { useState } from "react"
 import SearchUtil from "../../utils/Search/SearchUtil"
 import { SearchResult } from "../../types/Candidate"
 const navItems = [
-    { name: "Dashboard", href: '/employerhome', icon: Home, badge: 0 },
+    { name: "Dashboard", href: '/employerhome', icon: Home, },
     { name: "Messages", href: '#', icon: MessageSquare },
     { name: "Feed", href: '/feeds', icon: Rss },
     { name: "Company Profile", paths: ['/account', '/employer/edit-profile'], icon: Building2 },
@@ -70,11 +70,7 @@ const SideBar = () => {
                     >
                         <item.icon size={20} />
                         <span>{item.name}</span>
-                        {item.badge && (
-                            <span className='ml-auto bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>
-                                {item.badge}
-                            </span>
-                        )}
+                        
                     </a>
                 ))}
             </nav>

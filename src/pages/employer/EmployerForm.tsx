@@ -92,6 +92,8 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
         .max(500, "Maximum 500 characters allowed")
         .required("Description is required"),
     }),
+    validateOnChange: true,
+    validateOnBlur: true, 
     onSubmit: async (value) => {
       setLoading(true)
       const formData = new FormData()
@@ -124,12 +126,9 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   })
   useEffect(() => {
     if (initialData?.logo) {
-      const logoFileName = initialData?.logo.includes('\\')
-        ? initialData?.logo.split('\\').pop()
-        : initialData?.logo;
-      const logoURL = `${import.meta.env.VITE_API_BASE_URL}/uploads/company-logo/${logoFileName}?t=${new Date().getTime()}`;
-      setLogo(logoURL)
-      formik.setFieldValue('logo', logoURL)
+     
+      setLogo(logo)
+      formik.setFieldValue('logo', logo)
     }
   }, [initialData?.logo])
   const handleLocationChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,14 +157,14 @@ const EmployerForm = ({ initialData, onSubmit,isEdit }: CompanyFormProps) => {
   }
   return (
     
-    <form className="min-h-screen bg-[#0A0A0A] text-white p-6" onSubmit={formik.handleSubmit}>
+    <form className="min-h-screen bg-[#0A0A0A] text-white  ml-10" onSubmit={formik.handleSubmit}>
       {loading && <Spinner loading={true}/>}
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold">About company</h1>
         </div>
         <div className="space-y-8">
-          <section>
+          <section> 
             <h3 className="text-sm font-medium mb-2">Basic Information</h3>
             <p className="text-gray-400 text-sm mb-6">
               This is company information that you can update anytime

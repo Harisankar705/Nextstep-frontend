@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from "react-redux";
 import { PostComponentProps } from "../../types/Candidate";
-import { Bookmark, MapPin, MessageSquare, Share2, ThumbsUp, X, ChevronLeft, ChevronRight, MoreHorizontal, Trash2, Pencil, ReceiptPoundSterling } from 'lucide-react';
+import { Bookmark, MapPin, MessageSquare, Share2, ThumbsUp, X, ChevronLeft, ChevronRight, MoreHorizontal, Trash2, Pencil, Flag, Loader } from 'lucide-react';
 import { useEffect, useState, useRef } from "react";
 import { getRelativeTime } from "../../utils/relativeTime";
 import { Like } from "./CreatePost/Like";
@@ -18,6 +18,7 @@ const Post: React.FC<PostComponentProps> = ({
     userName,
     onPostUpdate,
     onUnsave,
+    isOwnProfile,
     role,
     onDelete,
     isAdmin=false
@@ -27,6 +28,7 @@ const Post: React.FC<PostComponentProps> = ({
     const [commentCount, setCommentCount] = useState(0)
     const [likeCount, setLikeCount] = useState(0)
     const [isSaved, setIsSaved] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false); 
     const [isShareModalOpen, setIsShareModalOpen] = useState(false)
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [scale, setScale] = useState(1);
@@ -109,6 +111,7 @@ const Post: React.FC<PostComponentProps> = ({
 
     const handleDeletePost = async () => {
         try {
+            setIsDeleting(true)
             await deletePost(post._id)
             toast.success("Post deleted successfully!")
             if(onDelete) {
@@ -117,7 +120,10 @@ const Post: React.FC<PostComponentProps> = ({
             
         } catch (error) {
             console.error(error)
-            toast.error("Failed to delete post")
+            
+        }
+        finally{
+            setIsDeleting(false)
         }
         setIsDeleteModalOpen(false)
         setIsMoreMenuOpen(false)
@@ -180,7 +186,7 @@ const Post: React.FC<PostComponentProps> = ({
     }
 
     const currentUser = useSelector((state: any) => state.user);
-    const isPostOwner = currentUser?.user?._id === post?.userId?._id;
+    // const isPostOwner = currentUser?.user?._id === post?.userId?._id;
 
     const finalProfilePicture = profilePicture
     ? role === 'employer'
@@ -325,40 +331,45 @@ const Post: React.FC<PostComponentProps> = ({
                         <Trash2 className='w-5 h-5'/>
                     </button>
                 ):
-                isPostOwner && (
+                (
                     <div className="relative" ref={moreMenuRef}>
-                        <button
-                            onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                            className="p-2 text-gray-400 hover:bg-gray-800 rounded-full transition-colors"
-                        >
-                            <MoreHorizontal className="w-5 h-5" />
-                        </button>
-                        {isMoreMenuOpen && (
-                            <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-1 z-50">
-                                <button
-                                    onClick={() => setIsDeleteModalOpen(true)}
-                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4 mr-2" />
-                                    Delete Post
-                                </button>
-                                <button
-                                    onClick={()=>setIsEditModalOpen(true)}
-                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
-                                >
-                                    <Pencil className="w-4 h-4 mr-2" />
-                                    Edit Post
-                                </button>
-                                <button
-                                    onClick={()=>setIsReportModalOpen(true)}
-                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
-                                >
-                                    <ReceiptPoundSterling className="w-4 h-4 mr-2" />
-                                    Report 
-                                </button>
-                            </div>
-                        )}
-                    </div>
+    <button
+        onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
+        className="p-2 text-gray-400 hover:bg-gray-800 rounded-full transition-colors"
+    >
+        <MoreHorizontal className="w-5 h-5" />
+    </button>
+    {isMoreMenuOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-1 z-50">
+            {isOwnProfile ? (
+                <>
+                    <button
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
+                    >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete Post
+                    </button>
+                    <button
+                        onClick={() => setIsEditModalOpen(true)}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
+                    >
+                        <Pencil className="w-4 h-4 mr-2" />
+                        Edit Post
+                    </button>
+                </>
+            ) : (
+                <button
+                    onClick={() => setIsReportModalOpen(true)}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
+                >
+                    <Flag className="w-4 h-4 mr-2" />
+                    Report Post
+                </button>
+            )}
+        </div>
+    )}
+</div>
                 )}
             </div>
             {!isAdmin && isReportModalOpen && (
@@ -516,28 +527,37 @@ const Post: React.FC<PostComponentProps> = ({
 
 
             )}
-            {isDeleteModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-gray-900 rounded-lg p-6 max-w-sm w-full mx-4">
-                        <h3 className="text-xl font-semibold text-white mb-4">Delete Post</h3>
-                        <p className="text-gray-300 mb-6">Are you sure you want to delete this post? This action cannot be undone!</p>
-                        <div className="flex justify-end gap-4">
-                            <button
-                                onClick={() => setIsDeleteModalOpen(false)}
-                                className="px-4 py-2 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleDeletePost}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+           {isDeleteModalOpen && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-gray-900 rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-xl font-semibold text-white mb-4">Delete Post</h3>
+            <p className="text-gray-300 mb-6">Are you sure you want to delete this post? This action cannot be undone!</p>
+            <div className="flex justify-end gap-4">
+                <button
+                    onClick={() => setIsDeleteModalOpen(false)}
+                    className="px-4 py-2 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"
+                    disabled={isDeleting}
+                >
+                    Cancel
+                </button>
+                <button
+                    onClick={handleDeletePost}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center"
+                    disabled={isDeleting}
+                >
+                    {isDeleting ? (
+                        <>
+                            <Loader className="w-4 h-4 mr-2 animate-spin" />
+                            Deleting...
+                        </>
+                    ) : (
+                        "Delete"
+                    )}
+                </button>
+            </div>
+        </div>
+    </div>
+)}
         </div>
     );
 };

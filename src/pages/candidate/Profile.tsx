@@ -62,6 +62,9 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
             )
         );
     };
+    const handleNewPost = (newPost: PostType) => {
+        setPosts(prevPosts => [newPost, ...prevPosts]); 
+    };
     return (
         <div className="min-h-screen bg-black text-white">
             <Navbar />
@@ -76,14 +79,15 @@ const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
                         {isOwnProfile && (
                             <>
                                 <PostInput onClick={() => setShowCreatePost(true)} profilePicture={displayedUser?.profilePicture} />
-                                <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role='user' />
+                                <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} onPostCreated={handleNewPost} role='user' />
                             </>
                         )}
                         {loading ? (
                             <Spinner loading={true} />
                         ) : posts.length > 0 ? (
                             posts.map((post: PostType) => (
-                                <Post key={post._id} post={post} onDelete={handleDeletePosts} onPostUpdate={handlePostUpdate} role='user'
+                                <Post key={post._id} post={post} onDelete={handleDeletePosts} onPostUpdate={handlePostUpdate}        isOwnProfile={isOwnProfile} 
+                                role='user'
                                 />
                             ))
                         ) : (

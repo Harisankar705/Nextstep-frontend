@@ -31,7 +31,9 @@ const Candidates = () => {
 
     const toggleStatus = async (id: string) => {
         try {
-            await toogleStatus(id, role);
+            console.log('in toggle')
+            const response=await toogleStatus(id, role);
+            console.log("TOOGLERESPONSE",response)
             setCandidates(candidates.map((candidate) => {
                 if (candidate.id === id) {
                     return {

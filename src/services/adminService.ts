@@ -82,7 +82,7 @@ export const adminLogout=async()=>{
 }
 export const toogleStatus = async (id: string, role: string): Promise<Candidate[]> => {
     try {
-        const response = await api.post(`/togglestatus/${id}`, { role })
+        const response = await api.patch(`/togglestatus/${id}`, { role })
         return response.data
     }
     catch (error) {
@@ -104,10 +104,12 @@ export const verifyEmployer=async(id:string,status:"VERIFIED"|"DENIED")=>{
 }
 export const individualDetails = async (id: string|undefined,role:string)=>{
     try {
+        console.log(id)
         const response = await api.get(`/individualdetails/${id}`,{params:{role}})
         return response.data
     } catch (error) {
         axiosError(error, 'individualDetails')
+        console.log(error)
         throw error
     }
 }

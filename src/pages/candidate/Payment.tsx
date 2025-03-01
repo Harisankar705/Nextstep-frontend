@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import { stripePayment } from "../../services/commonService";
 import { getSubscription } from "../../services/adminService";
 import Spinner from "../../utils/Spinner";
-
 interface Plan {
   _id: string;
   name: string;
@@ -16,7 +15,6 @@ interface Plan {
   isPopular?: boolean;
   status?: string;
 }
-
 export const Payment = () => {
   const location = useLocation();
   const stripe = useStripe();
@@ -24,7 +22,6 @@ export const Payment = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     const state = location.state as {
       redirectReason?: string;
@@ -34,23 +31,21 @@ export const Payment = () => {
       toast.error("You've reached the application limit. Upgrade to continue.");
     }
   }, [location]);
-
   useEffect(() => {
     const fetchPlans = async () => {
       try {
         setIsLoading(true);
         const response = await getSubscription();
+        console.log(response)
         
-        // Handle the response properly based on its structure
         let activePlans = [];
         if (response && Array.isArray(response)) {
-          // If response is already an array
+          
           activePlans = response.filter((plan: Plan) => plan.status === 'active');
         } else if (response && Array.isArray(response.data)) {
-          // If response has a data property that is an array
+          
           activePlans = response.data.filter((plan: Plan) => plan.status === 'active');
         }
-        
         console.log("Fetched plans:", activePlans);
         setPlans(activePlans);
       } catch (error) {
@@ -60,26 +55,23 @@ export const Payment = () => {
         setIsLoading(false);
       }
     };
-    
     fetchPlans();
   }, []);
-
   useEffect(() => {
     if (plans.length > 0) {
       setSelectedPlan(plans[0]);
     }
   }, [plans]);
-
   const handlePremiumUpgrade = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!stripe || !elements || !selectedPlan) {
       return;
     }
-    
     try {
       setIsLoading(true);
-      const response = await stripePayment(selectedPlan.price);
-      const url = response.url || response; // Handle different response structures
+      const response = await stripePayment(selectedPlan.price,selectedPlan._id);
+      console.log('setselectedplan',setSelectedPlan)
+      const url = response.url || response; 
       window.location.href = url;
     } catch (error) {
       toast.error("Payment Failed");
@@ -88,11 +80,9 @@ export const Payment = () => {
       setIsLoading(false);
     }
   };
-
   if (isLoading) {
     return (<Spinner loading={true} />);
   }
-
   if (plans.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white py-12 px-4 flex items-center justify-center">
@@ -103,7 +93,6 @@ export const Payment = () => {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white py-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -113,7 +102,6 @@ export const Payment = () => {
             Unlock unlimited job applications and premium features with our subscription plans
           </p>
         </div>
-
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan) => (
             <div
@@ -130,13 +118,11 @@ export const Payment = () => {
                   Popular
                 </span>
               )}
-
               <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
               <div className="flex items-baseline mb-2">
                 <span className="text-5xl font-extrabold">₹{plan.price.toFixed(2)}</span>
               </div>
               <p className="text-gray-400 mb-8">{plan.validity} validity</p>
-
               <ul className="space-y-4 mb-8">
                 {Array.isArray(plan.features) ? (
                   plan.features.map((feature, index) => (
@@ -152,10 +138,9 @@ export const Payment = () => {
                   </li>
                 )}
               </ul>
-
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent triggering the onClick of parent div
+                  e.stopPropagation(); 
                   handlePremiumUpgrade(e);
                 }}
                 disabled={isLoading}
@@ -177,5 +162,4 @@ export const Payment = () => {
     </div>
   );
 };
-
 export default Payment;

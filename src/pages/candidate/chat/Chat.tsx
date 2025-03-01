@@ -9,8 +9,7 @@ import {
 } from "lucide-react";
 import {useEffect, useRef, useState } from "react";
 import { useSocket } from "../../../SocketContext";
-import { Message, SelectedFileType, VideoCallAnswerData } from "../../../types/Candidate";
-// import { SideBar } from "./SideBar";
+import { ChatHistoryItem, Message, SelectedFileType, VideoCallAnswerData } from "../../../types/Candidate";
 import toast from "react-hot-toast";
 import {
   fetchUserMessages,
@@ -20,6 +19,7 @@ import { individualDetails } from "../../../services/adminService";
 import { useParams } from "react-router-dom";
 import { VideoCallUI } from "./VideoCall";
 import Spinner from "../../../utils/Spinner";
+import { SideBar } from "./SideBar";
 interface Caller{
   senderId:string
   receiverId: string;
@@ -57,17 +57,17 @@ export const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [userDetails, setUserDetails] = useState<any>(null);
   const [selectedChat, setSelectedChat] = useState<any>(null);
+  
   // const [filePreview, setFilePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  const [chatHistory, setChatHistory] = useState<Array<any>>([]);
+
   // const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [selectedFile, setSelectedFile] = useState<SelectedFileType | null>(
     null
   );
-  if(loading)
-  {
-    return(<Spinner loading={true}/>)
-  }
+ 
   const toggleMute=()=>{
     if(localStream)
     {
@@ -601,6 +601,7 @@ useEffect(() => {
             senderId: selectedChat._id, 
             receiverId: userId,
             content: message,
+            role:role,
             file: fileData,
           });
         };
@@ -612,6 +613,10 @@ useEffect(() => {
       }
     }
   };
+  const handleSelectedChat=(chat:ChatHistoryItem)=>{
+    setSelectedChat(chat)
+    fetchMutualMessages(chat._id)
+  }
   const FilePreview = ({ file, message }: FilePreviewProps) => {
     const [secureURL, setSecureURL] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -939,7 +944,8 @@ useEffect(() => {
   };
   return (
     <div className="flex h-screen bg-[#1C1C1C] text-white">
-      {/* <SideBar chatHistory={chatHistory} /> */}
+      {loading && <Spinner loading={true}/>}
+      <SideBar onSelectedChat={handleSelectedChat} role="user" />
       <div className="flex-1 flex flex-col">
         {isCallInProgress &&( <VideoCallUI localStream={localStream}isMuted={isMuted} callDuration={callDuration} remoteStream={remoteStream} isVideoEnabled={isVideoEnabled} toggleMute={toggleMute} toggleVideo={toggleVideo} endVideoCall={endVideoCall}/>)}
           {isReceivingCall && (

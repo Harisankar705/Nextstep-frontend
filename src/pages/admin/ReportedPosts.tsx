@@ -77,11 +77,17 @@ export const ReportedPosts = () => {
   const currentItems = reports.slice(indexOfFirstItem, indexOfLastItem)
   const totalPages = Math.ceil(reports.length / itemsPerPage)
 
-  const handleDeletePost = (postId: string) => {
-    setReports(reports.filter((report) => report.post._id !== postId))
+  const handleDeletePost = async(postId: string) => {
+    try {
+      await new Promise((resolve=>setTimeout(resolve,2000)))
+      setReports(reports.filter((report) => report.post._id !== postId))
     setIsPostModalOpen(false)
     setSelectedPost(null)
-    toast.success("Post deleted successfully")
+    } catch (error) {
+      console.error("Failed to delete post!")
+    }
+    
+    
   }
 
   return (

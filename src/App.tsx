@@ -37,6 +37,7 @@ import { useSelector } from 'react-redux';
 import { UserCandidate } from './types/Candidate.ts';
 import { Subscriptions } from './pages/admin/Subscriptions.tsx';
 import SubscriptionForm from './pages/admin/SubscriptionForm.tsx';
+import SearchProfile from './pages/employer/SearchProfile.tsx';
 const App = () => {
   const user = useSelector((state: { user: UserCandidate }) => state.user)??null
   return (
@@ -75,6 +76,8 @@ const App = () => {
           <Route path='/edit-subscription/:id'element={<ProtectedRoute role='admin'>{<SubscriptionForm/>}</ProtectedRoute>}/>
           {/* employer */}
           <Route path='/employersignup' element={<EmployerSignup />} />
+          <Route path='/search-profile/:id/:role' element={<SearchProfile/>} />
+
           <Route path='/messages/:userId/:role' element={<Chat />}/>
           <Route path='/employerlogin' element={<EmployerLogin />} />
           <Route path='/employerhome' element={<ProtectedRoute role='employer'><EmployerDashboard /></ProtectedRoute> }/>

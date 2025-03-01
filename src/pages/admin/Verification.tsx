@@ -22,7 +22,6 @@ import { jobFormData } from "../../types/Employer";
 import { AdminJobs } from "./AdminJobs";
 import { deleteJob } from "../../services/employerService";
 import { ReusableConfirmDialog } from "../../utils/ConfirmDialog";
-
 const Verification = () => {
   const [employer, setEmployer] = useState<Employer | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,13 +32,9 @@ const Verification = () => {
   const { id } = useParams<{ id: string }>();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [jobToDelete,setJobToDelete]=useState<string|null>(null)
-
-
-
   const handleDeleteJob = async (jobId: string) => {
        setJobToDelete(jobId)
        setDialogVisible(true)
-      
     };
   const handleViewJob = () => {
     setShowJobs(true);
@@ -61,7 +56,6 @@ const Verification = () => {
     };
     fetchEmployerDetails();
   }, [id]);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -69,7 +63,6 @@ const Verification = () => {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -79,7 +72,6 @@ const Verification = () => {
       </div>
     );
   }
-
   const handleVerifyEmployer = async (status: "VERIFIED" | "DENIED") => {
     if (id) {
       setVerifying(true);
@@ -100,7 +92,6 @@ const Verification = () => {
       }
     }
   };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "VERIFIED":
@@ -123,34 +114,31 @@ const Verification = () => {
           setJobs((prev) => prev?.filter((job) => job._id !== jobToDelete)||null);
         }
       }
-      
     } catch (error) {
       toast.error("Error occurred while deleting job!");
       return;
     } finally {
       setDialogVisible(false);
     }
-  
 };
   const handleDialogReject = () => {
     setDialogVisible(false);
     setJobToDelete(null)
     toast.success("Deleteing job cancelled!");
   };
-
   return (
     <div className="flex min-h-screen bg-slate-50">
+      <div className="w-64 h-screen fixed top-0 left-0 bg-white shadow-lg">
       <SideBar />
-      <div className="flex-1 p-8">
+      </div>
+     
+      <div className="flex-1 p-8 ml-64">
         <div className="max-w-5xl mx-auto space-y-6">
-          {/* Header Section */}
           <div className="bg-white rounded-xl shadow-sm p-6 flex items-start gap-8">
             <div className="w-32 h-32 bg-slate-50 rounded-lg overflow-hidden flex items-center justify-center border border-slate-200">
               {employer?.logo ? (
                 <img
-                  src={`${import.meta.env.VITE_API_BASE_URL}/uploads/company-logos/${employer.logo
-                    .split("\\")
-                    .pop()}`}
+                  src={employer.logo}
                   alt={`${employer.companyName} logo`}
                   className="w-full h-full object-contain p-2"
                 />
@@ -186,7 +174,6 @@ const Verification = () => {
               </div>
             </div>
           </div>
-
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-slate-900 mb-6">
               Company Information
@@ -281,7 +268,6 @@ const Verification = () => {
               </div>
             </div>
           </div>
-
           {/* Company Description */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-slate-900 mb-4">
@@ -291,7 +277,6 @@ const Verification = () => {
               {employer?.description || "No description available"}
             </p>
           </div>
-
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-slate-900 mb-6">
               Verification Details
@@ -319,16 +304,13 @@ const Verification = () => {
                   </div>
                 </div>
               </div>
-
               <div className="border-t pt-6">
                 <div className="text-sm font-medium text-slate-500 mb-3">
                   Uploaded Documents
                 </div>
                 {employer?.document ? (
                   <a
-                    href={`${import.meta.env.VITE_API_BASE_URL}/uploads/company-documents/${employer.document
-                      .split("\\")
-                      .pop()}`}
+                    href={employer.document}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors"
@@ -339,7 +321,6 @@ const Verification = () => {
                   <div className="text-slate-500">No documents uploaded</div>
                 )}
               </div>
-
               {employer?.isVerified === "PENDING" && (
                 <div className="border-t pt-6">
                   <div className="flex items-center justify-between">
@@ -372,5 +353,4 @@ const Verification = () => {
     </div>
   );
 };
-
 export default Verification;

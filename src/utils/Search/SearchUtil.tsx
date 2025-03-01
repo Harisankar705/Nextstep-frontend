@@ -73,7 +73,7 @@ const SearchUtil: React.FC<SearchBarProps> = ({
   const renderUserResult = (user: UserCandidate) => (
     <div
       key={user._id}
-      className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
+      className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3 text-black"
       onClick={() => {
         onResultSelect?.({
           _id: user._id,

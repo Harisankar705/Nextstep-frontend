@@ -16,6 +16,22 @@ export interface IEmployer  {
     isProfileComplete: boolean,
     status: "Active" | "Inactive"
 }
+export interface JobStats {
+    totalJobs: number;
+    activeJobs: number;
+    totalApplicants: number;
+    recentApplications: number;
+  }
+  
+  export interface JobsByType {
+    name: string;
+    value: number;
+  }
+  
+  export interface ApplicationsOverTime {
+    date: string;
+    applications: number;
+  }
 export interface AdminJobProps {
   jobs: jobFormData[]|null;
   onDelete: (id: string) => void;

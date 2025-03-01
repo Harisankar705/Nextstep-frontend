@@ -48,7 +48,8 @@ const UserProfile = () => {
         );
         setIsFollowing(followingStatus);
       } catch (error) {
-        toast.error("Error fetching posts");
+        console.error("Error fetching posts",error);
+        
       } finally {
         setLoading(false);
       }
@@ -145,7 +146,6 @@ const UserProfile = () => {
           <div className="h-48 w-48 rounded-full border-4 border-black overflow-hidden -mt-20 mb-4 ml-10"></div>
         </div>
       </div>
-      {/* Profile Body */}
       <div className="bg-black text-white pt-20 px-8">
         <div className="max-w-6xl mx-auto">
           <div className="relative inline-block h-48 w-48 rounded-full overflow-hidden border-4 border-black bg-gray-900 -mt-48 l-auto">
@@ -155,7 +155,6 @@ const UserProfile = () => {
               className="h-full w-full object-cover"
             />
           </div>
-          {/* User Info */}
           <div className="flex justify-between items-start">
             <div className="text-center">
               <h1 className="text-3xl font-bold">
@@ -254,6 +253,7 @@ const UserProfile = () => {
                   <Post
                     key={post._id}
                     post={post}
+                    isOwnProfile={false}
                     profilePicture={
                       role === "user"
                         ? profilePictureURL

@@ -1,4 +1,4 @@
-import { Building2, LogOut, Menu, ReceiptPoundSterling, SubscriptIcon, Users } from "lucide-react";
+import { Building2, LayoutDashboard, LogOut, Menu, ReceiptPoundSterling, SubscriptIcon, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "../../components/Logo";
 import { useDispatch } from "react-redux";
@@ -61,6 +61,13 @@ const SideBar = () => {
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
+          <Link 
+            to="/admindashboard" 
+            className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all group"
+          >
+            <LayoutDashboard className="h-5 w-5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+            <span>Dashboard</span>
+          </Link>
           <Link 
             to="/candidates" 
             className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all group"

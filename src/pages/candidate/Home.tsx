@@ -35,6 +35,7 @@ const Home = () => {
     const fetchPosts = async () => {
       try {
         const response = await fetchUserPosts();
+        console.log('response',response)
         setPosts(response.posts);
       } catch (error) {
         toast.error("Failed to get posts");
@@ -65,7 +66,7 @@ const Home = () => {
 
         <main className="flex-1 ml-0 sm:ml-[360px] mr-0 sm:mr-[360px] p-4">
           <PostInput onClick={() => setShowCreatePost(true)} profilePicture={profilePicture} />
-          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role="user" />
+          <CreatePost isOpen={showCreatePost} onClose={() => setShowCreatePost(false)} role="user"  />
           {posts.length > 0 ? (
             posts.map((post) => (
               <Post
