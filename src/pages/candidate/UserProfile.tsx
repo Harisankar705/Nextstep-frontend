@@ -200,7 +200,7 @@ const UserProfile = () => {
             onReject={handleDialogReject}
           />
           <div className="flex border-b border-gray-800 mt-8">
-            {["Posts", "About", "Friends", "Photos", "Videos"].map((item) => (
+            {["Posts"].map((item) => (
               <button
                 key={item}
                 className={`px-4 py-4 text-sm font-medium ${
