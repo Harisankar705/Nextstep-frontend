@@ -196,8 +196,8 @@ const Post: React.FC<PostComponentProps> = ({
     const finalUserName = userName
     ? userName
     : currentUser 
-      ? `${currentUser.firstName || "User "} ${currentUser .secondName || ""}`.trim()
-      : "User ";
+      ? `${currentUser.firstName || "user "} ${currentUser .secondName || ""}`.trim()
+      : "user ";
     
     const renderImageGrid = () => {
         if (!post.image || post.image.length === 0) return null;
