@@ -79,7 +79,7 @@ export const SideBar: React.FC<SideBarProps> = ({ onSelectedChat, role }) => {
 
     return Array.from(chatMap.values());
   };
-
+  console.log(filteredChats)
   const uniqueChats = extractUniqueChats(chatHistory);
 
   const sortedChats = uniqueChats.sort(
