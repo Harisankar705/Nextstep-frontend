@@ -113,7 +113,7 @@ export const ReportedPosts = () => {
               {currentItems.map((report) => (
                   <tr key={report._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="px -6 py-4 text-sm text-gray-600 font-mono">{report._id}</td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-700">{report.post?._id}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-700">{report.post?._id ?? "Post removed"}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">{report.reporter ? report.reporter.firstName : "Unknown"}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 capitalize">{report.reason}</td>
                     <td className="px-6 py-4">
