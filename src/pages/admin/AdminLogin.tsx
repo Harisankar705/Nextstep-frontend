@@ -28,6 +28,7 @@ const AdminLogin = () => {
             toast.success("Login success")
             navigate('/admindashboard')
         } catch (error) {
+            console.log("ERRROR LOGIN",error)
             setError("Check your email and password")
         }
         finally {
