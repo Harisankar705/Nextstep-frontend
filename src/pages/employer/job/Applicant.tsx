@@ -248,16 +248,14 @@ const Applicant = () => {
             <div className="bg-[#0B0E14] p-6 rounded-lg">
               {(() => {
                 const resumePath = applicant?.resume?.[0];
-                const resumeUrl = resumePath
-                  ? `${import.meta.env.VITE_API_BASE_URL}/uploads/profile-pictures/${resumePath.split("\\").pop()}`
-                  : null;
+              
                 return (
                   <div className="space-y-6">
                     <div className="flex justify-between items-center">
                       <h3 className="text-lg font-semibold">Resume</h3>
-                      {resumeUrl ? (
+                      {resumePath ? (
                         <a
-                          href={resumeUrl}
+                          href={resumePath}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -268,13 +266,13 @@ const Applicant = () => {
                         <div className="text-gray-500">No resume uploaded</div>
                       )}
                     </div>
-                    {resumeUrl && resumeUrl.endsWith('.pdf') ? (
+                    {resumePath && resumePath.endsWith('.pdf') ? (
                       <iframe
-                        src={resumeUrl}
+                        src={resumePath}
                         className="w-full h-[600px] rounded-lg border border-gray-800"
                         title="Resume Preview"
                       />
-                    ) : resumeUrl ? (
+                    ) : resumePath ? (
                       <div className="bg-[#0B0E14] p-6 rounded-lg">
                         <p>Resume preview not available. Click 'View Resume' to open the document.</p>
                       </div>
