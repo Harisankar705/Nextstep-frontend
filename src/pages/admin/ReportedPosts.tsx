@@ -80,8 +80,8 @@ export const ReportedPosts = () => {
   const handleDeletePost = async(postId: string) => {
     try {
       await new Promise((resolve=>setTimeout(resolve,2000)))
-      setReports(reports.filter((report) => report.post._id !== postId))
-    setIsPostModalOpen(false)
+      setReports((prevReports) => prevReports.filter((report) => report.post?._id !== postId));
+      setIsPostModalOpen(false)
     setSelectedPost(null)
     } catch (error) {
       console.error("Failed to delete post!")
@@ -128,8 +128,9 @@ export const ReportedPosts = () => {
             <td className="px-6 py-4">
                 <div className="flex gap-2">
                     <button
-                        onClick={() => handleViewPost(report.post ? report.post._id : undefined)} 
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+                        onClick={() => handleViewPost(report.post?._id)} 
+                        disabled={!report.post?._id}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium ${report.post?._id ? 'bg-slate-100 text-slate-700 hover:bg-slate-200':'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
                     >
                         <Eye className="w-3.5 h-3.5" />
                         View Post
