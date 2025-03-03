@@ -61,7 +61,7 @@ export const Chat = () => {
   // const [filePreview, setFilePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX_FILE_SIZE = 10 * 1024 * 1024;
-  const [chatHistory, setChatHistory] = useState<Array<any>>([]);
+  // const [chatHistory, setChatHistory] = useState<Array<any>>([]);
 
   // const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [selectedFile, setSelectedFile] = useState<SelectedFileType | null>(
