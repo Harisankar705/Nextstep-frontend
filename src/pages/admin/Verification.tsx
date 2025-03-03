@@ -103,6 +103,7 @@ const Verification = () => {
     }
   };
   const confirmDeleteJob = async () => {
+    setLoading(true)
     try {
       if(jobToDelete)
       {
@@ -118,6 +119,7 @@ const Verification = () => {
       toast.error("Error occurred while deleting job!");
       return;
     } finally {
+      setLoading(false)
       setDialogVisible(false);
     }
 };
@@ -207,8 +209,9 @@ const Verification = () => {
                   </div>
                   <button
                     onClick={handleViewJob}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                                                        bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+                    disabled={!jobs||jobs.length===0}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
+                        ${jobs && jobs.length>0 ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors':'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
                   >
                     <Eye className="w-3.5 h-3.5" />
                     View Jobs
@@ -217,6 +220,7 @@ const Verification = () => {
                     <AdminJobs jobs={jobs} onDelete={handleDeleteJob} />
                   )}
                    <ReusableConfirmDialog
+                   
                               visible={dialogVisible}
                               onHide={() => setDialogVisible(false)}
                               message="Are you sure to delete the job?"
@@ -224,6 +228,7 @@ const Verification = () => {
                               onAccept={confirmDeleteJob}
                               onReject={handleDialogReject}
                             />
+                            {loading &&  <Spinner loading={true}/>}
                 </div>
               </div>
               <div className="flex items-start gap-3">
