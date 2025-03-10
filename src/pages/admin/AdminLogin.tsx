@@ -102,13 +102,7 @@ const AdminLogin = () => {
                                 {loading ? <Spinner loading={true} /> : "Login"}
                             </button>
                         </form>
-                        {/* <button
-              type="button"
-              onClick={()=>handleGoogleLogin()}
-              className="w-full py-2 border border-[#8257e6] text[#8257e6] rounded-md  hover:bg-[#8257e6] hover:text-white transition-colors"
-            >
-              Continue With Google
-            </button> */}
+                       
                         <div className="flex items-center gap-2 rounded-lg bg-[#f] p-4">
                             <div className="h-8 w-8 rounded-lg " />
                             <div className="flex-1">

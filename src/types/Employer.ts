@@ -13,6 +13,7 @@ export interface IEmployer  {
     dateFounded: Date,
     description: string
     companyName?: string
+    isVerified?:string
     isProfileComplete: boolean,
     status: "Active" | "Inactive"
 }
@@ -139,4 +140,27 @@ export interface SubscriptionPlan {
   createdAt:Date,
   targetRole: "user" | "employer";
   status: "active" | "inactive";
+}
+export interface Connection{
+  _id:string,
+  followerId:{
+    _id:string,
+    firstName?:string,
+    secondName?:string
+    profilePicture?:string
+    role?:string,
+    companyName?:string,
+    logo?:string
+    email?:string
+  }
+  followingId:{
+    _id:string,
+    firstName?:string,
+    secondName?:string
+    profilePicture?:string
+    role?:string,
+    companyName?:string,
+    logo?:string,
+    email?:string
+  }
 }

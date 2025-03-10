@@ -8,6 +8,7 @@ import { setEmployer } from "../../redux/employerSlice";
 import { useDispatch } from "react-redux";
 import { AxiosError } from "axios";
 import Spinner from "../../utils/Spinner";
+import { GoogleAuth } from "../common/GoogleAuth";
 const EmployerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -106,6 +107,7 @@ const EmployerLogin = () => {
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
+              <GoogleAuth  authType="login" role="employer"/>
               {/* <button
                 type="button"
                 className="w-full flex items-center justify-center space-x-2 bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0dd3b4]/90 transition-colors"

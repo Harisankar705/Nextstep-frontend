@@ -119,6 +119,15 @@ export const login = async (email: string, password: string, role: role) => {
        }
     }
 }
+export const googleLogin = async (token:string, role: role) => {
+    try {
+        const response = await api.post('/google', { token,role }, { withCredentials: false })
+        console.log("GOOOOOOOGLELGOIN",response)
+        return response
+    } catch (error: unknown) {
+       axiosError(error,'googleLogin')
+    }
+}
 export const checkEmailOrPhone = async (email: string, phoneNumber: string, role: role, name: string) => {
     try {
         const response = await api.post('/check-email-phone', { email, phoneNumber, role, name }, { withCredentials: false })

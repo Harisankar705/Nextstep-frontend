@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast'
 import Spinner from "../../utils/Spinner";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userSlice";
+import { GoogleAuth } from "../common/GoogleAuth";
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -47,30 +48,7 @@ const Login = () => {
       setLoading(false)
     }
   },[email,password,dispatch,navigate])
-  // const handleGoogleLogin=useGoogleLogin({
-  //   onSuccess:async(tokenResponse)=>{
-  //     try {
-  //       console.log("RES",tokenResponse.token_type)
-  //       const role='user'
-  //       const response=await googleAuthentication(tokenResponse.access_token,role)
-  //       if(response.success && response.token)
-  //       {
-  //         localStorage.setItem('accessToken',response.token)
-  //         navigate('/home')
-  //       }
-  //       else
-  //       {
-  //         setError(response.message||"Google authentication failed!")
-  //       }
-  //     } catch (error) {
-  //       setError('Failed to google Authenticate!')
-  //     }
-  //   },
-  //   onError:(error)=>{
-  //     console.log("error occured in googleLogin",error)
-  //     setError("Google authentication")
-  //   }
-  // })
+  
   return (
     <div className="min-h-screen w-full bg-[#1a1625] text-white flex items-center justify-center p-4">
       <div className="container max-w-[1100px] px-4">
@@ -139,6 +117,7 @@ const Login = () => {
               >
                 {loading ? <Spinner loading={true} /> : "Login"}
               </button>
+              <GoogleAuth authType="login" role="user"/>
             </form>
             {/* <button
               type="button"

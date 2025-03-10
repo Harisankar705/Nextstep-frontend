@@ -6,6 +6,7 @@ import { validateConfirmPassword, validateMail, validateName, validatePassword }
 import { checkEmailOrPhone, register, sendOTP, verifyOTP, resendOTP } from "../../services/authService";
 import { EyeOff, Eye } from "lucide-react";
 import Spinner from "../../utils/Spinner";
+import { GoogleAuth } from "../common/GoogleAuth";
 const EmployerSignup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -309,6 +310,7 @@ const EmployerSignup = () => {
                   >
                     {loading ? <Spinner loading={true} /> : "Sign Up"}
                   </button>
+                   <GoogleAuth  authType="signup" role="employer"/>
               </form>
             )}
             <button

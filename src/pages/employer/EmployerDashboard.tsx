@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { isVerified, fetchJobs } from "../../services/employerService";
 import { IEmployer } from "../../types/Employer";
 import { jobFormData } from "../../types/Employer";
-
 const EmployerDashboard = () => {
     const employer = useSelector((state: { user: IEmployer }) => state.user)
     const navigate = useNavigate()
@@ -24,38 +23,27 @@ const EmployerDashboard = () => {
         isActive: boolean;
         applicantsCount?: number;
       }
-
     const handlePostJob = () => {
         navigate('/addjob')
     }
-
     const handleViewJobs = () => {
         navigate('/joblistings')
     }
-
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setIsLoading(true)
-                
                 const verificationResponse = await isVerified()
                 if (verificationResponse.data.message === 'isVerified') {
                     setVerified(true)
                 }
-
-                
                 const jobsResponse = await fetchJobs()
+                console.log('jobresponse',jobsResponse)
                 const jobs = jobsResponse.data
                 setJobListings(jobs)
-                
-                
                 const activeJobs: number = jobs.filter((job: Job) => job.isActive).length;
-const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (job.applicantsCount || 0), 0);
-                
-                
-                
+                const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (job.applicantsCount || 0), 0);
                 const recentApplications = Math.floor(totalApplicants * 0.2) 
-                
                 setStats({
                     totalJobs: jobs.length,
                     activeJobs,
@@ -70,24 +58,17 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
                 setIsLoading(false)
             }
         }
-        
         fetchData()
     }, [])
-
-    
     const recentJobs = [...jobListings]
         .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
         .slice(0, 3)
-
-    
     const StatSkeleton = () => (
         <div className='bg-[#2D3247] rounded-lg p-6 animate-pulse'>
             <div className='h-4 bg-[#404663] rounded w-3/4 mb-4'></div>
             <div className='h-6 bg-[#404663] rounded w-1/2 mb-2'></div>
         </div>
     )
-
-    
     const JobSkeleton = () => (
         <div className='bg-[#2D3247] rounded-lg p-6 mb-4 animate-pulse'>
             <div className='h-4 bg-[#404663] rounded w-3/4 mb-4'></div>
@@ -95,7 +76,6 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
             <div className='h-3 bg-[#404663] rounded w-1/4'></div>
         </div>
     )
-
     return (
         <div className='flex min-h-screen bg-[#1A1D2B] text-white'>
             <SideBar />
@@ -116,14 +96,12 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
                         Post a job
                     </button>
                 </div>
-
                 {!verified && !isLoading && (
                     <div className="bg-yellow-600 text-white p-4 rounded-lg mb-4 flex items-center">
                         <AlertCircle className="mr-2" />
                         <p>Your account is not verified. Please wait until the verification process is completed!</p>
                     </div>
                 )}
-
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
                     {isLoading ? (
                         <>
@@ -146,7 +124,6 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
                                     <span className='text-green-400'>{stats.activeJobs} active</span> jobs
                                 </p>
                             </div>
-
                             <div className='bg-[#2D3247] rounded-lg p-6'>
                                 <div className='flex items-center justify-between mb-4'>
                                     <h3 className='text-gray-400'>Total Applicants</h3>
@@ -159,7 +136,6 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
                                     <span className='text-green-400'>+{stats.recentApplications}</span> this week
                                 </p>
                             </div>
-
                             <div className='bg-[#2D3247] rounded-lg p-6'>
                                 <div className='flex items-center justify-between mb-4'>
                                     <h3 className='text-gray-400'>Active Jobs</h3>
@@ -172,7 +148,6 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
                                     of {stats.totalJobs} total jobs
                                 </p>
                             </div>
-
                             <div className='bg-[#2D3247] rounded-lg p-6'>
                                 <div className='flex items-center justify-between mb-4'>
                                     <h3 className='text-gray-400'>Avg. Salary Range</h3>
@@ -196,7 +171,6 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
                         </>
                     )}
                 </div>
-
                 <div className='mb-8'>
                     <div className='flex justify-between items-center mb-4'>
                         <h3 className='text-xl font-bold'>Recent Job Postings</h3>
@@ -207,7 +181,6 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
                             View all
                         </button>
                     </div>
-                    
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                         {isLoading ? (
                             <>
@@ -228,29 +201,24 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
                                             {job.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                     </div>
-                                    
                                     <div className='space-y-2 mb-4'>
                                         <div className='flex items-center text-gray-400 text-sm'>
                                             <Briefcase size={14} className='mr-2' />
                                             {job.employmentTypes.join(', ')}
                                         </div>
-                                        
                                         <div className='flex items-center text-gray-400 text-sm'>
                                             <DollarSign size={14} className='mr-2' />
                                             ${job.salaryRange?.min.toLocaleString()} - ${job.salaryRange?.max.toLocaleString()}
                                         </div>
-                                        
                                         <div className='flex items-center text-gray-400 text-sm'>
                                             <Calendar size={14} className='mr-2' />
                                             Deadline: {formatDate(job.applicationDeadline)}
                                         </div>
-                                        
                                         <div className='flex items-center text-gray-400 text-sm'>
                                             <Users size={14} className='mr-2' />
                                             {job.applicantsCount || 0} applicants
                                         </div>
                                     </div>
-                                    
                                     <div className='flex space-x-2'>
                                         <button 
                                             className='flex-1 bg-[#6366F1] hover:bg-[#5457d9] text-white py-2 rounded text-sm'
@@ -288,7 +256,6 @@ const totalApplicants: number = jobs.reduce((sum: number, job: Job) => sum + (jo
         </div>
     )
 }
-
 const formatDate = (dateString: string | undefined): string => {
     if (!dateString) return 'N/A';
     return new Intl.DateTimeFormat('en-US', {
@@ -297,14 +264,11 @@ const formatDate = (dateString: string | undefined): string => {
         year: 'numeric'
     }).format(new Date(dateString));
 }
-
 const calculateAvgSalary = (jobs: jobFormData[]): number => {
     if (!jobs || jobs.length === 0) return 0;
-    
     let totalMin = 0;
     let totalMax = 0;
     let count = 0;
-    
     jobs.forEach(job => {
         if (job.salaryRange?.min && job.salaryRange?.max) {
             totalMin += job.salaryRange.min;
@@ -312,9 +276,7 @@ const calculateAvgSalary = (jobs: jobFormData[]): number => {
             count++;
         }
     });
-    
     if (count === 0) return 0;
     return Math.round((totalMin + totalMax) / (2 * count));
 }
-
 export default EmployerDashboard

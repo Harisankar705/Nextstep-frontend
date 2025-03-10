@@ -40,6 +40,7 @@ api.interceptors.response.use(
         {
             return Promise.reject(error)
         }
+        console.log("ERROR API",error)
        
         const shouldForceLogout = (
             error.response?.status === 401 ||

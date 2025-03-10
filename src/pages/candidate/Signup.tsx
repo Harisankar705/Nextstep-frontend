@@ -7,6 +7,7 @@ import { validateConfirmPassword, validateMail, validateName, validatePassword, 
 import InputField from "../../utils/InputField";
 import { toast } from 'react-hot-toast'
 import Spinner from "../../utils/Spinner";
+import { GoogleAuth } from "../common/GoogleAuth";
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const handleLoginClick = () => {
@@ -323,6 +324,7 @@ const Signup: React.FC = () => {
                     "Sign up"
                   )}
                 </button>
+                <GoogleAuth authType="signup" role="user"/>
               </form>
               <div className="flex items-center gap-2 rounded-lg bg-[#2a2837] p-4">
                 <div className="h-8 w-8 rounded-lg bg-[#1e129]" />
