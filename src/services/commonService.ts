@@ -77,6 +77,25 @@ export const getComments = async (postId: string) => {
     throw error;
   }
 };
+export const forgotPassword = async (email: string,role:string) => {
+  try {
+    const response = await api.post("/forgot-password",{email,role}, { withCredentials: false });
+    console.log("RESPONSE",response)
+    return response
+  } catch (error) {
+    axiosError(error, "forgotPassword");
+    throw error;
+  }
+};
+export const resetPassword = async (token: string,password:string,role:string) => {
+  try {
+    const response = await api.post("/reset-password",{token,password,role});
+    return response
+  } catch (error) {
+    axiosError(error, "resetPassword");
+    throw error;
+  }
+};
 export const stripePayment = async (amount: number,planId:string) => {
   try {
     const response = await api.post("/create-payment", { amount,planId });

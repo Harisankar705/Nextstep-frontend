@@ -38,6 +38,8 @@ import { UserCandidate } from './types/Candidate.ts';
 import { Subscriptions } from './pages/admin/Subscriptions.tsx';
 import SubscriptionForm from './pages/admin/SubscriptionForm.tsx';
 import SearchProfile from './pages/employer/SearchProfile.tsx';
+import { ForgotPassword } from './pages/candidate/password/ForgotPassword.tsx';
+import { ResetPassword } from './pages/candidate/password/ResetPassword.tsx';
 const App = () => {
   const user = useSelector((state: { user: UserCandidate }) => state.user)??null
   return (
@@ -54,13 +56,13 @@ const App = () => {
           <Route path='/jobs' element={<ProtectedRoute role='candidate'>{<UserJobListing />}</ProtectedRoute>} />
           <Route path='/job-details/:id' element={<ProtectedRoute role='candidate'>{<JobDetails />}</ProtectedRoute>} />
           <Route path='/candidate-details' element={<ProtectedRoute role='candidate'>{<CandidateDetails />}</ProtectedRoute>} />
-          <Route path='/candidate-profile' element={<ProtectedRoute role='candidate'><Profile user={user} isOwnProfile={true} /></ProtectedRoute>
-  } 
-/>
+          <Route path='/candidate-profile' element={<ProtectedRoute role='candidate'><Profile user={user} isOwnProfile={true} /></ProtectedRoute>} />
           <Route path='/candidate-profile/:id/:role' element={<ProtectedRoute role='candidate'>{<UserProfile />}</ProtectedRoute>} />
           <Route path='/edit-profile' element={<ProtectedRoute role='candidate'>{<EditProfilee />}</ProtectedRoute>}/>
           <Route path='/saved' element={<ProtectedRoute role='candidate'>{<SavedPosts />}</ProtectedRoute>}/>
           <Route path='/payment' element={<ProtectedRoute role='candidate'>{<Payment />}</ProtectedRoute>}/>
+          <Route path='/forgot-password' element={<ForgotPassword />}/>
+          <Route path='/reset-password/:token' element={<ResetPassword />}/>
           <Route path='/payment-success' element={<ProtectedRoute role='candidate'>{<PaymentSuccess />}</ProtectedRoute>}/>
           {/* //admin */}
           <Route path='/admin' element={<AdminLogin/>}/>

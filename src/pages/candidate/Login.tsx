@@ -18,6 +18,9 @@ const Login = () => {
   const handleSignupClick = useCallback(() => {
     navigate('/signup')
   },[navigate])
+  const handleForgotPassword=useCallback(()=>{
+    navigate('/forgot-password')
+  },[navigate])
   const handleLoginClick = useCallback(async (e:React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
@@ -107,8 +110,10 @@ const Login = () => {
                   </label>
                   <button
                     type="button"
+                    onClick={handleForgotPassword}
                     className="text-xs text-[#8257e6] hover:underline"
                   >
+                    Forgot Password
                   </button>
                 </div>
                 <div className="relative">
