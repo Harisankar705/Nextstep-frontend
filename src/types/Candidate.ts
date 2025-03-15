@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { Benefit, IEmployer } from "./Employer";
+import { Benefit } from "./Employer";
 export interface BaseUser {
   _id?:string,
   id: string;
@@ -7,7 +7,40 @@ export interface BaseUser {
   status: "Active" | "Inactive";
   role: "user" | "employer";
 }
-export interface InterviewScheduleProps {
+export interface Caller{
+  senderId:string
+  receiverId: string;
+  offer: RTCSessionDescriptionInit;
+}
+export  interface FileData{
+  url?:string
+  preview?:string,
+  name?:string,
+  type?:string,
+  size?:number
+}
+export  interface FilePreviewProps
+{
+  file:FileData,
+  message?:Message
+}
+export interface AppliedJob{
+    jobId:{
+        _id:string
+        jobTitle:string,
+        companyName:string,
+        employmentTypes:string[],
+        salaryRange:{min:number,max:number},
+        applicationDeadline:string
+        employerId:{
+          companyName:string,
+          logo:string
+        }
+    },
+   
+    applicationStatus:string,
+    appliedAt:string
+}export interface InterviewScheduleProps {
   applicant: UserCandidate | null;
   onScheduleInterview: (scheduleData: InterviewScheduleData) => Promise<void>;
 }
@@ -68,6 +101,7 @@ export interface SideBarProps {
   chatHistory?: ChatHistoryItem[];
   onSelectedChat?: (chat: ChatHistoryItem) => void;
   role?: "user" | "employer";
+  currentUserId?:string
 }
 
 export interface PostComponentProps {
@@ -309,7 +343,7 @@ export interface UserData {
 export interface INotification {
   _id: string;
   read: boolean;
-  sender: {
+  senderInfo: {
     firstName?: string;
     secondName?: string;
     companyName?: string;
@@ -417,14 +451,28 @@ export interface SocketContextType {
 }
 export interface ChatHistoryItem {
   _id: string;
-  firstName: string;
+  firstName?: string;
   lastMessage: string;
-  timeStamp: string;
-  companyName: string;
-  logo: string;
-  profilePicture: string;
-  sender:IEmployer|User
-  receiver:IEmployer|User
+  timestamp: string;
+  content:string,
+  profilePicture?:string,
+  sender:{
+    _id:string,
+    firstName:string,
+    secondName:string,
+    profilePicture?:string,
+    companyName?:string
+    logo?:string
+  },
+  receiver:{
+    _id:string,
+    firstName:string,
+    secondName:string,
+    profilePicture?:string
+    companyName?:string
+    logo?:string
+  }
+  
 }
 export interface User{
   id:string,

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Spinner from '../../utils/Spinner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../utils/Navbar';
-import { PostType, ProfileHeaderProps } from '../../types/Candidate';
+import { PostType, ProfileHeaderProps, UserCandidate } from '../../types/Candidate';
 import Post from './Post';
 import { getUserPosts } from '../../services/authService';
 import { ProfileHeader } from './Profile/ProfileHeader';
@@ -12,13 +12,15 @@ import { ProfileIntro } from './Profile/ProfileIntro';
 import { CreatePost } from './CreatePost/CreatePost';
 import { PostInput } from './CreatePost/PostInput';
 import toast from 'react-hot-toast';
-const Profile:React.FC<ProfileHeaderProps>=({ userId }) => {
+const Profile:React.FC<ProfileHeaderProps>=() => {
+    const { userId: urlUserId } = useParams();
     const navigate = useNavigate()
     const currentUser = useSelector((state: any) => state.user);
     const [activeTab, setActiveTab] = useState("Posts")
     const [posts, setPosts] = useState<PostType[]>([])
     const [loading, setLoading] = useState(false)
-    const isOwnProfile = !userId || userId === currentUser?._id
+    const user = useSelector((state: { user: UserCandidate }) => state.user) ?? null;
+    const isOwnProfile = !urlUserId || urlUserId === user?._id;
     const displayedUser = isOwnProfile ? currentUser : null
     const [showCreatePost, setShowCreatePost] = useState(false)
     useEffect(() => {

@@ -19,9 +19,9 @@ export const ProfileHeader:React.FC<ProfileHeaderProps>=({user,isOwnProfile,onEd
                           <h1 className="text-3xl font-bold">
                               {firstName} {secondName}
                           </h1>
-                          <p className="text-purple-400 mt-1">
+                          {/* <p className="text-purple-400 mt-1">
                               {friends ? `${friends.length} friends` : 'No friends'}
-                          </p>
+                          </p> */}
                       </div>
                       {isOwnProfile &&(
                           <div className="flex justify-center mt-4">

@@ -2,6 +2,7 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import { ThumbsUp } from 'lucide-react'
 import { useSocket } from "../../../SocketContext"
+import { likePost } from "../../../services/commonService"
 
 export const Like = ({
     postId,
@@ -32,19 +33,7 @@ export const Like = ({
             const newLikeCount = newIsLiked ? likeCount + 1 : Math.max(0, likeCount - 1);
             setLikeCount(newLikeCount)
             onLikeCountChange?.(newLikeCount)
-
-            if(socket  && currentUser && post)
-            {
-                socket.emit("likePost",{
-                    userId:currentUser._id,
-                    postId:postId,
-                    recipientId:post.userId,
-                    sender:currentUser._id,
-                    type:"post_like",
-                    content:`${currentUser.companyName || currentUser.firstName}liked your post`,
-                    link:`/posts/${postId}`
-                })
-            }
+            await likePost(postId)
         } catch (error) {
             toast.error("Failed to update like")
             setLoading(false)

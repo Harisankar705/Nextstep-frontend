@@ -1,5 +1,5 @@
 import  { useEffect, useState } from 'react';
-import { ArrowLeft, MoreHorizontal, Search, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Search, ChevronDown } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchApplicantsForJob } from '../../../services/employerService'; 
 import Spinner from '../../../utils/Spinner';
@@ -65,8 +65,6 @@ const JobApplicants = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex gap-4">
             <button className="px-4 py-2 bg-[#1A1F26] text-teal-400 rounded-lg">Applicants</button>
-            <button className="px-4 py-2 hover:bg-[#1A1F26] rounded-lg">Job Details</button>
-            <button className="px-4 py-2 hover:bg-[#1A1F26] rounded-lg">Analytics</button>
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -113,7 +111,7 @@ const JobApplicants = () => {
   className="px-4 py-1 text-sm bg-[#0D1117] hover:bg-gray-800 rounded-lg"
 >
   See Details
-</button>                    <button className="p-1 hover:bg-gray-800 rounded-lg"><MoreHorizontal size={16} /></button>
+</button>                    <button className="p-1 hover:bg-gray-800 rounded-lg"></button>
                     </div>
                   </td>
                 </tr>

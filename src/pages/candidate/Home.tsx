@@ -12,12 +12,14 @@ import { fetchUserPosts } from "../../services/authService";
 const LeftSideBar = ({
   icon: Icon,
   children,
+  href
 }: {
   icon:React.ElementType,
   children: React.ReactNode;
+  href:string
 }) => (
   <a
-    href="/saved"
+    href={href}
     className="flex items-center gap-3 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
   >
     <Icon className="h-6 w-6" />
@@ -59,8 +61,8 @@ const Home = () => {
         <div className={`w-full sm:w-[360px] fixed top-16 h-[calc(100vh-64px)] p-4 overflow-y-auto bg-black z-10 transition-transform duration-300 
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0`}>
           <div className="space-y-2">
-            <LeftSideBar icon={Users}>Friends</LeftSideBar>
-            <LeftSideBar icon={Bookmark}>Saved</LeftSideBar>
+            <LeftSideBar icon={Users} href="/followrequests">Friends</LeftSideBar>
+            <LeftSideBar icon={Bookmark}href="/saved">Saved</LeftSideBar>
           </div>
         </div>
 

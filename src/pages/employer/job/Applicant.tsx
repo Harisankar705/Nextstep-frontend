@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Mail, Phone, Instagram, Twitter, Globe, MoreHorizontal, ChevronDown } from 'lucide-react';
 import { applicantDetails, individualDetails } from '../../../services/adminService';
@@ -9,15 +9,20 @@ import { scheduleInterview } from '../../../services/commonService';
 import toast from 'react-hot-toast';
 import { changeApplicationStatus } from '../../../services/employerService';
 import Spinner from '../../../utils/Spinner';
-type ApplicationStatus =  'Pending' | 'Accepted' |'In-review'|'Shortlisted'| 'Rejected' |'Interview'| 'Interview Scheduled' | 'Interview Completed';
-const statusOrder = ['pending' ,'accepted' ,'in-review','shortlisted', 'rejected' ,'interview', 'Interview Scheduled' , 'interviewCompleted'];
+
+type ApplicationStatus = 'Pending' | 'Accepted' | 'In-review' | 'Shortlisted' | 'Rejected' | 'Interview' | 'Interview Scheduled' | 'Interview Completed';
+
+const statusOrder = ['Pending', 'Accepted', 'In-review', 'Shortlisted', 'Rejected', 'Interview', 'Interview Scheduled', 'Interview Completed'];
+
 const getStatusIndex = (status: ApplicationStatus) => {
   return statusOrder.indexOf(status);
 };
+
 const getProgressWidth = (status: ApplicationStatus) => {
   const index = getStatusIndex(status);
   return index === -1 ? '0%' : `${(index / (statusOrder.length - 1)) * 100}%`;
 };
+
 const Applicant = () => {
   const { userId, jobId } = useParams<{ userId: string; jobId: string }>();
   const navigate = useNavigate();
@@ -27,64 +32,81 @@ const Applicant = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [applicationStatus, setApplicationStatus] = useState<ApplicationStatus>('Pending');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [isScheduling,setIsScheduling]=useState(false)
-  const [isChangingStatus,setIsChangingStatus]=useState(false)
+  const [isScheduling, setIsScheduling] = useState(false);
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
+
   const handleScheduleInterview = async (scheduleData: InterviewScheduleData) => {
     try {
-      setIsScheduling(true)
+      setIsScheduling(true);
       if (!userId || !jobId) {
-        throw new Error('User  ID or Job ID is missing');
+        throw new Error('User ID or Job ID is missing');
       }
       const response = await scheduleInterview(scheduleData, userId, jobId);
       if (response.status === 200) {
         toast.success("Interview scheduled!");
+        // Update the local state to reflect the status change
+        setApplicationStatus('Interview Scheduled');
       } else {
         toast.error("Failed to schedule interview.");
       }
     } catch (error) {
       toast.error("An error occurred while scheduling the interview.");
-    }
-    finally{
-      setIsScheduling(false)
+      console.error("Schedule interview error:", error);
+    } finally {
+      setIsScheduling(false);
     }
   };
+
   useEffect(() => {
     const fetchApplicant = async () => {
-        try {
-            const userResponse = await individualDetails(userId, 'user');
-            const user = userResponse[0];
-            const applicationStatus = await applicantDetails(userId, jobId); 
-            setApplicant(user);
-            setApplicationStatus(applicationStatus as ApplicationStatus); 
-        } catch (err) {
-            setError('Failed to load applicant details');
-        } finally {
-            setLoading(false);
-        }
+      try {
+        const userResponse = await individualDetails(userId, 'user');
+        const user = userResponse[0];
+        const applicationStatus = await applicantDetails(userId, jobId);
+        console.log("USERRESPONSE", applicationStatus);
+
+        setApplicant(user);
+        // Ensure the status matches our type
+        setApplicationStatus(applicationStatus as ApplicationStatus);
+      } catch (err) {
+        console.error("Error fetching applicant details:", err);
+        setError('Failed to load applicant details. Please try again or contact support.');
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchApplicant();
-}, [userId, jobId]); 
+    
+    if (userId && jobId) {
+      fetchApplicant();
+    } else {
+      setError('Missing required parameters to load applicant');
+      setLoading(false);
+    }
+  }, [userId, jobId]);
+
   const handleStatusChange = async (newStatus: ApplicationStatus) => {
-    setIsChangingStatus(true)
+    setIsChangingStatus(true);
     try {
-      await changeApplicationStatus(newStatus,userId as string)
+      await changeApplicationStatus(newStatus, userId as string);
       setApplicationStatus(newStatus);
       setShowStatusDropdown(false);
       toast.success("Status updated successfully!");
     } catch (err) {
+      console.error("Status change error:", err);
       toast.error("Failed to update status.");
-    }
-    finally{
-      setIsChangingStatus(false)
+    } finally {
+      setIsChangingStatus(false);
     }
   };
+
   const StatusDropdown = () => (
     <div className="relative">
       <button
-        onClick={() => setShowStatusDropdown(!showStatusDropdown )}
+        onClick={() => setShowStatusDropdown(!showStatusDropdown)}
         className="px-4 py-2 bg-[#2DD4BF]/10 text-[#2DD4BF] rounded-lg flex items-center gap-2 hover:bg-[#2DD4BF]/20 transition-colors"
+        disabled={isChangingStatus}
       >
-        Change Status
+        {isChangingStatus ? 'Updating...' : 'Change Status'}
         <ChevronDown size={16} />
       </button>
       {showStatusDropdown && (
@@ -96,14 +118,16 @@ const Applicant = () => {
               className={`w-full px-4 py-2 text-left hover:bg-[#2DD4BF]/10 transition-colors ${
                 status === applicationStatus ? 'text-[#2DD4BF] bg-[#2DD4BF]/5' : 'text-gray-400'
               }`}
+              disabled={isChangingStatus}
             >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              {status}
             </button>
           ))}
         </div>
       )}
     </div>
   );
+
   const renderContent = () => {
     switch (activeTab) {
       case 'hiring':
@@ -148,7 +172,7 @@ const Applicant = () => {
                             : 'text-gray-400'
                         }`}
                       >
-                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                        {status}
                       </span>
                     </div>
                   );
@@ -157,17 +181,17 @@ const Applicant = () => {
             </div>
             <div className="mt-8 p-4 bg-[#0B0E14] rounded-lg">
               <h4 className="text-[#2DD4BF] font-medium mb-2">
-                Current Status: {applicationStatus.charAt(0).toUpperCase() + applicationStatus.slice(1)}
+                Current Status: {applicationStatus}
               </h4>
               <p className="text-gray-400">
                 {applicationStatus === 'Pending' && 'Application is awaiting initial review.'}
-                {applicationStatus === 'Accepted' && 'Application is currently being reviewed by the hiring team.'}
-                {applicationStatus === 'In-review' && 'Candidate has been shortlisted for interview.'}
-                {applicationStatus === 'Shortlisted' && 'Interview process is in progress.'}
-                {applicationStatus === 'Rejected' && 'Candidate has been selected for the position.'}
-                {applicationStatus === 'Interview' && 'Application has been declined.'}
-                {applicationStatus === 'Interview Scheduled' && 'Application has been declined.'}
-                {applicationStatus === 'Interview Completed' && 'Application has been declined.'}
+                {applicationStatus === 'Accepted' && 'Application has been accepted for review.'}
+                {applicationStatus === 'In-review' && 'Application is currently being reviewed by the hiring team.'}
+                {applicationStatus === 'Shortlisted' && 'Candidate has been shortlisted for interview.'}
+                {applicationStatus === 'Rejected' && 'Application has been declined.'}
+                {applicationStatus === 'Interview' && 'Interview process is in progress.'}
+                {applicationStatus === 'Interview Scheduled' && 'Interview has been scheduled with the candidate.'}
+                {applicationStatus === 'Interview Completed' && 'Interview has been completed, awaiting final decision.'}
               </p>
             </div>
           </div>
@@ -277,7 +301,7 @@ const Applicant = () => {
                         <p>Resume preview not available. Click 'View Resume' to open the document.</p>
                       </div>
                     ) : (
-                      <div className="bg-[#0B0E14] p- 6 rounded-lg">
+                      <div className="bg-[#0B0E14] p-6 rounded-lg">
                         <p>No resume available.</p>
                       </div>
                     )}
@@ -322,18 +346,27 @@ const Applicant = () => {
                 </div>
               </div>
             ) : null}
-            <InterviewScheduler applicant={applicant} onScheduleInterview={handleScheduleInterview} />
+            {applicationStatus === 'Interview' && (
+              <div className="relative">
+                {isScheduling ? (
+                  <div className="absolute inset-0 bg-[#151923]/70 flex items-center justify-center z-10 rounded-lg">
+                    <Spinner loading={true} />
+                  </div>
+                ) : null}
+                <InterviewScheduler applicant={applicant} onScheduleInterview={handleScheduleInterview} />
+              </div>
+            )}
           </div>
         );
       default:
         return <div className="text-gray-400">Content not available</div>;
     }
   };
-  if (loading || isChangingStatus||isScheduling) {
-    return (
-      <Spinner loading={true}/>
-    );
+
+  if (loading) {
+    return <Spinner loading={true} />;
   }
+
   if (error) {
     return (
       <div className="min-h-screen bg-[#0B0E14] flex items-center justify-center">
@@ -341,6 +374,7 @@ const Applicant = () => {
       </div>
     );
   }
+
   if (!applicant) {
     return (
       <div className="min-h-screen bg-[#0B0E14] flex items-center justify-center">
@@ -348,6 +382,7 @@ const Applicant = () => {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-[#0B0E14] text-white p-6">
       <div className="flex justify-between items-center mb-8">
@@ -359,10 +394,17 @@ const Applicant = () => {
           <span>Applicant Details</span>
         </button>
         <button className="flex items-center gap-2 px-4 py-2 bg-[#151923] text-[#2DD4BF] rounded-lg hover:bg-opacity-80 transition-colors">
-          <span>More Action</span>
           <MoreHorizontal size={20} />
         </button>
       </div>
+
+      {(isChangingStatus || isScheduling) && (
+        <div className="mb-4 p-3 bg-[#151923] rounded-lg text-[#2DD4BF] flex items-center gap-2">
+          <Spinner loading={true}/>
+          <span>{isChangingStatus ? 'Updating status...' : 'Scheduling interview...'}</span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="space-y-6">
           <div className="flex items-center gap-4">
@@ -383,7 +425,7 @@ const Applicant = () => {
             </div>
           </div>
           <div className="bg-[#151923] rounded-lg p-6">
-            <div className=" flex justify-between text-sm mb-4">
+            <div className="flex justify-between text-sm mb-4">
               <span className="text-gray-400">Profile Completion</span>
               <span className="text-[#2DD4BF]">85%</span>
             </div>
@@ -480,4 +522,5 @@ const Applicant = () => {
     </div>
   );
 };
+
 export default Applicant;

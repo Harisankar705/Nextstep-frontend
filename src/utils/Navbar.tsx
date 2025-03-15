@@ -1,25 +1,35 @@
 import { useEffect, useState } from 'react';
-import { Home, Store, Users, Menu, Bell, User, BriefcaseBusiness, LogOut, LucideMessagesSquare, X } from 'lucide-react';
+import { Home, Users, Menu, Bell, User, BriefcaseBusiness, LogOut, LucideMessagesSquare, X, TicketCheckIcon } from 'lucide-react';
 import { Logo } from '../components/Logo';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { clearUser } from '../redux/userSlice';
 import { persistor } from '../redux/store';
 import SearchUtil from './Search/SearchUtil';
 import { Notification } from '../pages/candidate/Notification';
-import { SearchResult } from '../types/Candidate';
+import { SearchResult, UserCandidate } from '../types/Candidate';
+import { useSocket } from '../SocketContext';
 export default function Navbar() {
     const navigate = useNavigate();
-    const location = useLocation(); 
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const {socket,isConnected}=useSocket()
+    const [unreadNotificationCount,setUnreadNotificationCount]=useState(0)
     const [mobileMenuOpen,setMobileMenuOpen]=useState(false)
+    const user = useSelector((state: { user: UserCandidate }) => state.user)??null
     const [isNotificationModalOpen,setisNotificationModalOpen]=useState(false)
     const dispatch = useDispatch();
+    const location=useLocation()
     const handleBellClick=()=>{
         setisNotificationModalOpen(!isNotificationModalOpen)
+        if(!isNotificationModalOpen)
+        {
+            setUnreadNotificationCount(0)
+        }
     }
     const handleAccountClick = () => {
-        navigate('/candidate-profile');
+    const userId=user?._id
+
+        navigate(`/candidate-profile/${userId}`);
     };
     const toggleMobileMenu=()=>{
         setMobileMenuOpen(!mobileMenuOpen)
@@ -27,6 +37,9 @@ export default function Navbar() {
     const handleConnectionClick = () => {
         navigate('/followrequests');
     };
+    const handleAppliedJobs=()=>{
+        navigate('/appliedjobs')
+    }
     const handleLogout = () => {
         dispatch(clearUser());
         persistor.purge();
@@ -47,6 +60,16 @@ export default function Navbar() {
             document.removeEventListener('mousedown', handleOutsideClick);
         };
     }, []);
+    useEffect(()=>{
+        if(!socket)return
+        const handleNewNotification=()=>{
+            setUnreadNotificationCount(prev=>prev+1)
+        }
+        socket.on('newNotification',handleNewNotification)
+        return ()=>{
+            socket.off('newNotification',handleNewNotification)
+        }
+    },[socket])
     const handleMessageClick=()=>{
         navigate('/messages')
     }
@@ -69,13 +92,13 @@ export default function Navbar() {
         <div className="w-full border-b border-gray-700 bg-black">
             <div className="hidden md:flex h-16 items-center px-4 gap-4">
                 <div className="flex items-center gap-4 flex-1">
-                    <a href="/" className="text-purple-500">
+                    <a href="/home" className="text-purple-500">
                         <Logo width={160} height={80} />
                     </a>
                     <SearchUtil className="flex-1" onResultSelect={handleSearchResultSelect} />
                 </div>
                 <nav className="flex items-center gap-6 max-w-4xl flex-1 justify-center">
-                    <button className="h-16 px-4 hover:bg-gray-900 text-purple-500">
+                    <button className={`h-16 px-4 hover:bg-gray-900 ${location.pathname === '/home' ? 'bg-gray-900 text-purple-500' : 'text-gray-400'}`} onClick={()=>navigate('/home')}>
                         <Home className="h-6 w-6" />
                     </button>
                     <button
@@ -84,23 +107,32 @@ export default function Navbar() {
                     >
                         <BriefcaseBusiness className="h-6 w-6" />
                     </button>
-                    <button className="h-16 px-4 hover:bg-gray-900 text-gray-400">
-                        <Store className="h-6 w-6" />
+                   
+                    <button className={`h-16 px-4 hover:bg-gray-900 ${location.pathname === '/followrequests' ? 'bg-gray-900 text-purple-500' : 'text-gray-400'}`}onClick={handleConnectionClick}  >
+                        <Users className="h-6 w-6" />
                     </button>
-                    <button className="h-16 px-4 hover:bg-gray-900 text-gray-400">
-                        <Users className="h-6 w-6" onClick={handleConnectionClick} />
+                    <button className={`h-16 px-4 hover:bg-gray-900 ${location.pathname === '/appliedjobs' ? 'bg-gray-900 text-purple-500' : 'text-gray-400'}`}onClick={handleAppliedJobs}  >
+                        <TicketCheckIcon className="h-6 w-6" />
                     </button>
                 </nav>
                 <div className="flex items-center gap-4 flex-1 justify-end">
                     <button className="p-2 rounded-full hover:bg-gray-900 text-gray-400">
                         <Menu className="h-5 w-5" />
                     </button>
-                    <button className="p-2 rounded-full hover:bg-gray-900 text-gray-400">
-                        <LucideMessagesSquare className="h-5 w-5" onClick={handleMessageClick}/>
+                    <button className={`h-16 px-4 hover:bg-gray-900 ${location.pathname === '/messages' ? 'bg-gray-900 text-purple-500' : 'text-gray-400'}`}onClick={handleMessageClick}>
+                        <LucideMessagesSquare className="h-5 w-5" />
                     </button>
+                    <div className='relative'>
                     <button className="p-2 rounded-full hover:bg-gray-900 text-gray-400" onClick={handleBellClick}>
                         <Bell className="h-5 w-5" />
+                        {unreadNotificationCount>0 && (
+                            <span className='absolute -top-1 -right-1 bg-purple-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center'>
+                                {unreadNotificationCount>9?"9+":unreadNotificationCount}
+                            </span>
+                        )}
                     </button>
+                    </div>
+                   
                     {isNotificationModalOpen && (
                         <Notification isOpen={isNotificationModalOpen} onClose={() => setisNotificationModalOpen(false)} />
                     )}
@@ -134,8 +166,13 @@ export default function Navbar() {
                     <Logo width={120} height={60}/>
                     </a>
                     <div className='flex items-center gap-4'>
-                        <button className='p-2 rounded-full hover:bg-gray-900 text-gray-400' onClick={()=>setisNotificationModalOpen(true)}>
+                        <button className='p-2 rounded-full hover:bg-gray-900 text-gray-400 relative' onClick={()=>setisNotificationModalOpen(true)}>
                             <Bell className='h-5 w-5'/>
+                            {unreadNotificationCount>0 && (
+                            <span className='absolute -top-1 -right-1 bg-purple-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center'>
+                                {unreadNotificationCount>9?"9+":unreadNotificationCount}
+                            </span>
+                        )}
                         </button>
                         <button className='p-2 rounded-full hover:bg-gray-900 text-gray-400' onClick={toggleMobileMenu}>
                             {mobileMenuOpen ? <X className='w-6 h-6'/>:<Menu className='w-6 h-6'/>}
@@ -164,35 +201,35 @@ export default function Navbar() {
                                 navigate('/jobs')
                                 toggleMobileMenu()
                             }}>
-                                <BriefcaseBusiness className='h-6 w-6'/>Home
+                                <BriefcaseBusiness className='h-6 w-6'/>Jobs
                             </button>
                             <button className='w-full text-left py-3 px-4 hover:bg-gray-900 text-white flex items-center gap-3'
                             onClick={()=>{
                                 navigate('/messages')
                                 toggleMobileMenu()
                             }}>
-                                <LucideMessagesSquare className='h-6 w-6'/>Home
+                                <LucideMessagesSquare className='h-6 w-6'/>Messages
                             </button>
                             <button className='w-full text-left py-3 px-4 hover:bg-gray-900 text-white flex items-center gap-3'
                             onClick={()=>{
                                 navigate('/followrequests')
                                 toggleMobileMenu()
                             }}>
-                                <Users className='h-6 w-6'/>Home
+                                <Users className='h-6 w-6'/>Connections
                             </button>
                             <button className='w-full text-left py-3 px-4 hover:bg-gray-900 text-white flex items-center gap-3'
                             onClick={()=>{
                                 navigate('/candidate-profile')
                                 toggleMobileMenu()
                             }}>
-                                <User className='h-6 w-6'/>Home
+                                <User className='h-6 w-6'/>Profile
                             </button>
                             <button className='w-full text-left py-3 px-4 hover:bg-gray-900 text-white flex items-center gap-3'
                             onClick={()=>{
                                 handleLogout()
                                 toggleMobileMenu()
                             }}>
-                                <LogOut className='h-6 w-6'/>Home
+                                <LogOut className='h-6 w-6'/>Logout
                             </button>
                         </nav>
                     </div>

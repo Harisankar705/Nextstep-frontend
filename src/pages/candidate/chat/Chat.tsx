@@ -1,49 +1,23 @@
-import {
-  Delete,
-  MessagesSquare,
-  MoreVertical,
-  Paperclip,
-  Send,
-  Video,
-  X,
-} from "lucide-react";
+import {Delete,MessagesSquare,MoreVertical,Paperclip,Send,Video,X,} from "lucide-react";
 import {useEffect, useRef, useState } from "react";
 import { useSocket } from "../../../SocketContext";
-import { ChatHistoryItem, Message, SelectedFileType, VideoCallAnswerData } from "../../../types/Candidate";
+import { Caller, ChatHistoryItem, FilePreviewProps, Message, SelectedFileType, VideoCallAnswerData } from "../../../types/Candidate";
 import toast from "react-hot-toast";
-import {
-  fetchUserMessages,
-  getURL,
-} from "../../../services/commonService";
+import {fetchUserMessages,getURL,} from "../../../services/commonService";
 import { individualDetails } from "../../../services/adminService";
 import { useParams } from "react-router-dom";
 import { VideoCallUI } from "./VideoCall";
 import Spinner from "../../../utils/Spinner";
 import { SideBar } from "./SideBar";
-interface Caller{
-  senderId:string
-  receiverId: string;
-  offer: RTCSessionDescriptionInit;
-}
-interface FileData{
-  url?:string
-  preview?:string,
-  name?:string,
-  type?:string,
-  size?:number
-}
-interface FilePreviewProps
-{
-  file:FileData,
-  message?:Message
-}
+
 export const Chat = () => {
-  const { userId, role } = useParams();
+  const { userId:urlUserId, role:urlRole } = useParams();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
   const [isReceivingCall, setIsReceivingCall] = useState(false);
   const [caller, setCaller] = useState<Caller|null>(null);
+  const [selectedMessageId,setSelectedMessageId]=useState<string|null>(null)
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const [isStreamSet, setIsStreamSet] = useState(false);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -56,7 +30,11 @@ export const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [userDetails, setUserDetails] = useState<any>(null);
-  const [selectedChat, setSelectedChat] = useState<any>(null);
+  const [selectedChat, setSelectedChat] = useState<ChatHistoryItem | null>(null);
+  const userId=urlUserId||selectedChat?._id
+  const role = urlRole || "user"; // Default role if not provided
+
+
   
   // const [filePreview, setFilePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -598,7 +576,7 @@ useEffect(() => {
             return;
           }
           socket?.emit("sendMessage", {
-            senderId: selectedChat._id, 
+            senderId: selectedChat?._id, 
             receiverId: userId,
             content: message,
             role:role,
@@ -613,10 +591,16 @@ useEffect(() => {
       }
     }
   };
-  const handleSelectedChat=(chat:ChatHistoryItem)=>{
-    setSelectedChat(chat)
-    fetchMutualMessages(chat._id)
-  }
+  const handleSelectedChat = (chat: ChatHistoryItem) => {
+    console.log("Selected Chat:", chat); 
+    setSelectedChat(chat);
+    fetchMutualMessages(chat._id)//check this
+    const filteredMessages = messages.filter(
+      (msg) => msg.senderId === chat._id || msg.receiverId === chat._id
+    );
+    console.log("Filtered Messages:", filteredMessages); 
+    setMessages(filteredMessages);
+  };
   const FilePreview = ({ file, message }: FilePreviewProps) => {
     const [secureURL, setSecureURL] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -706,10 +690,14 @@ useEffect(() => {
   };
   const renderMessage = (msg: Message, index: number) => {
     const isSent = isMessageSent(msg);
+    const isSelected=msg._id===selectedMessageId
     return (
       <div
         key={msg._id || `msg-${index}`}
-        className={`flex ${isSent ? "justify-end" : "justify-start"}`}
+        className={`flex ${isSent ? "justify-end" : "justify-start"}${
+          isSelected ? "bg-[#3E3E3E]":""
+        }`}
+        onClick={()=>setSelectedMessageId(msg._id||null)}
       >
         <div className="group relative">
           <div
@@ -744,11 +732,14 @@ useEffect(() => {
     try {
       setLoading(true);
       const response = await individualDetails(userId, role as string);
+      console.log("FETCHUSERDETAIL",response)
       const data = await response[0];
       setUserDetails(data);
       setSelectedChat(response[0]);
     } catch (error) {
       toast.error("Failed to fetch user details");
+      console.error("Failed to fetch user details",error);
+    
     } finally {
       setLoading(false);
     }
@@ -814,13 +805,13 @@ useEffect(() => {
     try {
       setLoading(true);
       const response = await fetchUserMessages(userId); 
+      console.log("MUTUAL MESSAGES",response)
       if (Array.isArray(response.messages)) {
         const sortedMessages = response.messages.sort(
           (a: Message, b: Message) =>
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
         setMessages(sortedMessages);
-        setSelectedChat({ _id: response.userId });
       } else {
         setMessages([]);
         toast.error("Messages data is not in the correct format!");
@@ -831,6 +822,11 @@ useEffect(() => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (selectedChat) {
+      fetchMutualMessages(selectedChat._id);
+    }
+  }, [selectedChat]);
   useEffect(() => {
     if (userId) {
       fetchUserDetails(userId);
@@ -947,6 +943,7 @@ useEffect(() => {
       {loading && <Spinner loading={true}/>}
       <SideBar onSelectedChat={handleSelectedChat} role="user" />
       <div className="flex-1 flex flex-col">
+        
         {isCallInProgress &&( <VideoCallUI localStream={localStream}isMuted={isMuted} callDuration={callDuration} remoteStream={remoteStream} isVideoEnabled={isVideoEnabled} toggleMute={toggleMute} toggleVideo={toggleVideo} endVideoCall={endVideoCall}/>)}
           {isReceivingCall && (
           <div className="fixed inset-0 z-50 flex-col items-center justify-center bg-black bg-opacity-75">
@@ -983,7 +980,9 @@ useEffect(() => {
             </div>
           </div>
         )}
-        <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+        {selectedChat && (
+          <>
+          <div className="p-4 border-b border-gray-700 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full bg-[#2E2E2E]">
               <img
@@ -1060,6 +1059,19 @@ useEffect(() => {
             :null}
           </div>
         </div>
+          </>
+        )}
+        {!selectedChat && (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-gray-400">
+              <MessagesSquare className="w-16 h-16 mx-auto mb-4"/>
+              <p>Select a chat to start messaging!</p>
+            </div>
+          </div>
+        )}
+        
+       
+      
       </div>
     </div>
   );

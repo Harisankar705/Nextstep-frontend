@@ -41,10 +41,13 @@ const EmployerLogin = () => {
         navigate('/employerdetails',{replace:true})
       }
     } catch (error:unknown) {
-      if (error instanceof AxiosError) {
-      const errorMessage = error.response?.data?.message || "Login failed";
+      let errorMessage = "Login failed.Check your password!";
+      
+    if (error instanceof Error) {
+      errorMessage = error.message
+    }
       setError(errorMessage);
-      }
+
     } finally {
       setLoading(false);
     }

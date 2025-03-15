@@ -14,6 +14,7 @@ export interface IEmployer  {
     description: string
     companyName?: string
     isVerified?:string
+    isAuthenticated?:boolean
     isProfileComplete: boolean,
     status: "Active" | "Inactive"
 }

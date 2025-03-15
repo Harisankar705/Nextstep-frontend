@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { getComments } from "../../../services/commonService";
+import { commentPost, getComments } from "../../../services/commonService";
 import { Comment, Employer, PostType, UserCandidate } from "../../../types/Candidate";
-import { useSocket } from "../../../SocketContext";
 const Comments = ({
   postId,
   onCommentCountChange,
   currentUser,
   post,
 }: {
-  postId: string;
+  postId: string; 
   onCommentCountChange?: (count: number) => void;
   currentUser: UserCandidate|Employer|null;
   post: PostType;
@@ -17,7 +16,6 @@ const Comments = ({
   const [comments, setComments] = useState<Comment[]>([]);
   const [comment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
-  const { socket } = useSocket();
   const fetchComments = async () => {
     try {
       const response = await getComments(postId);
@@ -38,25 +36,16 @@ const Comments = ({
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log(socket,currentUser,postId)
-    if (comment.trim()) {
+    if (comment.trim()&&currentUser) {
       setLoading(true);
       try {
-        if (socket && currentUser && postId) {
-          socket.emit("commentPost", {
-            userId: currentUser._id,
-            comment:comment,
-            postId: postId,
-            receipientId: post.userId,
-            type: "comment_post",
-            content: "liked your post",
-            link: `/posts/${postId}`,
-          });
-        }
-        await fetchComments();
+       const response=await commentPost(postId,comment)
+       console.log("REPONSE OF COMMENT",response)
         setNewComment("");
-        onCommentCountChange;
+        onCommentCountChange?.(comments.length+1)
         toast.success("Comment added successfully!");
+       
+       
       } catch (error) {
         toast.error("Failed to add comment!");
       } finally {

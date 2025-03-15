@@ -113,9 +113,7 @@ const JobDetails = () => {
          <Navbar />
       <div className="max-w-6xl mx-auto mt-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Header */}
             <div className="flex items-start gap-6">
               <div className="w-16 h-16 bg-teal-500 rounded-lg flex items-center justify-center">
                 <span className="text-2xl font-bold text-white">

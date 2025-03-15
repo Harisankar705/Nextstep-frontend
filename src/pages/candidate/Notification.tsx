@@ -1,13 +1,10 @@
-import io from "socket.io-client";
 import { useEffect, useState } from "react";
-import {
-  getNotifications,
-  markNotificationAsRead,
-} from "../../services/commonService";
+import {getNotifications,markNotificationAsRead,} from "../../services/commonService";
 import { LoaderIcon, X } from "lucide-react";
 import { INotification } from "../../types/Candidate";
 import toast from "react-hot-toast";
-const socket = io(import.meta.env.VITE_API_BASE_URL);
+import { useNavigate } from "react-router-dom";
+import { useSocket } from "../../SocketContext";
 export const Notification= ({isOpen,onClose}: {
   isOpen: boolean;
   onClose: () => void;
@@ -15,13 +12,16 @@ export const Notification= ({isOpen,onClose}: {
   notification?:INotification
 }) => {
   const [loading,setLoading]=useState(true)
+  const {socket}=useSocket()
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [unreadCount, setUnReadCount] = useState(0);
+  const navigate=useNavigate()
   useEffect(() => {
     const fetchNotification = async () => {
       setLoading(true)
       try {
         const response: INotification[] = await getNotifications();
+        console.log("RESPONSE",response)
         setNotifications(response);
         setUnReadCount(response.filter((n) => !n.read).length);
       } catch (error) {
@@ -34,25 +34,37 @@ export const Notification= ({isOpen,onClose}: {
     if (isOpen) {
       fetchNotification();
     }
-    socket.on("newNotification", (newNotification) => {
-      setNotifications([newNotification, ...notifications]);
-      setUnReadCount((prevCount) => prevCount + 1);
-    });
-    return () => {
-      socket.off("newNotification");
-    };
-  }, [isOpen]);
-  const handleNotificationClick = async (notificationId: string) => {
+    
+    },[isOpen])
+    useEffect(()=>{
+      if(!socket)return
+      const handleNewNotification=(newNotification:INotification)=>{
+        setNotifications([newNotification, ...notifications]);
+        setUnReadCount((prevCount) => prevCount + 1);
+      }
+      socket.on("newNotification",handleNewNotification);
+      return () => {
+        socket.off("newNotification");
+      };
+    }, [socket]);
+   
+  const handleNotificationClick = async (notification:INotification) => {
     try {
-      await markNotificationAsRead(notificationId);
+      await markNotificationAsRead(notification._id);
       setNotifications(
         notifications.map((n) =>
-          n._id === notificationId ? { ...n, read: true } : n
+          n._id === notification._id ? { ...n, read: true } : n
         )
       );
-      setUnReadCount((prevCount) => prevCount - 1);
+      setUnReadCount((prevCount) => Math.max(prevCount-1,0));
+      if(notification.link)
+      {
+        navigate(notification.link)
+        onClose()
+      }
     } catch (error) {
       toast.error("Error marking notification as read");
+      console.error("Error marking notification as read",error);
     }
   };
   if (!isOpen) return null;
@@ -70,30 +82,30 @@ export const Notification= ({isOpen,onClose}: {
           </button>
         </div>
         {loading ? (
-      <LoaderIcon className="w-4 h-4"/>
+      <LoaderIcon className="w-4 h-4 animate-spin"/>
     ):notifications.length===0 ? (
-      <p className="text-gray-500">No notification tes</p>
+      <p className="text-gray-500">No notifications</p>
     ): (
           <ul>
             {notifications.map((notification) => (
               <li
                 key={notification._id}
-                onClick={() => handleNotificationClick(notification._id)}
+                onClick={() => handleNotificationClick(notification)}
                 className={`cursor-pointer px-4 py-2 hover:bg-gray-900 rounded-md mb-2  ${
-                  !notification.read && "font-semibold bg-gray-500"
+                  !notification.read && "font-semibold bg-gray"
                 }`}
               >
               <div className="flex items-center">
                 {notification.senderModel==='Employer'? (
-                  <img src={notification.sender.logo}
+                  <img src={notification.senderInfo.logo}
                   className="w-8 h-8 rounded-full mr-2"/>
                 ):(
-                  <img src={notification.sender.profilePicture}
+                  <img src={notification.senderInfo.profilePicture}
                   className="w-8 h-8 rounded-full mr-2"/>
                 )}
                 <div>
                   <p className="font-semibold">
-                    {notification.senderModel==='Employer'? notification.sender.companyName :notification.sender.firstName}
+                    {/* {notification.senderModel==='Employer'? notification.senderInfo.companyName :notification.senderInfo.firstName} */}
                   </p>
                   <p>{notification.content}</p>
                 </div>

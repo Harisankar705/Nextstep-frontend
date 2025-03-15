@@ -71,10 +71,7 @@ const handleDeleteJob = async () => {
         <div className="bg-gray-800 rounded-lg overflow-hidden">
           <div className="flex justify-between items-center p-4 border-b border-gray-700">
             <h2 className="text-lg font-semibold">Job List</h2>
-            <button className="flex items-center space-x-2 bg-gray-700 px-3 py-2 rounded-lg">
-              <Filter size={18} />
-              <span>Filters</span>
-            </button>
+           
           </div>
           <table className="w-full">
             <thead className="bg-gray-800">
@@ -146,8 +143,8 @@ const handleDeleteJob = async () => {
                   </td>
                   <td className="p-4">
                     <button
-                      className="flex justify-between items-center bg-teal-300 px-4 text-xs rounded-lg text-black"
-                      onClick={() => navigate(`/job-applicants/${job._id}`)}  // Navigate to job applicants page
+                      className="flex justify-between items-center bg-teal-300 px-4 rounded-lg text-black"
+                      onClick={() => navigate(`/job-applicants/${job._id}`)} 
                     >
                       View Applicants
                     </button>

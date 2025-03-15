@@ -20,7 +20,6 @@ import Profile from './pages/candidate/Profile.tsx';
 import EditProfilee from './pages/candidate/EditProfilee.tsx'
 import Verification from './pages/admin/Verification.tsx';
 import UserProfile from './pages/candidate/UserProfile.tsx';
-import { ConnectionRequest } from './pages/candidate/ConnectionRequest.tsx';
 import { JobPostingForm } from './pages/employer/job/JobPostingForm.tsx';
 import { JobListing } from './pages/employer/job/JobListing.tsx';
 import { SavedPosts } from './pages/candidate/SavedPosts.tsx';
@@ -34,12 +33,15 @@ import { Payment } from './pages/candidate/Payment.tsx';
 import { PaymentSuccess } from './pages/candidate/PaymentSuccess.tsx';
 import { ReportedPosts } from './pages/admin/ReportedPosts.tsx';
 import { useSelector } from 'react-redux';
-import { UserCandidate } from './types/Candidate.ts';
+import { UserCandidate } from './types/Candidate.ts'; 
 import { Subscriptions } from './pages/admin/Subscriptions.tsx';
 import SubscriptionForm from './pages/admin/SubscriptionForm.tsx';
 import SearchProfile from './pages/employer/SearchProfile.tsx';
 import { ForgotPassword } from './pages/candidate/password/ForgotPassword.tsx';
 import { ResetPassword } from './pages/candidate/password/ResetPassword.tsx';
+import { AllConnections } from './pages/candidate/AllConnections.tsx';
+import  ErrorBoundary  from './pages/candidate/ErrorBoundary.tsx';
+import { AppliedJobs } from './pages/candidate/AppliedJobs.tsx';
 const App = () => {
   const user = useSelector((state: { user: UserCandidate }) => state.user)??null
   return (
@@ -57,6 +59,8 @@ const App = () => {
           <Route path='/job-details/:id' element={<ProtectedRoute role='candidate'>{<JobDetails />}</ProtectedRoute>} />
           <Route path='/candidate-details' element={<ProtectedRoute role='candidate'>{<CandidateDetails />}</ProtectedRoute>} />
           <Route path='/candidate-profile' element={<ProtectedRoute role='candidate'><Profile user={user} isOwnProfile={true} /></ProtectedRoute>} />
+          <Route path='/candidate-profile/:userId' element={<ProtectedRoute role='candidate'><Profile /></ProtectedRoute>} />
+          <Route path='/appliedjobs' element={<ProtectedRoute role='candidate'>{<AppliedJobs />}</ProtectedRoute>} />
           <Route path='/candidate-profile/:id/:role' element={<ProtectedRoute role='candidate'>{<UserProfile />}</ProtectedRoute>} />
           <Route path='/edit-profile' element={<ProtectedRoute role='candidate'>{<EditProfilee />}</ProtectedRoute>}/>
           <Route path='/saved' element={<ProtectedRoute role='candidate'>{<SavedPosts />}</ProtectedRoute>}/>
@@ -64,6 +68,7 @@ const App = () => {
           <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password/:token' element={<ResetPassword />}/>
           <Route path='/payment-success' element={<ProtectedRoute role='candidate'>{<PaymentSuccess />}</ProtectedRoute>}/>
+          <Route path='followrequests' element={<ProtectedRoute role='candidate'><ErrorBoundary><AllConnections /></ErrorBoundary></ProtectedRoute>}/>
           {/* //admin */}
           <Route path='/admin' element={<AdminLogin/>}/>
           <Route path='/sidebar' element={<Employers/>}/>
@@ -71,7 +76,6 @@ const App = () => {
           <Route path='/candidates'element={<ProtectedRoute role='admin'>{<Candidates/>}</ProtectedRoute>}/>
           <Route path='/employers'element={<ProtectedRoute role='admin'>{<Employers/>}</ProtectedRoute>}/>
           <Route path='/verifyemployer/:id'element={<ProtectedRoute role='admin'>{<Verification/>}</ProtectedRoute>}/>
-          <Route path='followrequests'element={<ProtectedRoute role='admin'>{<ConnectionRequest/>}</ProtectedRoute>}/>
           <Route path='/reports'element={<ProtectedRoute role='admin'>{<ReportedPosts/>}</ProtectedRoute>}/>
           <Route path='/subscription'element={<ProtectedRoute role='admin'>{<Subscriptions/>}</ProtectedRoute>}/>
           <Route path='/add-subscription'element={<ProtectedRoute role='admin'>{<SubscriptionForm/>}</ProtectedRoute>}/>
@@ -79,8 +83,8 @@ const App = () => {
           {/* employer */}
           <Route path='/employersignup' element={<EmployerSignup />} />
           <Route path='/search-profile/:id/:role' element={<SearchProfile/>} />
-
           <Route path='/messages/:userId/:role' element={<Chat />}/>
+          <Route path='/messages' element={<Chat />}/>
           <Route path='/employerlogin' element={<EmployerLogin />} />
           <Route path='/employerhome' element={<ProtectedRoute role='employer'><EmployerDashboard /></ProtectedRoute> }/>
           <Route path='/feeds' element={<ProtectedRoute role='employer'><Feed /></ProtectedRoute> }/>

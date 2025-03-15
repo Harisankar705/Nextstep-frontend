@@ -197,6 +197,15 @@ export const fetchJobs = async () => {
     throw error;
   }
 };
+export const fetchAppliedJobs = async () => {
+  try {
+    const response = await api.get("/appliedjobs");
+    return response.data
+  } catch (error) {
+    axiosError(error, "fetchAppliedJobs");
+    throw error;
+  }
+};
 export const scheduleInterview = async (
   scheduleData: InterviewScheduleData,
   userId: string,
@@ -225,6 +234,7 @@ export const getURL = async (url: string) => {
 };
 export const fetchUserMessages = async (id: string) => {
   try {
+    console.log("FETCHUSERMESSAGES",id  )
     const response = await api.get(`/get-chat/${id}`);
     return response.data;
   } catch (error) {

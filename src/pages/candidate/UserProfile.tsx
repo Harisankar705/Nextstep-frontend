@@ -9,10 +9,10 @@ import { useEffect, useState } from "react";
 import Spinner from "../../utils/Spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../utils/Navbar";
-import { PostType, UserCandidate } from "../../types/Candidate";
+import { INotification, PostType, UserCandidate } from "../../types/Candidate";
 import Post from "./Post";
 import { getUserPosts } from "../../services/authService";
-
+import { useSocket } from "../../SocketContext";
 import { individualDetails } from "../../services/adminService";
 import toast from "react-hot-toast";
 import { checkFollowStatus, toggleFollow } from "../../services/commonService";
@@ -56,16 +56,9 @@ const UserProfile = () => {
     };
     fetchPosts();
   }, [userId, navigate]);
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black text-white">
-        <Navbar />
-        <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-          <Spinner loading={true} />
-        </div>
-      </div>
-    );
-  }
+  
+  
+ 
   if (!profileData) {
     return (
       <div className="min-h-screen bg-black text-white">
@@ -121,16 +114,7 @@ const UserProfile = () => {
       </div>
     );
   }
-  if (!profileData) {
-    return (
-      <div className="min-h-screen bg -black text-white">
-        <Navbar />
-        <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-          <h2>User not found</h2>
-        </div>
-      </div>
-    );
-  }
+  
   const profilePictureURL =
     role === "user"
       ? profileData.profilePicture
@@ -162,11 +146,7 @@ const UserProfile = () => {
                   ? `${profileData.firstName} ${profileData.secondName}`
                   : profileData.companyName}
               </h1>
-              <p className="text-purple-400 mt-1">
-                {profileData.friends
-                  ? `${profileData.friends.length} friends`
-                  : "No friends"}
-              </p>
+              
             </div>
             <div className="flex justify-center mt-4">
               <button

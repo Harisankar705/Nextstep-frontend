@@ -7,7 +7,8 @@ const initialState={
     isAuthenticated:false,
     phoneNumber:null,
     skills:null,
-    languages:null
+    languages:null,
+    role: "candidate" 
 }
 const userSlice=createSlice({
     name:"user",

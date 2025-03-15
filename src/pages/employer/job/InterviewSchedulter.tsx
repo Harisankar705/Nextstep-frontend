@@ -16,6 +16,11 @@ const InterviewScheduler: React.FC<InterviewScheduleProps> = ({ applicant, onSch
   const [scheduledInterview, setScheduledInterview] = useState<InterviewScheduleData | null>(null); // New state for scheduled interview
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    const today=new Date().toISOString().split('T')[0]
+    if(name==='date'&& value<today)
+    {
+        return
+    }
     setScheduleData(prev => ({
       ...prev,
       [name]: value

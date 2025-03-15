@@ -4,7 +4,8 @@ const initialState={
     email:null,
     logo:null,
     isAuthenticated:false,
-    companyName:null
+    companyName:null,
+    role: "employer" 
 }
 const employerSlice=createSlice({
     name:'employer',
