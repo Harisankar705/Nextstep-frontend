@@ -92,7 +92,7 @@ const EmployerLogin = () => {
                   Password
                 </label>
                 <button type="button" onClick={handleForgotPassword}
-                className="text-xs text-[#] hover:underline">
+                className="text-xs text-[#0DD3B4] hover:underline">
                   Forgot Password
                 </button>
                 {showForgotPassword && <ForgotPassword role="employer"/>}
