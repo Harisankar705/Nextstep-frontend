@@ -56,6 +56,9 @@ const EmployerLogin = () => {
   const handleForgotPassword=useCallback(()=>{
       setShowForgotPassword(true)
     },[])
+    const closeForgotPassword=useCallback(()=>{
+        setShowForgotPassword(false)
+      },[])
   return (
     <div className="min-h-screen w-full bg-[#111827] text-white flex items-center justify-center">
       {loading && <Spinner loading={true}/>}
@@ -95,7 +98,7 @@ const EmployerLogin = () => {
                 className="text-xs text-[#0DD3B4] hover:underline">
                   Forgot Password
                 </button>
-                {showForgotPassword && <ForgotPassword role="employer"/>}
+                  {showForgotPassword && <ForgotPassword role="employer" onClose={closeForgotPassword}/>}
                 </div>
                
                 <input

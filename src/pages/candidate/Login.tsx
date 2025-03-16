@@ -24,6 +24,9 @@ const Login = () => {
   const handleForgotPassword=useCallback(()=>{
     setShowForgotPassword(true)
   },[])
+  const closeForgotPassword=useCallback(()=>{
+    setShowForgotPassword(false)
+  },[])
   const handleLoginClick = useCallback(async (e:React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
@@ -95,7 +98,7 @@ const Login = () => {
                   >
                     Forgot Password
                   </button>
-                  {showForgotPassword && <ForgotPassword role="user"/>}
+                  {showForgotPassword && <ForgotPassword role="user" onClose={closeForgotPassword}/>}
                 </div>
                 <div className="relative">
                   <input

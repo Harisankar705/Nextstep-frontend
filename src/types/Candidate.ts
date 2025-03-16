@@ -21,6 +21,8 @@ export  interface FileData{
 }
 export interface ForgotPasswordProps{
     role:string
+    onClose:()=>void
+
 }
 
 export  interface FilePreviewProps
