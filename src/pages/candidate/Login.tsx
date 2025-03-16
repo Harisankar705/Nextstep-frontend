@@ -56,6 +56,7 @@ const Login = () => {
   
   return (
     <div className="min-h-screen w-full bg-[#1a1625] text-white flex items-center justify-center p-4">
+      {showForgotPassword && <ForgotPassword role="user" onClose={closeForgotPassword}/>}
       <div className="container max-w-[1100px] px-4">
         <div className=" grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div className="flex flex-col justify-center space-y-4 text-center lg:text-left">
@@ -98,7 +99,6 @@ const Login = () => {
                   >
                     Forgot Password
                   </button>
-                  {showForgotPassword && <ForgotPassword role="user" onClose={closeForgotPassword}/>}
                 </div>
                 <div className="relative">
                   <input
