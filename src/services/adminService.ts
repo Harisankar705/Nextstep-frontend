@@ -90,7 +90,7 @@ export const toogleStatus = async (id: string, role: string): Promise<Candidate[
         throw error
     }
 }
-export const verifyEmployer=async(id:string,status:"VERIFIED"|"DENIED")=>{
+export const verifyEmployer=async(id:string,status:"APPROVED"|"DENIED")=>{
     try
     {
         const response = await api.patch(`/verifyemployer/${id}`,{status})

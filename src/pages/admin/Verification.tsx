@@ -72,7 +72,7 @@ const Verification = () => {
       </div>
     );
   }
-  const handleVerifyEmployer = async (status: "VERIFIED" | "DENIED") => {
+  const handleVerifyEmployer = async (status: "APPROVED" | "DENIED") => {
     if (id) {
       setVerifying(true);
       try {
@@ -94,7 +94,7 @@ const Verification = () => {
   };
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "VERIFIED":
+      case "APPROVED":
         return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
       case "DENIED":
         return <XCircle className="w-4 h-4 text-red-500" />;
@@ -159,7 +159,7 @@ const Verification = () => {
                 <span
                   className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium
                                     ${
-                                      employer?.isVerified === "VERIFIED"
+                                      employer?.isVerified === "APPROVED"
                                         ? "bg-emerald-50 text-emerald-700"
                                         : employer?.isVerified === "DENIED"
                                         ? "bg-red-50 text-red-700"
@@ -167,7 +167,7 @@ const Verification = () => {
                                     }`}
                 >
                   {getStatusIcon(employer?.isVerified || "PENDING")}
-                  {employer?.isVerified === "VERIFIED"
+                  {employer?.isVerified === "APPROVED"
                     ? "Verified"
                     : employer?.isVerified === "DENIED"
                     ? "Denied"
@@ -334,7 +334,7 @@ const Verification = () => {
                     </div>
                     <div className="flex gap-3">
                       <button
-                        onClick={() => handleVerifyEmployer("VERIFIED")}
+                        onClick={() => handleVerifyEmployer("APPROVED")}
                         disabled={verifying}
                         className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors disabled:opacity-50"
                       >
