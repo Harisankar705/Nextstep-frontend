@@ -37,7 +37,6 @@ import { UserCandidate } from './types/Candidate.ts';
 import { Subscriptions } from './pages/admin/Subscriptions.tsx';
 import SubscriptionForm from './pages/admin/SubscriptionForm.tsx';
 import SearchProfile from './pages/employer/SearchProfile.tsx';
-import { ForgotPassword } from './pages/candidate/password/ForgotPassword.tsx';
 import { ResetPassword } from './pages/candidate/password/ResetPassword.tsx';
 import { AllConnections } from './pages/candidate/AllConnections.tsx';
 import  ErrorBoundary  from './pages/candidate/ErrorBoundary.tsx';
@@ -65,7 +64,6 @@ const App = () => {
           <Route path='/edit-profile' element={<ProtectedRoute role='candidate'>{<EditProfilee />}</ProtectedRoute>}/>
           <Route path='/saved' element={<ProtectedRoute role='candidate'>{<SavedPosts />}</ProtectedRoute>}/>
           <Route path='/payment' element={<ProtectedRoute role='candidate'>{<Payment />}</ProtectedRoute>}/>
-          <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password/:token' element={<ResetPassword />}/>
           <Route path='/payment-success' element={<ProtectedRoute role='candidate'>{<PaymentSuccess />}</ProtectedRoute>}/>
           <Route path='followrequests' element={<ProtectedRoute role='candidate'><ErrorBoundary><AllConnections /></ErrorBoundary></ProtectedRoute>}/>

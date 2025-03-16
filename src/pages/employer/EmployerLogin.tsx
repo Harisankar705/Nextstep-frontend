@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Logo } from "../../components/Logo";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authService";
@@ -8,10 +8,12 @@ import { setEmployer } from "../../redux/employerSlice";
 import { useDispatch } from "react-redux";
 import Spinner from "../../utils/Spinner";
 import { GoogleAuth } from "../common/GoogleAuth";
+import { ForgotPassword } from "../candidate/password/ForgotPassword";
 const EmployerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword,setShowForgotPassword]=useState(false)
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -51,6 +53,9 @@ const EmployerLogin = () => {
       setLoading(false);
     }
   };
+  const handleForgotPassword=useCallback(()=>{
+      setShowForgotPassword(true)
+    },[])
   return (
     <div className="min-h-screen w-full bg-[#111827] text-white flex items-center justify-center">
       {loading && <Spinner loading={true}/>}
@@ -82,9 +87,17 @@ const EmployerLogin = () => {
                 />
               </div>
               <div className="space-y-2 relative">
+                <div className="flex items-center justify-between">
                 <label className="text-sm" htmlFor="password">
                   Password
                 </label>
+                <button type="button" onClick={handleForgotPassword}
+                className="text-xs text-[#] hover:underline">
+                  Forgot Password
+                </button>
+                {showForgotPassword && <ForgotPassword role="employer"/>}
+                </div>
+               
                 <input
                   id="password"
                   onChange={(e) => setPassword(e.target.value)}
@@ -110,13 +123,7 @@ const EmployerLogin = () => {
                 {loading ? "Logging in..." : "Login"}
               </button>
               <GoogleAuth  authType="login" role="employer"/>
-              {/* <button
-                type="button"
-                className="w-full flex items-center justify-center space-x-2 bg-[#0DD3B4] text-black font-medium py-2 px-4 rounded-md hover:bg-[#0dd3b4]/90 transition-colors"
-              >
-                <FcGoogle className="w-4 h-4" />
-                <span className="text-sm">Login with Google!</span>
-              </button> */}
+              
             </form>
             <div className="text-center text-sm">
               <span className="text-gray-400">Don't have an Account? </span>

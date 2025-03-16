@@ -19,6 +19,10 @@ export  interface FileData{
   type?:string,
   size?:number
 }
+export interface ForgotPasswordProps{
+    role:string
+}
+
 export  interface FilePreviewProps
 {
   file:FileData,

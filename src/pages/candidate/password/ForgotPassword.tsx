@@ -2,8 +2,9 @@ import { ArrowRight, KeyRound, Mail } from "lucide-react"
 import React, { useState } from "react"
 import toast from "react-hot-toast"
 import { forgotPassword } from "../../../services/commonService"
+import { ForgotPasswordProps } from "../../../types/Candidate"
 
-export const ForgotPassword = () => {
+export const ForgotPassword:React.FC<ForgotPasswordProps>= ({role}) => {
     const [email,setEmail]=useState('')
     const [emailSent,setEmailSent]=useState(false)
     const [isLoading,setIsLoading]=useState(false)
@@ -11,7 +12,7 @@ export const ForgotPassword = () => {
         e.preventDefault()
         setIsLoading(true)
         try {
-            const response=await forgotPassword(email,'user')
+            const response=await forgotPassword(email,role)
             setEmailSent(true)
             console.log("RESPONSE",response)
             if(response.status===200)

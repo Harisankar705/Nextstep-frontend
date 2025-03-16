@@ -8,8 +8,10 @@ import Spinner from "../../utils/Spinner";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/userSlice";
 import { GoogleAuth } from "../common/GoogleAuth";
+import { ForgotPassword } from "./password/ForgotPassword";
 const Login = () => {
   const [email, setEmail] = useState('')
+  const [showForgotPassword,setShowForgotPassword]=useState(false)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -20,8 +22,8 @@ const Login = () => {
     navigate('/signup')
   },[navigate])
   const handleForgotPassword=useCallback(()=>{
-    navigate('/forgot-password')
-  },[navigate])
+    setShowForgotPassword(true)
+  },[])
   const handleLoginClick = useCallback(async (e:React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
@@ -93,6 +95,7 @@ const Login = () => {
                   >
                     Forgot Password
                   </button>
+                  {showForgotPassword && <ForgotPassword role="user"/>}
                 </div>
                 <div className="relative">
                   <input
