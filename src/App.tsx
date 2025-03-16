@@ -41,6 +41,7 @@ import { ResetPassword } from './pages/candidate/password/ResetPassword.tsx';
 import { AllConnections } from './pages/candidate/AllConnections.tsx';
 import  ErrorBoundary  from './pages/candidate/ErrorBoundary.tsx';
 import { AppliedJobs } from './pages/candidate/AppliedJobs.tsx';
+import { PageNotFound } from './pages/common/PageNotFound.tsx';
 const App = () => {
   const user = useSelector((state: { user: UserCandidate }) => state.user)??null
   return (
@@ -50,6 +51,7 @@ const App = () => {
         <Routes>
           {/* user */}
         <Route path='/login' element={<Login />} />
+        <Route path='*' element={<PageNotFound />} />
           <Route path='/signup' element={<Signup />} />
           <Route path='/' element={<LandingPage />} />
           <Route path='/navbar' element={<Navbar/>}/>
