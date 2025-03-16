@@ -62,6 +62,8 @@ const EmployerLogin = () => {
   return (
     <div className="min-h-screen w-full bg-[#111827] text-white flex items-center justify-center">
       {loading && <Spinner loading={true}/>}
+      {showForgotPassword && <ForgotPassword role="employer" onClose={closeForgotPassword}/>}
+
       <div className="container max-w-screen-md sm:max-w-screen-lg lg-max-w-[1100px] px-4">
         <div className="grid grid-cols-1 gap-6 sm:gap-8  lg:grid-cols-2">
           <div className="flex flex-col justify-center space-y-4">
@@ -98,7 +100,6 @@ const EmployerLogin = () => {
                 className="text-xs text-[#0DD3B4] hover:underline">
                   Forgot Password
                 </button>
-                  {showForgotPassword && <ForgotPassword role="employer" onClose={closeForgotPassword}/>}
                 </div>
                
                 <input
