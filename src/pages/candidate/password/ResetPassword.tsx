@@ -68,7 +68,7 @@ export const ResetPassword = () => {
               the new password
             </p>
             <a
-              href="/login"
+              href="/"
               className="inline-flex items-center justify-center gap-2 w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
             >
               Go to Login
