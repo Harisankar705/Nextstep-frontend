@@ -12,7 +12,7 @@ import { useSocket } from '../SocketContext';
 export default function Navbar() {
     const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const {socket,isConnected}=useSocket()
+    const {socket}=useSocket()
     const [unreadNotificationCount,setUnreadNotificationCount]=useState(0)
     const [mobileMenuOpen,setMobileMenuOpen]=useState(false)
     const user = useSelector((state: { user: UserCandidate }) => state.user)??null

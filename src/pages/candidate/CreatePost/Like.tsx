@@ -1,7 +1,6 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { ThumbsUp } from 'lucide-react'
-import { useSocket } from "../../../SocketContext"
 import { likePost } from "../../../services/commonService"
 
 export const Like = ({
@@ -9,8 +8,6 @@ export const Like = ({
     initialLikes = 0,
     initiallyLiked = false,
     onLikeCountChange,
-    currentUser,
-    post
 }: {
     postId: string;
     currentUser:any,
@@ -22,7 +19,6 @@ export const Like = ({
     const [isLiked, setIsLiked] = useState(initiallyLiked)
     const [likeCount, setLikeCount] = useState(initialLikes)
     const [loading, setLoading] = useState(false)
-    const {socket}=useSocket()
 
     const handleToggleLike = async () => {
         if (loading) return

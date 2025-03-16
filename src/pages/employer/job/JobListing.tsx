@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";  
-import { ChevronDown, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { jobFormData } from "../../../types/Employer";
 import { deleteJob, fetchJobs } from "../../../services/employerService";

@@ -32,7 +32,7 @@ export const Chat = () => {
   const [userDetails, setUserDetails] = useState<any>(null);
   const [selectedChat, setSelectedChat] = useState<ChatHistoryItem | null>(null);
   const userId=urlUserId||selectedChat?._id
-  const role = urlRole || "user"; // Default role if not provided
+  const role = urlRole || "user";
 
 
   
@@ -182,14 +182,14 @@ export const Chat = () => {
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
       socket?.emit("videoCallOffer", {
-        senderId: selectedChat._id, 
+        senderId: selectedChat?._id, 
         receiverId: userId, 
         offer,
       });
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           socket?.emit("newIceCandidate", {
-            senderId: selectedChat._id, 
+            senderId: selectedChat?._id, 
             receiverId: userId, 
             candidate: event.candidate,
           });
@@ -255,7 +255,7 @@ export const Chat = () => {
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           socket?.emit("newIceCandidate", {
-            senderId: selectedChat._id,
+            senderId: selectedChat?._id,
             receiverId: caller.senderId,
             candidate: event.candidate,
           });
@@ -775,7 +775,7 @@ useEffect(() => {
   }, [socket]);
   const MessageContextMenu = ({ message }: { message: Message }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const canDelete = message.senderId === selectedChat._id; 
+    const canDelete = message.senderId === selectedChat?._id; 
     if (!canDelete) return null;
     return (
       <div className="relative inline-block">

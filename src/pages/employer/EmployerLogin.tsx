@@ -6,7 +6,6 @@ import { EyeOff, Eye } from "lucide-react";
 import {toast} from 'react-hot-toast'
 import { setEmployer } from "../../redux/employerSlice";
 import { useDispatch } from "react-redux";
-import { AxiosError } from "axios";
 import Spinner from "../../utils/Spinner";
 import { GoogleAuth } from "../common/GoogleAuth";
 const EmployerLogin = () => {

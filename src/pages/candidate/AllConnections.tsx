@@ -80,7 +80,7 @@ export const AllConnections = () => {
         <div className="flex flex-col md:flex-row gap-8">
         <div
     className={`w-full md:w-64 flex-shrink-0 ${
-      role === "employer" ? "ml-[200px]" : "" /* Moves it to the right for employers */
+      role === "employer" ? "ml-[200px]" : ""
     }`}
   >            <div className="bg-gray-800 rounded-lg shadow-sm p-6 sticky top-8">
               <div className="flex items-center gap-4 mb-6">

@@ -59,7 +59,7 @@ const App = () => {
           <Route path='/job-details/:id' element={<ProtectedRoute role='candidate'>{<JobDetails />}</ProtectedRoute>} />
           <Route path='/candidate-details' element={<ProtectedRoute role='candidate'>{<CandidateDetails />}</ProtectedRoute>} />
           <Route path='/candidate-profile' element={<ProtectedRoute role='candidate'><Profile user={user} isOwnProfile={true} /></ProtectedRoute>} />
-          <Route path='/candidate-profile/:userId' element={<ProtectedRoute role='candidate'><Profile /></ProtectedRoute>} />
+          <Route path='/candidate-profile/:userId' element={<ProtectedRoute role='candidate'><Profile user={user} isOwnProfile={false} /></ProtectedRoute>} />
           <Route path='/appliedjobs' element={<ProtectedRoute role='candidate'>{<AppliedJobs />}</ProtectedRoute>} />
           <Route path='/candidate-profile/:id/:role' element={<ProtectedRoute role='candidate'>{<UserProfile />}</ProtectedRoute>} />
           <Route path='/edit-profile' element={<ProtectedRoute role='candidate'>{<EditProfilee />}</ProtectedRoute>}/>

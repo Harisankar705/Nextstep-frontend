@@ -1,7 +1,7 @@
 import { Edit } from "lucide-react"
 import { ProfileHeaderProps } from "../../../types/Candidate"
 export const ProfileHeader:React.FC<ProfileHeaderProps>=({user,isOwnProfile,onEditProfile}) => {
-    const {firstName,secondName,profilePicture,friends}=user
+    const {firstName,secondName,profilePicture}=user
   return (
     <>
     <div className="relative h-[350px]">

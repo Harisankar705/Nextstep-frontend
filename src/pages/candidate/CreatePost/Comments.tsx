@@ -6,7 +6,6 @@ const Comments = ({
   postId,
   onCommentCountChange,
   currentUser,
-  post,
 }: {
   postId: string; 
   onCommentCountChange?: (count: number) => void;

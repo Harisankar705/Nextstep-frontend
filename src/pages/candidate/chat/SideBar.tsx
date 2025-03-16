@@ -37,8 +37,8 @@ export const SideBar: React.FC<SideBarProps> = ({ onSelectedChat }) => {
         const response = await getAllChats();
         console.log("Fetched chat history:", response);
     
-        const { messages, currentUserId } = response.data;
-        setCurrentUserId(currentUserId); // Set currentUserId state
+        const { messages, userId } = response.data;
+        setCurrentUserId(userId);
         console.log(currentUserId)
         if (Array.isArray(messages)) {
           const uniqueChats = extractUniqueChats(messages, currentUserId);
