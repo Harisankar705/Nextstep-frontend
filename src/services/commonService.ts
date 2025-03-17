@@ -10,6 +10,25 @@ export const toggleFollow = async (followingId: string): Promise<any> => {
     throw error;
   }
 };
+export const unfollow = async (followingId: string): Promise<any> => {
+  try {
+    const response = await api.post("/unfollowaccount", { followingId });
+    return response.data;
+  } catch (error) {
+    axiosError(error, "unfollow");
+    throw error;
+  }
+};
+export const rejectRequest = async (requestId: string): Promise<any> => {
+  try {
+    const response = await api.delete(`/rejectrequest/${requestId}`);
+    console.log('rejectrequest',response)
+    return response.data;
+  } catch (error) {
+    axiosError(error, "rejectRequest");
+    throw error;
+  }
+};
 export const followBack = async (connectionId: string): Promise<boolean> => {
   try {
     const response = await api.post("/followback", { connectionId });

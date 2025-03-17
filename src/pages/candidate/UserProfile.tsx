@@ -14,7 +14,7 @@ import Post from "./Post";
 import { getUserPosts } from "../../services/authService";
 import { individualDetails } from "../../services/adminService";
 import toast from "react-hot-toast";
-import { checkFollowStatus, toggleFollow } from "../../services/commonService";
+import { checkFollowStatus, toggleFollow, unfollow } from "../../services/commonService";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
@@ -39,12 +39,14 @@ const UserProfile = () => {
           getUserPosts(userId),
           individualDetails(userId, role as string),
         ]);
+        console.log("POSTRESPONSE",postResponse)
         setPosts(postResponse);
         const userDetails = details[0];
         setProfileData(userDetails);
         const followingStatus: boolean = await checkFollowStatus(
           userDetails._id
         );
+        console.log("FOLLOWINGSTATUS",followingStatus)
         setIsFollowing(followingStatus);
       } catch (error) {
         console.error("Error fetching posts",error);
@@ -80,6 +82,7 @@ const UserProfile = () => {
             : "You have unfollowed this user"
         );
       } catch (error) {
+        console.log('error',error)
         toast.error("Failed to update follow status");
       }
     }
@@ -88,11 +91,11 @@ const UserProfile = () => {
   const handleDialogAccept = async () => {
     setDialogVisible(false);
     try {
-      const newFollowStatus = await toggleFollow(profileData._id);
-      const isNowFollowing = newFollowStatus.data === true;
-      setIsFollowing(isNowFollowing);
+       await unfollow(profileData._id);
+      setIsFollowing(false);
       toast.success("You have unfollowed the user");
     } catch (error) {
+      console.log('error',error)
       toast.error("Failed to update follow status");
     }
   };

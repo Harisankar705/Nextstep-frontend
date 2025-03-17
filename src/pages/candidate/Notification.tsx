@@ -19,7 +19,7 @@ export const Notification= ({isOpen,onClose}: {
   useEffect(() => {
     const fetchNotification = async () => {
       setLoading(true)
-      try {
+      try { 
         const response: INotification[] = await getNotifications();
         console.log("RESPONSE",response)
         setNotifications(response);

@@ -1,25 +1,28 @@
 import { useEffect, useState } from "react";
 import { Connection, IEmployer } from "../../types/Employer";
 import Spinner from "../../utils/Spinner";
-import { followBack, getConnections, getPendingRequests } from "../../services/commonService";
-import { UserCheck, UserPlus } from "lucide-react";
+import { followBack, getConnections, getPendingRequests, rejectRequest } from "../../services/commonService";
+import { UserCheck, UserMinus, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Requests, UserCandidate } from "../../types/Candidate";
 import { useSelector } from "react-redux";
 import Navbar from "../../utils/Navbar";
 import SideBar from "../employer/SideBar";
+import { ReusableConfirmDialog } from "../../utils/ConfirmDialog";
 
 export const AllConnections = () => {
   const [connections, setConnections] = useState<Connection[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [selectedRequestId,setSelectedRequestId]=useState<string|null>(null)
   const [requests, setRequests] = useState<Requests[]>([]);
   const [activeTab, setActiveTab] = useState<"requests" | "connections">("requests");
   const currentUser = useSelector((state: { user: UserCandidate }) => state.user);
   const currentEmployer=useSelector((state:{user:IEmployer})=>state.user)
   const role=currentUser.isAuthenticated?currentUser.role:currentEmployer.isAuthenticated?currentEmployer.role:null
-  
+  const [isDialogVisible, setDialogVisible] = useState(false);
+
 
   const fetchRequests = async () => {
     try {
@@ -40,6 +43,7 @@ export const AllConnections = () => {
     setLoading(true);
     try {
       const response = await getConnections();
+      console.log("FETCH CONNECTIONS",response)
       setConnections(response.data.data);
     } catch (error) {
       console.error("Error fetching connections", error);
@@ -68,13 +72,46 @@ export const AllConnections = () => {
       toast.error("Failed to accept connection request");
     }
   };
+  const handleDialogAccept = async () => {
+    setDialogVisible(false);
+    try {
+      const response = await rejectRequest(selectedRequestId as string);
+      console.log("RESPNSE",response)
+      if(response.success)
+      {
+        toast.success("Request rejected successfully!");
+        setRequests((prevRequests)=>prevRequests.filter((request)=>request._id!==selectedRequestId))
 
+      }
+      else
+      {
+        toast.success("Failed to reject request!");
+
+      }
+
+    } catch (error) {
+      toast.error("Failed to update follow status");
+    }
+  };
+ 
+  const handleDialogReject = () => {
+    setDialogVisible(false);
+    toast.success("Unfollow cancelled");
+  };
   if (loading) {
     return <Spinner loading={true} />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
+        <ReusableConfirmDialog
+                  visible={isDialogVisible}
+                  onHide={() => setDialogVisible(false)}
+                  message="Are you sure you want to remove the request?"
+                  header="Unfollow Confirmation"
+                  onAccept={handleDialogAccept}
+                  onReject={handleDialogReject}
+                />
       {role==='employer'?<SideBar/>:<Navbar/>}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row gap-8">
@@ -212,6 +249,13 @@ export const AllConnections = () => {
                             >
                               <UserPlus className="h-4 w-4" />
                               Follow Back
+                            </button>
+                            <button
+                              onClick={() => {setDialogVisible(true);setSelectedRequestId(request._id)}}
+                              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                            >
+                              <UserMinus className="h-4 w-4" />
+                              Remove
                             </button>
                           </div>
                         </div>

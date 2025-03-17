@@ -37,7 +37,6 @@ const Post: React.FC<PostComponentProps> = ({
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
     const moreMenuRef = useRef<HTMLDivElement>(null);
-    console.log("PROFILEPICTURE",profilePicture)
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
