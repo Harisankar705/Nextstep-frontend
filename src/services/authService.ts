@@ -121,7 +121,7 @@ export const login = async (email: string, password: string, role: role) => {
 }
 export const googleLogin = async (token:string, role: role) => {
     try {
-        const response = await api.post('/google', { token,role }, { withCredentials: false })
+        const response = await api.post('/google', { token,role }, { withCredentials: true })
         console.log("GOOOOOOOGLELGOIN",response)
         return response
     } catch (error: unknown) {
