@@ -7,8 +7,8 @@ import {
   Briefcase,
   Building2,
   CheckCircle,
-  Globe, 
-  Mail,  
+  Globe,
+  Mail,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { applyJob, fetchJobById } from "../../services/employerService";
@@ -19,8 +19,8 @@ import Navbar from "../../utils/Navbar";
 const JobDetails = () => {
   const { id } = useParams<{ id: string | undefined }>();
   const [job, setJob] = useState<JobType | null>(null);
-  const [isApplying,setIsApplying]=useState(false)
-  const navigate=useNavigate()
+  const [isApplying, setIsApplying] = useState(false);
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const getJobDetails = async () => {
@@ -36,81 +36,81 @@ const JobDetails = () => {
     };
     getJobDetails();
   }, [id]);
-  const handleApplyClick=async()=>{
-    if(!job?._id)
-    {
-        toast.error('Job ID is not available')
-        return
+  const handleApplyClick = async () => {
+    if (!job?._id) {
+      toast.error("Job ID is not available");
+      return;
     }
-    setIsApplying(true)
+    setIsApplying(true);
     try {
-        const response=await applyJob(job._id)
-        if(response.status===200)
-        {
-            toast.success("Application submitted successfully!")
-            setJob((prev) => prev && { ...prev, hasApplied: true }); 
-        }
-        else
-        {
-            toast.error("Error applying for this job!")
-        }
-    }catch (error: unknown) {
-      let errorMessage = "An unexpected error occurred"; 
-  
+      const response = await applyJob(job._id);
+      if (response.status === 200) {
+        toast.success("Application submitted successfully!");
+        setJob((prev) => prev && { ...prev, hasApplied: true });
+      } else {
+        toast.error("Error applying for this job!");
+      }
+    } catch (error: unknown) {
+      let errorMessage = "An unexpected error occurred";
+
       if (error instanceof Error) {
-          errorMessage = error.message;
+        errorMessage = error.message;
       } else if (typeof error === "string") {
-          errorMessage = error;
+        errorMessage = error;
       }
-  
+
       toast.error(errorMessage);
-  
+
       if (errorMessage.includes("You have reached the maximum")) {
-          toast.custom((t) => (
-              <div
-                  className="bg-gray-800 p-4 rounded-lg text-white flex items-center justify-between"
-                  style={{ width: "100%", maxWidth: "500px" }}
-              >
-                  <div>
-                      <p>You have reached the maximum. Try premium to apply for unlimited jobs!</p>
-                  </div>
-                  <button
-                      onClick={() => {
-                          navigate('/payment', {
-                              state: {
-                                  redirectReason: 'job_application_limit',
-                                  jobId: job?._id
-                              }
-                          });
-                          toast.dismiss(t.id);
-                      }}
-                      className="text-teal-500 hover:text-teal-600 ml-2"
-                  >
-                      Upgrade to Premium
-                  </button>
+        toast.custom(
+          (t) => (
+            <div
+              className="bg-gray-800 p-4 rounded-lg text-white flex items-center justify-between"
+              style={{ width: "100%", maxWidth: "500px" }}
+            >
+              <div>
+                <p>
+                  You have reached the maximum. Try premium to apply for
+                  unlimited jobs!
+                </p>
               </div>
-          ), {
-              duration: 5000,
-              position: 'top-center',
-              icon: "💼",
-          });
+              <button
+                onClick={() => {
+                  navigate("/payment", {
+                    state: {
+                      redirectReason: "job_application_limit",
+                      jobId: job?._id,
+                    },
+                  });
+                  toast.dismiss(t.id);
+                }}
+                className="text-teal-500 hover:text-teal-600 ml-2"
+              >
+                Upgrade to Premium
+              </button>
+            </div>
+          ),
+          {
+            duration: 5000,
+            position: "top-center",
+            icon: "💼",
+          }
+        );
       }
-  }
-  
-    finally
-    {
-        setIsApplying(false)
+    } finally {
+      setIsApplying(false);
     }
-  }
+  };
   if (isLoading) {
     return <Spinner loading={true} />;
   }
   if (!job) {
     return <div className="text-center text-gray-400">Job not found!</div>;
   }
+  const isDeadlinePassed = job.applicationDeadline ? new Date(job.applicationDeadline) <= new Date():false;
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 ">
-         <Navbar />
+      <Navbar />
       <div className="max-w-6xl mx-auto mt-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
@@ -121,7 +121,9 @@ const JobDetails = () => {
                 </span>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">{job.jobTitle}</h1>
+                <h1 className="text-3xl font-bold text-white mb-2">
+                  {job.jobTitle}
+                </h1>
                 <div className="flex items-center text-gray-400 gap-4">
                   <span className="flex items-center gap-1">
                     <Building2 className="w-4 h-4 text-teal-500" />
@@ -136,7 +138,9 @@ const JobDetails = () => {
             </div>
             {/* Job Description */}
             <div className="bg-gray-800 rounded-xl p-6 space-y-6">
-              <h2 className="text-xl font-semibold text-white">Job Description</h2>
+              <h2 className="text-xl font-semibold text-white">
+                Job Description
+              </h2>
               <p className="text-gray-300 leading-relaxed">{job.description}</p>
             </div>
             {/* Required Knowledge */}
@@ -156,15 +160,23 @@ const JobDetails = () => {
             {/* Responsibilities */}
             {job.responsibilities && (
               <div className="bg-gray-800 rounded-xl p-6 space-y-6">
-                <h2 className="text-xl font-semibold text-white">Responsibilities</h2>
-                <p className="text-gray-300 leading-relaxed">{job.responsibilities}</p>
+                <h2 className="text-xl font-semibold text-white">
+                  Responsibilities
+                </h2>
+                <p className="text-gray-300 leading-relaxed">
+                  {job.responsibilities}
+                </p>
               </div>
             )}
             {/* Nice to Have */}
             {job.niceToHave && (
               <div className="bg-gray-800 rounded-xl p-6 space-y-6">
-                <h2 className="text-xl font-semibold text-white">Nice to Have</h2>
-                <p className="text-gray-300 leading-relaxed">{job.niceToHave}</p>
+                <h2 className="text-xl font-semibold text-white">
+                  Nice to Have
+                </h2>
+                <p className="text-gray-300 leading-relaxed">
+                  {job.niceToHave}
+                </p>
               </div>
             )}
             {/* Benefits */}
@@ -188,21 +200,29 @@ const JobDetails = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-gray-800 rounded-xl p-6">
-              <h2 className="text-xl font-semibold text-white mb-6">Job Overview</h2>
+              <h2 className="text-xl font-semibold text-white mb-6">
+                Job Overview
+              </h2>
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-gray-300">
                   <Calendar className="w-5 h-5 text-teal-500" />
                   <div>
                     <p className="text-sm text-gray-400">Posted date:</p>
-                    <p>{job.createdAt ? new Date(job.createdAt).toDateString() : "Date not available"}</p>
-                    </div>
+                    <p>
+                      {job.createdAt
+                        ? new Date(job.createdAt).toDateString()
+                        : "Date not available"}
+                    </p>
+                  </div>
                 </div>
                 {job.applicationDeadline && (
                   <div className="flex items-center gap-3 text-gray-300">
                     <Clock className="w-5 h-5 text-teal-500" />
                     <div>
                       <p className="text-sm text-gray-400">Deadline:</p>
-                      <p>{new Date(job.applicationDeadline).toLocaleDateString()}</p>
+                      <p>
+                        {new Date(job.applicationDeadline).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -210,7 +230,9 @@ const JobDetails = () => {
                   <DollarSign className="w-5 h-5 text-teal-500" />
                   <div>
                     <p className="text-sm text-gray-400">Salary:</p>
-                    <p>${job.salaryRange.min} - ${job.salaryRange.max} yearly</p>
+                    <p>
+                      ${job.salaryRange.min} - ${job.salaryRange.max} yearly
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-gray-300">
@@ -221,52 +243,56 @@ const JobDetails = () => {
                   </div>
                 </div>
               </div>
-              <button
+             <button
   className={`w-full ${
-    job.isActive && !job.hasApplied && !isApplying
+    job.isActive && !job.hasApplied && !isApplying && !isDeadlinePassed
       ? "bg-teal-500 hover:bg-teal-600"
       : "bg-gray-500 cursor-not-allowed"
   } text-white font-semibold py-3 px-6 rounded-lg mt-6 transition-colors`}
-  disabled={!job.isActive || job.hasApplied || isApplying} // Disable if applying
+  disabled={
+    !job.isActive || job.hasApplied || isApplying || isDeadlinePassed
+  }
   onClick={handleApplyClick}
 >
   {isApplying ? (
-    <Spinner loading={true} /> 
+    <Spinner loading={true} />
   ) : job.hasApplied ? (
     "Applied"
-  ) : job.isActive ? (
-    "Apply Now"
-  ) : (
+  ) : !job.isActive || isDeadlinePassed ? (
     "Job Closed"
+  ) : (
+    "Apply Now"
   )}
 </button>
             </div>
             <div className="bg-gray-800 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-6">Company Information</h2>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 text-gray-300">
-                <Building2 className="w-5 h-5 text-teal-500" />
-                <div>
-                  <p className="text-sm text-gray-400">Name:</p>
-                  {job.employerId?.companyName || "Unknown Company"}
+              <h2 className="text-xl font-semibold text-white mb-6">
+                Company Information
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-gray-300">
+                  <Building2 className="w-5 h-5 text-teal-500" />
+                  <div>
+                    <p className="text-sm text-gray-400">Name:</p>
+                    {job.employerId?.companyName || "Unknown Company"}
                   </div>
-              </div>
-              <div className="flex items-center gap-3 text-gray-300">
-                <Globe className="w-5 h-5 text-teal-500" />
-                <div>
-                  <p className="text-sm text-gray-400">Web:</p>
-                  {job.employerId?.website || "Unknown Company"}
                 </div>
-              </div>
-              <div className="flex items-center gap-3 text-gray-300">
-                <Mail className="w-5 h-5 text-teal-500" />
-                <div>
-                  <p className="text-sm text-gray-400">Email:</p>
-                  {job.employerId?.email || "Unknown Company"}
+                <div className="flex items-center gap-3 text-gray-300">
+                  <Globe className="w-5 h-5 text-teal-500" />
+                  <div>
+                    <p className="text-sm text-gray-400">Web:</p>
+                    {job.employerId?.website || "Unknown Company"}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-gray-300">
+                  <Mail className="w-5 h-5 text-teal-500" />
+                  <div>
+                    <p className="text-sm text-gray-400">Email:</p>
+                    {job.employerId?.email || "Unknown Company"}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </div>
           {/* Company Info */}
         </div>
