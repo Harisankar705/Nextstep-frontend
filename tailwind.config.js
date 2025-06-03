@@ -1,5 +1,5 @@
 export const content = [
-  './src/**/*.{js,jsx,ts,tsx}', // Scan all .js, .jsx, .ts, .tsx files in the 'src' folder
+  './src/**/*.{js,jsx,ts,tsx}', 
 ];
 export const theme = {
   extend: {},

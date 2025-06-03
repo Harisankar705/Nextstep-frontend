@@ -31,7 +31,6 @@ const Account = () => {
             <SideBar />
         </div>
 
-        {/* Main Content */}
         <div className="flex-1 p-4 lg:p-12 ml-[250px]">
             <div className="flex justify-between items-center mb-12">
                 <h1 className='text-2xl lg:text-3xl font-bold'>Company Profile</h1>

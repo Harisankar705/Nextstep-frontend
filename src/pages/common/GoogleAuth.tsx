@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { googleLogin } from "../../services/authService";
 import { setUser } from "../../redux/userSlice";
 import { setEmployer } from "../../redux/employerSlice";
+import { useState } from "react";
+import Spinner from "../../utils/Spinner";
 
 interface GoogleAuthProps {
   authType: "login" | "signup";
@@ -15,9 +17,10 @@ interface GoogleAuthProps {
 export const GoogleAuth: React.FC<GoogleAuthProps> = ({ authType, role }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [loading,setLoading]=useState(false)
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
+      setLoading(true)
       if (!credentialResponse.credential) {
         toast.error("Google authentication failed!");
         return;
@@ -60,11 +63,22 @@ export const GoogleAuth: React.FC<GoogleAuthProps> = ({ authType, role }) => {
       console.error("Google login error:", error);
       toast.error("Google authentication failed!");
     }
+    finally{
+       setLoading(false)
+    }
   };
 
   const googleLoginFailed = () => {
     toast.error("Google Sign-in failed!");
   };
 
-  return <GoogleLogin onSuccess={handleGoogleSuccess} onError={googleLoginFailed} />;
-};
+ return (
+  <div className="w-full flex justify-center items-center">
+    {loading ? (
+      <Spinner loading={true} />
+    ) : (
+      <GoogleLogin onSuccess={handleGoogleSuccess} onError={googleLoginFailed} />
+    )}
+  </div>
+);
+}
